@@ -1,20 +1,35 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native'; // react-native
+import styled from 'styled-components/native'; // native용 styled-components
+import { NavigationContainer } from '@react-navigation/native'; // 내비게이션 라이브러리
 
-export default function App() {
+import Header from './src/components/Header'; // 상단 헤더 가져오기
+import BottomBar from './src/components/BottomBar'; // 하단 바 가져오기
+
+const Content = styled.View`
+  flex: 1;
+  justify-content: 'center';
+  align-items: 'center';
+`;
+
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+    <NavigationContainer>
+      <View style={{ flex: 1 }}>
+        <Header></Header>
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+        <Content>
+          <Text>컨텐츠가 들어가야하는 부분입니다.</Text>
+          <Text>컨텐츠가 들어가야하는 부분입니다.</Text>
+          <Text>컨텐츠가 들어가야하는 부분입니다.</Text>
+          <Text>컨텐츠가 들어가야하는 부분입니다.</Text>
+          <Text>컨텐츠가 들어가야하는 부분입니다.</Text>
+          <Text>컨텐츠가 들어가야하는 부분입니다.</Text>
+        </Content>
+
+        <BottomBar />
+      </View>
+    </NavigationContainer>
+  );
+};
+
+export default App;
