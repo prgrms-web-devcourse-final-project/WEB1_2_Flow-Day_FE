@@ -1,67 +1,58 @@
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Image } from 'react-native';
 import styled from 'styled-components/native';
 
-const BottomBarDesign = styled.View`
+const Container = styled.View`
+  z-index: 100;
   flex-direction: row;
-  background-color: #333;
-  padding: 10px;
+  background-color: #FFFFFF;
   justify-content: space-between;
   align-items: center;
   height: 70px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border: 1px solid #EEEEEE;
 `;
 
-const BottomBarButtonWrapper = styled.View`
+const Button = styled.TouchableOpacity`
   flex: 1;
   align-items: center;
   justify-content: center;
-`;
-
-const BottomBarButton = styled.TouchableOpacity`
-  padding: 10px;
   align-items: center;
   justify-content: center;
 `;
 
-const BottomBarText = styled.Text`
-  color: white;
+const ButtonText = styled.Text`
+  color: #000000;
   font-size: 16px;
+  padding: 2px;
 `;
 
 const BottomBar = () => {
   return (
-    <BottomBarDesign>
-      <BottomBarButtonWrapper>
-        <BottomBarButton>
-          <BottomBarText>홈</BottomBarText>
-        </BottomBarButton>
-      </BottomBarButtonWrapper>
+    <Container>
+        <Button>
+          <Image source={require('../assets/icons/home.svg')} />
+          <ButtonText>홈</ButtonText>
+        </Button>
 
-      <BottomBarButtonWrapper>
-        <BottomBarButton>
-          <BottomBarText>채팅</BottomBarText>
-        </BottomBarButton>
-      </BottomBarButtonWrapper>
+        <Button>
+          <Image source={require('../assets/icons/chat.svg')} />
+          <ButtonText>채팅</ButtonText>
+        </Button>
 
-      <BottomBarButtonWrapper>
-        <BottomBarButton>
-          <BottomBarText>지도</BottomBarText>
-        </BottomBarButton>
-      </BottomBarButtonWrapper>
+        <Button>
+          <Image source={require('../assets/icons/map.svg')} />
+          <ButtonText>지도</ButtonText>
+        </Button>
 
-      <BottomBarButtonWrapper>
-        <BottomBarButton>
-          <BottomBarText>게시글</BottomBarText>
-        </BottomBarButton>
-      </BottomBarButtonWrapper>
+        <Button>
+          <Image source={require('../assets/icons/post.svg')} />
+          <ButtonText>게시글</ButtonText>
+        </Button>
 
-      <BottomBarButtonWrapper>
-        <BottomBarButton>
-          <BottomBarText>마이</BottomBarText>
-        </BottomBarButton>
-      </BottomBarButtonWrapper>
-    </BottomBarDesign>
+        <Button>
+          <Image source={require('../assets/icons/my.svg')} />
+          <ButtonText>마이</ButtonText>
+        </Button>
+    </Container>
   );
 };
 

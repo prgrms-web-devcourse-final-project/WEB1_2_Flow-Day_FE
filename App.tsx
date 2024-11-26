@@ -15,8 +15,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <View style={{ flex: 1 }}>
-        <Header></Header>
-
+        <Header>D+1234</Header>
         <Content>
           <Text>컨텐츠가 들어가야하는 부분입니다.</Text>
           <Text>컨텐츠가 들어가야하는 부분입니다.</Text>

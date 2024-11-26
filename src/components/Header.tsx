@@ -1,30 +1,38 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { Image, StyleSheet, View, Text } from 'react-native';
 import styled from 'styled-components/native';
 
-// styled-components로 스타일링된 컴포넌트 정의
-const HeaderDesign = styled.View`
-  background-color: white;
-  padding: 20px;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const NotificationButton = styled.TouchableOpacity`
-  padding: 5px;
-`;
-
-const Header = () => {
-  return (
-    <HeaderDesign>
-    <Text>Flow Day</Text>
-        <Text>D+100</Text>
-        <NotificationButton>
-          <Text>🔔</Text>
-        </NotificationButton>
-    </HeaderDesign>
-  )
+type HeaderProps = {
+  children: React.ReactNode;
 }
 
-export default Header
+const Container = styled.View`
+  background-color: '#FFFFFF';
+  padding: 16px 14px;
+  flex-direction: row;
+  justify-content: space-between;
+`
+
+const styles = StyleSheet.create({
+  container: {
+    
+  },
+  text: {
+    fontSize: 16
+  },
+  icon: {
+    width: 24,
+    height: 24
+  }
+});
+
+
+export default function Header({children}: HeaderProps) {
+  return (
+    <Container>
+      <Image source={require('../assets/logo.svg')} />
+      <Text style={styles.text}>{children}</Text>
+      <Image style={styles.icon} source={require('../assets/icons/alert.svg')} />
+    </Container>
+  );
+}
