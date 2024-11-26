@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native'; // 내비게이�
 
 import Header from './src/components/Header'; // 상단 헤더 가져오기
 import BottomBar from './src/components/BottomBar'; // 하단 바 가져오기
+import ChatPage from '@/pages/chat-page/ChatPage';
 
 const Content = styled.View`
   flex: 1;
@@ -18,12 +19,7 @@ const App = () => {
         <Header></Header>
 
         <Content>
-          <Text>컨텐츠가 들어가야하는 부분입니다.</Text>
-          <Text>컨텐츠가 들어가야하는 부분입니다.</Text>
-          <Text>컨텐츠가 들어가야하는 부분입니다.</Text>
-          <Text>컨텐츠가 들어가야하는 부분입니다.</Text>
-          <Text>컨텐츠가 들어가야하는 부분입니다.</Text>
-          <Text>컨텐츠가 들어가야하는 부분입니다.</Text>
+          <ChatPage></ChatPage>
         </Content>
 
         <BottomBar />
