@@ -10,6 +10,7 @@ const StyledPressable = styled.Pressable<{ $variant: 'short' | 'long' }>`
   justify-content: center;
   align-items: center;
   background-color: ${props => props.disabled ? '#CCCCCC' : '#FF6B6B'};
+  margin: 0 auto;
 `;
 
 // 버튼 내부 텍스트 스타일 컴포넌트
