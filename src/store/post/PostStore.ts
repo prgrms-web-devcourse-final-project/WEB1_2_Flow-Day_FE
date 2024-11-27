@@ -1,43 +1,39 @@
 // PostStore.ts : 포스트 관련 상태 관리
-// 아래 코드는 예시로 만들어둔 코드이니 전부 삭제 후 코딩하시기 바랍니다.
-import { create } from 'zustand';
+import create from 'zustand';
 
-// Post 타입 정의
-interface Post {
+interface IPost {
   id: string;
-  title: string;
-  content: string;
+  writerName: string; // 닉네임
+  city: string; // 카테고리
+  title: string; // 게시글 제목
+  contents: string; // 게시글 내용
+  courseId: number; // 코스 아이디
+  created_at: string; // 생성일자
+  updated_at: string; // 수정일자
+  spots: any[]; // Assuming spots is an array of objects
+  images: any[]; // Assuming images is an array of objects
 }
 
-// Store의 상태와 액션 정의
-interface PostStore {
-  posts: Post[];
-  addPost: (post: Post) => void;
-  updatePost: (updatedPost: Post) => void;
+interface PostState {
+  posts: IPost[];
+  addPost: (post: IPost) => void;
+  updatePost: (id: string, updatedPost: Partial<IPost>) => void;
   deletePost: (id: string) => void;
 }
 
-// zustand store 생성
-export const usePostStore = create<PostStore>(set => ({
+const usePostStore = create<PostState>(set => ({
   posts: [],
-
-  // 포스트 추가
-  addPost: post =>
-    set(state => ({
-      posts: [...state.posts, post],
-    })),
-
-  // 포스트 업데이트
-  updatePost: updatedPost =>
+  addPost: post => set(state => ({ posts: [...state.posts, post] })),
+  updatePost: (id, updatedPost) =>
     set(state => ({
       posts: state.posts.map(post =>
-        post.id === updatedPost.id ? updatedPost : post,
+        post.id === id ? { ...post, ...updatedPost } : post,
       ),
     })),
-
-  // 포스트 삭제
   deletePost: id =>
     set(state => ({
       posts: state.posts.filter(post => post.id !== id),
     })),
 }));
+
+export default usePostStore;
