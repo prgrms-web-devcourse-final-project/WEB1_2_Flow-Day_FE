@@ -16,6 +16,7 @@ const Content = styled.View`
 `;
 
 const App = () => {
+  // 커스텀 폰트 로딩과 관련된 상태 관리
  const [fontsLoaded, setFontsLoaded] = useState(false);
 
  useEffect(() => {
@@ -42,7 +43,7 @@ const App = () => {
  }, []);
 
  if (!fontsLoaded) {
-   return null; // 또는 로딩 화면
+   return null; 
  }
 
  return (
