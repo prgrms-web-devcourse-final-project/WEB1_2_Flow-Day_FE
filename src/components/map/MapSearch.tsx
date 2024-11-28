@@ -1,5 +1,3 @@
-// MapSearch.tsx
-import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@/types/type';
 import styled from 'styled-components/native';
@@ -20,10 +18,6 @@ const SearchBar = styled.TouchableOpacity`
   background-color: white;
   padding: 12px 16px;
   border-radius: 8px;
-  shadowColor: #000000;
-  shadowOffset: 0px 2px;
-  shadowOpacity: 0.25;
-  shadowRadius: 3.84px;
   elevation: 5;
 `;
 
