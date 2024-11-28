@@ -2,6 +2,48 @@ import { StyleSheet, Text, View } from 'react-native';
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
 
+// API 완성 후 Type 수정 예정
+const PostItem = (data: any) => {
+  const postData = data.postData;
+  const [year, month, day] = postData.createdAt.split('T')[0].split('-');
+  return (
+    <PostItemDesign>
+      <PostTexts>
+        <Title>{postData.title}</Title>
+        <ContentPreview>{postData.contents}</ContentPreview>
+        <PostInfo>
+          <InfoBox>
+            {/* import 방식으로 PNG 이미지파일을 가져오지 못하여 이런식으로 작성 - 리팩토링 필요 */}
+            {/* API 완성 시 "좋아요수", "댓글수" 수정 예정 - 리팩토링 필요 */}
+            <InfoIcon source={require('../../assets/icons/like.png')} />
+            <InfoText>좋아요수</InfoText>
+          </InfoBox>
+          <InfoBox>
+            <InfoIcon source={require('../../assets/icons/comment.png')} />
+            <InfoText>댓글수</InfoText>
+          </InfoBox>
+          <InfoBox>
+            <InfoIcon source={require('../../assets/icons/nickname.png')} />
+            <InfoText>{postData.nickName}</InfoText>
+          </InfoBox>
+          <InfoBox>
+            <InfoIcon source={require('../../assets/icons/createdAt.png')} />
+            {/* <InfoText>{createdAt}</InfoText> */}
+            <InfoText>{`${year}/${month}/${day}`}</InfoText>
+          </InfoBox>
+        </PostInfo>
+      </PostTexts>
+      {postData.images ? (
+        <PostImage source={postData.Image} />
+      ) : (
+        <PostImage source={require('../../assets/images/noImage.png')} />
+      )}
+    </PostItemDesign>
+  );
+};
+
+export default PostItem;
+
 const PostItemDesign = styled.TouchableOpacity`
   height: 100px;
   border-bottom-width: 1px;
@@ -59,45 +101,3 @@ const PostImage = styled.Image`
   border: 1px solid #dddddd;
   margin-left: auto;
 `;
-
-const PostItem = data => {
-  const postData = data.postData;
-  // const [year, month, day] = postData.createdAt.split('T')[0].split('-');
-  return (
-    <PostItemDesign>
-      <PostTexts>
-        <Title>{postData.title}</Title>
-        <ContentPreview>{postData.contents}</ContentPreview>
-        <PostInfo>
-          <InfoBox>
-            <InfoIcon source={require('../../assets/icons/like.png')} />
-            <InfoText>1234</InfoText>
-          </InfoBox>
-          <InfoBox>
-            <InfoIcon source={require('../../assets/icons/comment.png')} />
-            <InfoText>1234</InfoText>
-          </InfoBox>
-          <InfoBox>
-            <InfoIcon source={require('../../assets/icons/nickname.png')} />
-            <InfoText>{postData.nickName}</InfoText>
-          </InfoBox>
-          <InfoBox>
-            <InfoIcon source={require('../../assets/icons/createdAt.png')} />
-            {/* <InfoText>{createdAt}</InfoText> */}
-            {/* <InfoText>{`${year}/${month}/${day}`}</InfoText> */}
-          </InfoBox>
-        </PostInfo>
-      </PostTexts>
-      {postData.images ? (
-        <PostImage source={postData.Image} />
-      ) : (
-        <PostImage source={require('../../assets/images/noImage.png')} />
-      )}
-      {/* <PostImage source={require('../../assets/images/noImage.png')} /> */}
-    </PostItemDesign>
-  );
-};
-
-export default PostItem;
-
-const styles = StyleSheet.create({});
