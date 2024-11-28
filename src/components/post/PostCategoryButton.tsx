@@ -14,9 +14,13 @@ const CategoryIcon = styled.Image`
   margin: auto;
 `;
 
-const PostCategoryButton = () => {
+interface PostCategoryButtonProps {
+  onPress: () => void; // onPress 이벤트를 props로 받도록 인터페이스 추가
+}
+
+const PostCategoryButton: React.FC<PostCategoryButtonProps> = ({ onPress }) => {
   return (
-    <CategoryButton onPress={() => {}}>
+    <CategoryButton onPress={onPress}>
       <CategoryIcon source={require('../../assets/icons/category.png')} />
     </CategoryButton>
   );

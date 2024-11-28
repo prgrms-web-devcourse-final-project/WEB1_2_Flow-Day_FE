@@ -1,21 +1,16 @@
 import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/native';
-
-const CategoryBlur = styled.View`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 투명한 검정색 배경 */
-`;
 
 const CategoryModal = styled.View`
   width: 300px;
   height: 550px;
   background-color: #fff;
-  margin: auto;
+  z-index: 100;
+  border-radius: 8px;
+  margin: 0 auto;
+  /* 모달 내부 요소는 pointer events를 허용하지 않음 */
+  pointer-events: auto;
 `;
 
 const CategoryTitle = styled.View`
@@ -57,20 +52,21 @@ const SelectButtonList = styled.View`
   flex-wrap: wrap;
 `;
 
-const SelectButton = styled.TouchableOpacity`
+const SelectButton = styled.TouchableOpacity<{ selected: boolean }>`
   width: 60px;
   height: 30px;
-  background-color: #ffeadd;
+  background-color: ${({ selected }) => (selected ? '#ff6666' : '#ffeadd')};
   justify-content: center;
   border-radius: 6px;
   margin: 5px;
 `;
 
-const SelectButtonText = styled.Text`
+const SelectButtonText = styled.Text<{ selected: boolean }>`
   width: 50px;
   font-size: 13px;
   margin: auto;
   text-align: center;
+  color: ${({ selected }) => (selected ? '#ffffff' : '#000000')};
 `;
 
 const CompleteButton = styled.TouchableOpacity`
@@ -89,7 +85,22 @@ const CompleteButtonText = styled.Text`
   text-align: center;
 `;
 
-const PostCategoryModal = () => {
+const CategoryBlur = styled.TouchableOpacity`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 0;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+`;
+
+interface PostCategoryModalProps {
+  onPress: () => void; // onPress 이벤트를 props로 받도록 인터페이스 추가
+}
+
+const PostCategoryModal: React.FC<PostCategoryModalProps> = ({ onPress }) => {
   const seasonArr = ['전체', '봄', '여름', '가을', '겨울'];
   const regionArr = [
     '전체',
@@ -111,9 +122,28 @@ const PostCategoryModal = () => {
     '경남',
     '제주',
   ];
+  const [selectSeason, setSelectSeason] = useState<string[]>([]);
+  const [selectRegion, setSelectRegion] = useState<string[]>([]);
+
+  const handleSelectSeason = (season: string) => {
+    setSelectSeason(prevState =>
+      prevState.includes(season)
+        ? prevState.filter(item => item !== season)
+        : [...prevState, season],
+    );
+  };
+
+  const handleSelectRegion = (region: string) => {
+    setSelectRegion(prevState =>
+      prevState.includes(region)
+        ? prevState.filter(item => item !== region)
+        : [...prevState, region],
+    );
+  };
+
   return (
-    <CategoryBlur>
-      <CategoryModal>
+    <CategoryBlur onPress={onPress}>
+      <CategoryModal onStartShouldSetResponder={() => true}>
         <CategoryTitle>
           <CategoryTitleText>카테고리</CategoryTitleText>
         </CategoryTitle>
@@ -122,37 +152,47 @@ const PostCategoryModal = () => {
             <ContentTitleText>계절</ContentTitleText>
           </ContentTitle>
           <SelectButtonList>
-            {seasonArr.map((season, i) => {
-              return (
-                <SelectButton>
-                  <SelectButtonText>{season}</SelectButtonText>
-                </SelectButton>
-              );
-            })}
+            {seasonArr.map((season, i) => (
+              <SelectButton
+                onPress={() => handleSelectSeason(season)}
+                selected={selectSeason.includes(season)}
+                key={i}
+              >
+                <SelectButtonText selected={selectSeason.includes(season)}>
+                  {season}
+                </SelectButtonText>
+              </SelectButton>
+            ))}
           </SelectButtonList>
         </Content>
         <Content>
           <ContentTitle>
-            <ContentTitleText>계절</ContentTitleText>
+            <ContentTitleText>지역</ContentTitleText>
           </ContentTitle>
           <SelectButtonList>
-            {regionArr.map((region, i) => {
-              return (
-                <SelectButton>
-                  <SelectButtonText>{region}</SelectButtonText>
-                </SelectButton>
-              );
-            })}
+            {regionArr.map((region, i) => (
+              <SelectButton
+                onPress={() => handleSelectRegion(region)}
+                selected={selectRegion.includes(region)}
+                key={i}
+              >
+                <SelectButtonText selected={selectRegion.includes(region)}>
+                  {region}
+                </SelectButtonText>
+              </SelectButton>
+            ))}
           </SelectButtonList>
         </Content>
         <CompleteButton>
-          <CompleteButtonText>완료</CompleteButtonText>
+          <CompleteButtonText onPress={onPress}>완료</CompleteButtonText>
         </CompleteButton>
+        {/* <View>
+          <Text>계절: {selectSeason.join(', ')}</Text>
+          <Text>지역: {selectRegion.join(', ')}</Text>
+        </View> */}
       </CategoryModal>
     </CategoryBlur>
   );
 };
 
 export default PostCategoryModal;
-
-const styles = StyleSheet.create({});
