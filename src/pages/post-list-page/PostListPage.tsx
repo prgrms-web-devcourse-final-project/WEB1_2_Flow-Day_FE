@@ -7,6 +7,7 @@ import PostCategoryButton from '@/components/post/PostCategoryButton';
 import PostItem from '@/components/post/PostItem';
 import PostCategoryModal from '@/components/post/PostCategoryModal';
 
+/** API 완성 시 변경 예정 (게시글 페이지에서만 사용하는 인터페이스) */
 interface IPost {
   id: string;
   writerName: string; // 닉네임

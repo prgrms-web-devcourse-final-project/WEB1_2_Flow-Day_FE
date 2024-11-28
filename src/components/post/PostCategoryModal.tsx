@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components/native';
 
 interface PostCategoryModalProps {
-  onPress: () => void; // onPress 이벤트를 props로 받도록 인터페이스 추가
+  onPress: () => void;
 }
 
 const PostCategoryModal: React.FC<PostCategoryModalProps> = ({ onPress }) => {
