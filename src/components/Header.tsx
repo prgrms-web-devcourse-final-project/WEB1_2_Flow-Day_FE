@@ -1,5 +1,8 @@
 import { svg } from '@/assets/icons/svg';
+import HomePage from '@/pages/home-page/HomePage';
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
+import { Button, TouchableOpacity } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import styled from 'styled-components/native';
 
@@ -31,11 +34,15 @@ const AlertImage = styled.View`
 `
 
 export default function Header({children}: HeaderProps) {
+  const navigation =  useNavigation();
+  
   return (
     <Container>
-      <LogoImage>
-        <SvgXml xml={svg.logo} />
-      </LogoImage>
+      <TouchableOpacity onPress={() => navigation.navigate('home' as never)}>
+        <LogoImage>
+          <SvgXml xml={svg.logo} />
+        </LogoImage>
+      </TouchableOpacity>
       <HeaderText>{children}</HeaderText>
       <AlertImage>
         <SvgXml xml={svg.alert} />

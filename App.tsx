@@ -7,7 +7,6 @@ import { SvgXml } from 'react-native-svg';
 import HomePage from '@/pages/home-page/HomePage';
 import ChatPage from '@/pages/chat-page/ChatPage';
 
-const Tab = createBottomTabNavigator();
 
 import Header from './src/components/Header';
 import { svg } from '@/assets/icons/svg';
@@ -32,6 +31,8 @@ const ButtonText = styled.Text`
 `
 
 const App = () => {
+  const Tab = createBottomTabNavigator();
+
   const getModifiedSvg = (xml: string, fillColor: string) => {
     return xml.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
   };
@@ -55,10 +56,10 @@ const App = () => {
         }}>
 
         <Tab.Screen 
-          name='Home' 
+          name='home' 
           component={HomePage}
           options={{
-            header: () => <Header>D+1234</Header>,
+            header: () => <Header>D+134</Header>,
             tabBarIcon: ({ focused } : {focused: boolean}) => {
               return (
                 <ButtonBox>
@@ -73,7 +74,7 @@ const App = () => {
         />
            
         <Tab.Screen 
-          name='채팅' 
+          name='chat' 
           component={ChatPage}
           options={{ 
             header: () => <Header>D+1234</Header>, 
@@ -91,7 +92,7 @@ const App = () => {
         />
 
         <Tab.Screen 
-          name='지도' 
+          name='map' 
           component={ChatPage}
           options={{ 
             headerShown: false,
@@ -109,7 +110,7 @@ const App = () => {
         />
 
         <Tab.Screen
-          name='게시글' 
+          name='post' 
           component={ChatPage}
           options={{ 
             header: () => <Header>게시글</Header>, 
@@ -127,7 +128,7 @@ const App = () => {
         />
         
         <Tab.Screen 
-          name='마이' 
+          name='my' 
           component={ChatPage}
           options={{ 
             header: () => <Header>마이페이지</Header>, 
