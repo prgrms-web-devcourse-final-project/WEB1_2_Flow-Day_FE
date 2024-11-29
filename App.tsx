@@ -13,6 +13,7 @@ import MapPage from '@/pages/map-page/MapPage';
 import {SearchPage} from '@/pages/map-page/SearchPage';
 import Header from './src/components/Header';
 import {svg} from '@/assets/icons/svg';
+import AlertPage from '@/pages/alert-page/AlertPage';
 
 const COLORS = {
   active: '#FF6666',
@@ -120,7 +121,7 @@ const App = () => {
 
         <Tab.Screen
           name='chat'
-          component={ChatPage}
+          component={AlertPage}
           options={{
             header: () => <Header>D+1234</Header>,
             tabBarIcon: ({focused}: {focused: boolean}) => {
