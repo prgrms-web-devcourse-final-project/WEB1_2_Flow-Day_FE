@@ -25,7 +25,7 @@ const ButtonText = styled.Text`
   font-size: 13px;
   margin-top: 2px;
   text-align: center;;
-  min-width: 36px;
+  min-width: 38px;
   height: 20px;
 `
 
