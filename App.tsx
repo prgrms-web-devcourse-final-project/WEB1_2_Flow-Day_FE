@@ -1,4 +1,3 @@
-import { Button, Text, View } from 'react-native';
 import styled from 'styled-components/native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -7,9 +6,9 @@ import { SvgXml } from 'react-native-svg';
 import HomePage from '@/pages/home-page/HomePage';
 import ChatPage from '@/pages/chat-page/ChatPage';
 
-
 import Header from './src/components/Header';
 import { svg } from '@/assets/icons/svg';
+import { ROUTES } from '@/constants/routes';
 
 const COLORS = {
   active: '#FF6666',
@@ -56,7 +55,7 @@ const App = () => {
         }}>
 
         <Tab.Screen 
-          name='home' 
+          name={ROUTES.HOME}
           component={HomePage}
           options={{
             header: () => <Header>D+134</Header>,
@@ -74,7 +73,7 @@ const App = () => {
         />
            
         <Tab.Screen 
-          name='chat' 
+          name={ROUTES.CHAT} 
           component={ChatPage}
           options={{ 
             header: () => <Header>D+1234</Header>, 
@@ -92,7 +91,7 @@ const App = () => {
         />
 
         <Tab.Screen 
-          name='map' 
+          name={ROUTES.MAP} 
           component={ChatPage}
           options={{ 
             headerShown: false,
@@ -110,7 +109,7 @@ const App = () => {
         />
 
         <Tab.Screen
-          name='post' 
+          name={ROUTES.POST}
           component={ChatPage}
           options={{ 
             header: () => <Header>게시글</Header>, 
@@ -128,7 +127,7 @@ const App = () => {
         />
         
         <Tab.Screen 
-          name='my' 
+          name={ROUTES.MAP}
           component={ChatPage}
           options={{ 
             header: () => <Header>마이페이지</Header>, 
