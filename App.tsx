@@ -1,4 +1,5 @@
 import { Button, Text, View } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -32,6 +33,11 @@ const ButtonText = styled.Text`
  min-width: 36px;
  height: 20px;
  font-family: 'SCDream4';
+`;
+
+const SafeContainer = styled(SafeAreaView)`
+  flex: 1;
+  background-color: white;
 `;
 
 // Stack Navigator 생성 - MapPage와 SearchPage의 네비게이션을 위한 스택
@@ -93,6 +99,8 @@ const App = () => {
  }
 
  return (
+<SafeAreaProvider>
+  <SafeContainer>
    <NavigationContainer>
      <Tab.Navigator
        screenOptions={{
@@ -201,6 +209,8 @@ const App = () => {
        />
      </Tab.Navigator>
    </NavigationContainer>
+  </SafeContainer>
+</SafeAreaProvider>
  );
 };
 
