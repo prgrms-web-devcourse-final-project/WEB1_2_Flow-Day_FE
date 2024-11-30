@@ -5,7 +5,7 @@ import styled from 'styled-components/native';
 import PostTitle from '@/components/post/post-detail/PostTitle';
 import PostTag from '@/components/post/post-detail/PostTag';
 import PostInfo from '@/components/post/post-detail/PostInfo';
-import SelectCourse from '@/components/post/post-detail/SelectCourse';
+import SaveCourse from '@/components/post/post-detail/SaveCourse';
 import PostMap from '@/components/post/post-detail/PostMap';
 import PostContents from '@/components/post/post-detail/PostContents';
 import PostLikeButton from '@/components/post/post-detail/PostLikeButton';
@@ -16,17 +16,25 @@ import PostComment from '@/components/post/post-detail/PostComment';
 
 const PostDetailPage = () => {
   return (
-    <PostDetailPageDesign>
-      <PostTitle></PostTitle>
-      <PostTag>태그</PostTag>
-      <PostInfo>포스트 정보</PostInfo>
-      <SelectCourse>코스 저장</SelectCourse>
-      <PostMap></PostMap>
-      <PostContents></PostContents>
-      <PostLikeButton></PostLikeButton>
-      <PostCommentButton></PostCommentButton>
-      <PostButton>수정</PostButton>
-      <PostButton>삭제</PostButton>
+    <PostDetailPageDesign showsVerticalScrollIndicator={false}>
+      <PostTitle />
+      <PostTag />
+      <InfoSelectCourseBox>
+        <PostInfo />
+        <SaveCourse />
+      </InfoSelectCourseBox>
+      <PostMap />
+      <PostContents />
+      <Boxs>
+        <ButtonsBox>
+          <PostLikeButton />
+          <PostCommentButton />
+        </ButtonsBox>
+        <ButtonsBox>
+          <PostButton>수정</PostButton>
+          <PostButton>삭제</PostButton>
+        </ButtonsBox>
+      </Boxs>
       <PostInputComment>
         <PostButton>입력</PostButton>
       </PostInputComment>
@@ -39,8 +47,26 @@ const PostDetailPage = () => {
 
 export default PostDetailPage;
 
-const PostDetailPageDesign = styled.View`
+const PostDetailPageDesign = styled.ScrollView`
   flex: 1;
   background-color: #fff;
   padding: 10px;
+`;
+
+const InfoSelectCourseBox = styled.View`
+  flex-direction: row;
+  width: 100%;
+  margin-bottom: 10px;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const Boxs = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const ButtonsBox = styled.View`
+  flex-direction: row;
+  height: 20px;
 `;
