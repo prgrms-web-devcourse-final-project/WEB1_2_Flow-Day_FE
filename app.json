@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "flow-day",
+    "name": "com.snsdl0905@flowday",
     "slug": "flow-day",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -13,16 +13,36 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.snsdl0905.flowday"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "googleServicesFile": "./android/app/google-services.json",
+      "package": "com.snsdl0905.flowday"
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
-    }
-  }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "74297d92-d0ab-46df-8515-85e2fc0421dc"
+      }
+    },
+    "owner": "snsdl0905"
+  }, 
+  "plugins": [
+    [
+      "expo-build-properties",
+      {
+        "android": {
+          "enableProguardInReleaseBuilds": true,
+          "extraProguardRules": "-keep class io.invertase.firebase.** { *; }"
+        }
+      }
+    ]
+  ]
 }

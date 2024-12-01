@@ -6,6 +6,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SvgXml} from 'react-native-svg';
 import * as Font from 'expo-font';
 import {useEffect, useState} from 'react';
+import messaging from '@react-native-firebase/messaging'
 
 import HomePage from '@/pages/home-page/HomePage';
 import ChatPage from '@/pages/chat-page/ChatPage';
@@ -47,7 +48,44 @@ const MapStack = () => {
   );
 };
 
+import firebase from '@react-native-firebase/app';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAx9SNaSQ7156t23_VuJoNSf7IEaIE5tgk",
+  authDomain: "flow-day-dc1de.firebaseapp.com",
+  projectId: "flow-day-dc1de",
+  storageBucket: "flow-day-dc1de.firebasestorage.app",
+  messagingSenderId: "428576715841",
+  appId: "1:428576715841:web:e09529d7ea8372e4fbc2c0",
+  measurementId: "G-XJ9TD9FYCB"
+};
+
+
 const App = () => {
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+
+  const getFcmToken = async () => {
+    try {
+      const fcmToken = await messaging().getToken();
+      if (fcmToken) {
+        console.log('[+] FCM Token :: ', fcmToken);
+      } else {
+        console.log('[-] No FCM token received.');
+      }
+    } catch (error) {
+      console.error('[-] Error fetching FCM token:', error);
+    }
+  };
+  
+
+  useEffect(() => {
+    getFcmToken();
+  }, [])
+
+
+
   const Tab = createBottomTabNavigator();
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
