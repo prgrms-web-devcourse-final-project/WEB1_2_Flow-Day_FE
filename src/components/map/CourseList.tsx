@@ -1,8 +1,10 @@
-import React, { useRef, useState } from 'react';
-import { Modal, PanResponder, Dimensions, View, Text } from 'react-native';
+import React, { useRef, useState, useEffect } from 'react';
+import { Modal, PanResponder, Dimensions, View, Text, Alert } from 'react-native';
 import styled from 'styled-components/native';
 import { SvgXml } from 'react-native-svg';
 import { svg } from '@/assets/icons/svg';
+import { courseApi } from '@/api/courseApi';
+import { Course, CreateCourseRequest } from '@/types/course';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -52,18 +54,27 @@ const Content = styled.ScrollView`
   flex: 1;
 `;
 
-const WishList = styled.View`
-  padding: 20px;
+const CourseItem = styled.View`
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom-width: 1px;
+  border-bottom-color: #EEEEEE;
 `;
 
-const WishListTitle = styled.Text`
+const CourseColor = styled.View<{ color: string }>`
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  background-color: ${props => props.color};
+  margin-right: 12px;
+`;
+
+const CourseTitle = styled.Text`
   font-size: 15px;
-  font-family: 'SCDream5';
-  margin-bottom: 10px;
+  font-family: 'SCDream4';
 `;
 
-
-// 모달 스타일
 const ModalContainer = styled.View`
   flex: 1;
   justify-content: center;
@@ -135,6 +146,7 @@ const ButtonText = styled.Text`
   font-family: 'SCDream4';
 `;
 
+
 const colors = ['#FF6666', '#FFB966', '#FFE166', '#66FF66', '#66FFFF', '#6666FF', '#FF66FF'];
 
 export const CourseList = () => {
@@ -143,6 +155,70 @@ export const CourseList = () => {
   const [title, setTitle] = useState('');
   const [selectedColor, setSelectedColor] = useState(colors[0]);
   const [isShared, setIsShared] = useState(false);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImlkIjoxLCJsb2dpbklkIjoidGVzdCIsImNhdGVnb3J5IjoiYWNjZXNzVG9rZW4iLCJyb2xlIjoiUk9MRV9VU0VSIn0sImlhdCI6MTczMzEwNzQ1MywiZXhwIjoxNzMzMTExMDUzfQ.g5yV1LyJeO1zWPWn9Fw8rpNAiVujcZlFUbfvyOVShzs";
+  useEffect(() => {
+    loadCourses();
+  }, []);
+
+  const loadCourses = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const coursesData = await courseApi.getCourses(token);
+      
+      console.log('API Response:', coursesData); // 응답 데이터 확인용 로그
+      
+      // 응답 데이터가 배열인지 확인
+      if (!Array.isArray(coursesData)) {
+        console.error('Unexpected API response:', coursesData);
+        throw new Error('서버로부터 잘못된 데이터 형식을 받았습니다.');
+      }
+      
+      setCourses(coursesData);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : '코스 목록을 불러오는데 실패했습니다.');
+      Alert.alert('오류', error instanceof Error ? error.message : '코스 목록을 불러오는데 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateCourse = async () => {
+    if (!title.trim()) {
+      Alert.alert('알림', '제목을 입력해주세요.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const newCourse: CreateCourseRequest = {
+        title: title.trim(),
+        status: isShared ? 'PUBLIC' : 'PRIVATE',
+        date: new Date().toISOString().split('T')[0],
+        color: selectedColor
+      };
+
+      await courseApi.createCourse(newCourse, token);
+      setModalVisible(false);
+      await loadCourses();
+      
+      // 입력값 초기화
+      setTitle('');
+      setSelectedColor(colors[0]);
+      setIsShared(false);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : '코스 생성에 실패했습니다.');
+      Alert.alert('오류', error instanceof Error ? error.message : '코스 생성에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const panResponder = useRef(
     PanResponder.create({
@@ -171,16 +247,38 @@ export const CourseList = () => {
       <SlideContainer height={slideHeight} {...panResponder.panHandlers}>
         <Header>
           <HeaderTitle>전체 리스트</HeaderTitle>
-          <CreateButton onPress={() => setModalVisible(true)}>
-            <CreateText>새 코스 생성</CreateText>
+          <CreateButton onPress={() => setModalVisible(true)} disabled={loading}>
+            <CreateText>새코스 생성</CreateText>
             <SvgXml xml={svg.plusCircle} width={20} height={20} />
           </CreateButton>
         </Header>
         <Content>
-          <WishList>
-            <WishListTitle>나의 위시리스트</WishListTitle>
-        
-          </WishList>
+        {loading ? (
+            <View style={{ padding: 16 }}>
+              <Text style={{ textAlign: 'center', color: '#666' }}>
+                로딩 중...
+              </Text>
+            </View>
+          ) : error ? (
+            <View style={{ padding: 16 }}>
+              <Text style={{ textAlign: 'center', color: 'red' }}>
+                {error}
+              </Text>
+            </View>
+          ) : courses && Array.isArray(courses) && courses.length > 0 ? (  // courses가 존재하고 배열인지 확인
+            courses.map((course) => (
+              <CourseItem key={course.id}>
+                <CourseColor color={course.color} />
+                <CourseTitle>{course.title}</CourseTitle>
+              </CourseItem>
+            ))
+          ) : (
+            <View style={{ padding: 16 }}>
+              <Text style={{ textAlign: 'center', color: '#666' }}>
+                코스가 없습니다.
+              </Text>
+            </View>
+          )}
         </Content>
       </SlideContainer>
 
@@ -192,11 +290,12 @@ export const CourseList = () => {
       >
         <ModalContainer>
           <ModalContent>
-            <ModalTitle>새 코스 생성</ModalTitle>
+            <ModalTitle>새코스 생성</ModalTitle>
             <Input
               placeholder="제목을 입력하세요"
               value={title}
               onChangeText={setTitle}
+              editable={!loading}
             />
             <ColorContainer>
               {colors.map(color => (
@@ -205,10 +304,11 @@ export const CourseList = () => {
                   color={color}
                   selected={color === selectedColor}
                   onPress={() => setSelectedColor(color)}
+                  disabled={loading}
                 />
               ))}
             </ColorContainer>
-            <CheckboxContainer onPress={() => setIsShared(!isShared)}>
+            <CheckboxContainer onPress={() => !loading && setIsShared(!isShared)}>
               <View style={{
                 width: 20,
                 height: 20,
@@ -217,19 +317,16 @@ export const CourseList = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-                {isShared && <Text>✓</Text>}
+                {isShared && <Text style={{ color: '#666' }}>✓</Text>}
               </View>
               <CheckboxLabel>연인과 코스 공유하기</CheckboxLabel>
             </CheckboxContainer>
             <ButtonContainer>
-              <Button onPress={() => setModalVisible(false)}>
+              <Button onPress={() => setModalVisible(false)} disabled={loading}>
                 <ButtonText>취소</ButtonText>
               </Button>
-              <Button onPress={() => {
-            
-                setModalVisible(false);
-              }}>
-                <ButtonText>추가</ButtonText>
+              <Button onPress={handleCreateCourse} disabled={loading}>
+                <ButtonText>{loading ? '처리 중...' : '추가'}</ButtonText>
               </Button>
             </ButtonContainer>
           </ModalContent>
