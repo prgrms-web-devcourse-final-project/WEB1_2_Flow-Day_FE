@@ -1,9 +1,20 @@
 import React from 'react';
 import styled from 'styled-components/native';
 
-interface MyMessageProps {
-  message: string;
-}
+const MyMessage = ({ data }: any) => {
+  const [date, time] = data.time.split('T');
+  const [hour, minute, second] = time.split(':');
+  return (
+    <MyMessageDesign>
+      <SendTime>{`${hour}:${minute}`}</SendTime>
+      <TextDesign>
+        <MyMessageText>{data.message}</MyMessageText>
+      </TextDesign>
+    </MyMessageDesign>
+  );
+};
+
+export default MyMessage;
 
 const MyMessageDesign = styled.View`
   margin-top: 10px;
@@ -20,14 +31,11 @@ const TextDesign = styled.View`
 `;
 
 const MyMessageText = styled.Text`
-  max-width: 220px;
-  max-height: 300px;
-  min-width: fit-content;
-  min-height: 30px;
   font-size: 14px;
   justify-content: center;
-  padding: 10px;
+  padding: 5px 10px;
   color: #ffffff;
+  max-width: 200px;
 `;
 
 const SendTime = styled.Text`
@@ -41,16 +49,3 @@ const SendTime = styled.Text`
   /* align-items: center; */
   justify-content: center;
 `;
-
-const MyMessage: React.FC<MyMessageProps> = ({ message }) => {
-  return (
-    <MyMessageDesign>
-      <SendTime>15:00</SendTime>
-      <TextDesign>
-        <MyMessageText>{message}</MyMessageText>
-      </TextDesign>
-    </MyMessageDesign>
-  );
-};
-
-export default MyMessage;
