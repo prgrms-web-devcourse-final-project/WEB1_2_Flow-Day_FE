@@ -26,6 +26,7 @@
     "react-native-screens": "~4.1.0",
     "react-native-swiper": "^1.6.0",
     "react-native-web": "~0.19.13",
+    "socketjs-client": "^1.0.2",
     "sockjs-client": "^1.6.1",
     "styled-components": "^6.1.13",
     "zustand": "^5.0.1"
@@ -54,5 +55,6 @@
     "typescript": "^5.3.3",
     "typescript-eslint": "^8.15.0"
   },
-  "private": true
+  "private": true,
+  "proxy": "http://flowday.kro.kr:5000"
 }
