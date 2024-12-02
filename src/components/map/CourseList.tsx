@@ -159,7 +159,7 @@ export const CourseList = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImlkIjoxLCJsb2dpbklkIjoidGVzdCIsImNhdGVnb3J5IjoiYWNjZXNzVG9rZW4iLCJyb2xlIjoiUk9MRV9VU0VSIn0sImlhdCI6MTczMzEwNzQ1MywiZXhwIjoxNzMzMTExMDUzfQ.g5yV1LyJeO1zWPWn9Fw8rpNAiVujcZlFUbfvyOVShzs";
+  const token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImlkIjoxLCJyb2xlIjoiUk9MRV9VU0VSIiwiY2F0ZWdvcnkiOiJhY2Nlc3NUb2tlbiIsImxvZ2luSWQiOiJ0ZXN0In0sImlhdCI6MTczMzEyNDM1MywiZXhwIjoxNzMzMTI3OTUzfQ.1_zDma3XIdJalnEqAbOAAGhki2LmfEQxYG8kturGcQk";
   useEffect(() => {
     loadCourses();
   }, []);
@@ -168,17 +168,29 @@ export const CourseList = () => {
     try {
       setLoading(true);
       setError(null);
-      const coursesData = await courseApi.getCourses(token);
-      
-      console.log('API Response:', coursesData); // 응답 데이터 확인용 로그
-      
-      // 응답 데이터가 배열인지 확인
-      if (!Array.isArray(coursesData)) {
-        console.error('Unexpected API response:', coursesData);
-        throw new Error('서버로부터 잘못된 데이터 형식을 받았습니다.');
+      const response = await courseApi.getCourses(token);
+
+      console.log('=== 코스 목록 조회 결과 ===');
+      console.log('전체 응답:', JSON.stringify(response, null, 2));
+      console.log('컨텐츠:', JSON.stringify(response.content, null, 2));
+  
+      if (response.content) {
+        response.content.forEach((course, index) => {
+          console.log(`코스 ${index + 1}:`, {
+            id: course.id,
+            title: course.title,
+            status: course.status,
+            color: course.color,
+            spots: course.spots?.length || 0
+          });
+        });
       }
       
-      setCourses(coursesData);
+      if (response.content && Array.isArray(response.content)) {
+        setCourses(response.content);
+      } else {
+        throw new Error('유효하지 않은 데이터 형식입니다.');
+      }
     } catch (error) {
       setError(error instanceof Error ? error.message : '코스 목록을 불러오는데 실패했습니다.');
       Alert.alert('오류', error instanceof Error ? error.message : '코스 목록을 불러오는데 실패했습니다.');
@@ -192,27 +204,32 @@ export const CourseList = () => {
       Alert.alert('알림', '제목을 입력해주세요.');
       return;
     }
-
+  
     try {
       setLoading(true);
       setError(null);
       
       const newCourse: CreateCourseRequest = {
         title: title.trim(),
-        status: isShared ? 'PUBLIC' : 'PRIVATE',
-        date: new Date().toISOString().split('T')[0],
+        status: isShared ? 'COUPLE' : 'PRIVATE', 
+        date: new Date().toISOString().split('T')[0], 
         color: selectedColor
       };
-
-      await courseApi.createCourse(newCourse, token);
+  
+      console.log('Creating new course:', newCourse); // 요청 데이터 확인
+  
+      await courseApi.createCourse(1, newCourse, token);
       setModalVisible(false);
-      await loadCourses();
+      await loadCourses(); // 목록 새로고침
       
       // 입력값 초기화
       setTitle('');
       setSelectedColor(colors[0]);
       setIsShared(false);
+      
+      Alert.alert('성공', '새로운 코스가 추가되었습니다.');
     } catch (error) {
+      console.error('코스 생성 실패:', error);
       setError(error instanceof Error ? error.message : '코스 생성에 실패했습니다.');
       Alert.alert('오류', error instanceof Error ? error.message : '코스 생성에 실패했습니다.');
     } finally {
@@ -255,27 +272,43 @@ export const CourseList = () => {
         <Content>
         {loading ? (
             <View style={{ padding: 16 }}>
-              <Text style={{ textAlign: 'center', color: '#666' }}>
-                로딩 중...
-              </Text>
+              <Text style={{ textAlign: 'center', color: '#666' }}>로딩 중...</Text>
             </View>
           ) : error ? (
             <View style={{ padding: 16 }}>
-              <Text style={{ textAlign: 'center', color: 'red' }}>
-                {error}
-              </Text>
+              <Text style={{ textAlign: 'center', color: 'red' }}>{error}</Text>
             </View>
-          ) : courses && Array.isArray(courses) && courses.length > 0 ? (  // courses가 존재하고 배열인지 확인
-            courses.map((course) => (
-              <CourseItem key={course.id}>
-                <CourseColor color={course.color} />
-                <CourseTitle>{course.title}</CourseTitle>
-              </CourseItem>
-            ))
+          ) : courses && courses.length > 0 ? (
+
+            
+            courses.map((course) => {
+              if (course.title && course.color) {
+                return (
+                  <CourseItem key={course.id}>
+                    <CourseColor color={course.color} />
+                    <CourseTitle>{course.title}</CourseTitle>
+                  </CourseItem>
+                );
+              } else if (course.spots && course.spots.length > 0) {
+                return (
+                  <CourseItem key={course.id}>
+                    <CourseColor color={'#666666'} />
+                    <CourseTitle>{course.spots[0].name}</CourseTitle>
+                  </CourseItem>
+                );
+              } else {
+                return (
+                  <CourseItem key={course.id}>
+                    <CourseColor color={'#666666'} />
+                    <CourseTitle>제목 없음</CourseTitle>
+                  </CourseItem>
+                );
+              }
+            })
           ) : (
             <View style={{ padding: 16 }}>
               <Text style={{ textAlign: 'center', color: '#666' }}>
-                코스가 없습니다.
+                코스가 없습니다. (데이터: {JSON.stringify(courses)})
               </Text>
             </View>
           )}

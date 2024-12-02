@@ -2,7 +2,7 @@ export interface Course {
   id: number;
   memberId: number;
   title: string;
-  status: 'PRIVATE' | 'PUBLIC';
+  status: 'PRIVATE' | 'PUBLIC' | 'COUPLE';  
   date: string;
   color: string;
   createdAt?: string;
@@ -21,7 +21,7 @@ export interface Course {
 
 export interface CreateCourseRequest {
   title: string;
-  status: 'PRIVATE' | 'PUBLIC';
+  status: 'PRIVATE' | 'PUBLIC' | 'COUPLE';
   date: string;
   color: string;
 }
