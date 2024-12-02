@@ -367,4 +367,4 @@ export const CourseList = () => {
       </Modal>
     </>
   );
-};
+}; 
