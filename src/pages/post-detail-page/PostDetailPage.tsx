@@ -1,5 +1,5 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
 import styled from 'styled-components/native';
 
 import PostTitle from '@/components/post/post-detail/PostTitle';
@@ -12,9 +12,74 @@ import PostLikeButton from '@/components/post/post-detail/PostLikeButton';
 import PostCommentButton from '@/components/post/post-detail/PostCommentButton';
 import PostButton from '@/components/post/post-detail/PostButton';
 import PostInputComment from '@/components/post/post-detail/PostInputComment';
-import PostComment from '@/components/post/post-detail/PostComment';
+import PostParentComment from '@/components/post/post-detail/PostParentComment';
+import PostChildComment from '@/components/post/post-detail/PostChildComment';
 
 const PostDetailPage = () => {
+  const [commentList, setCommentList] = useState([]);
+  // const getReplies = async () => {
+  //   try {
+  //     const res = await axios.get('{{url}}/api/v1/replies/1');
+  //     const data = await res.data;
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
+
+  /** 댓글 더미데이터 - API 완성 시 수정 예정 */
+  const commentData = [
+    {
+      id: 2,
+      content: '부모댓글100',
+      memberName: 'member1',
+      likeCount: 0,
+      createdAt: '2024-11-28T11:39:34.997124',
+      children: [
+        {
+          id: 3,
+          content: '자식댓글100',
+          memberName: 'member1',
+          likeCount: 0,
+          createdAt: '2024-11-28T11:41:24.093087',
+          children: [],
+        },
+        {
+          id: 4,
+          content: '자식댓글100',
+          memberName: 'member1',
+          likeCount: 0,
+          createdAt: '2024-11-28T11:43:01.349621',
+          children: [],
+        },
+      ],
+    },
+    {
+      id: 5,
+      content: '부모댓글10',
+      memberName: 'member1',
+      likeCount: 0,
+      createdAt: '2024-11-28T11:46:52.440241',
+      children: [],
+    },
+    {
+      id: 6,
+      content: '부모댓글11',
+      memberName: 'member1',
+      likeCount: 0,
+      createdAt: '2024-11-28T11:46:55.760757',
+      children: [
+        {
+          id: 8,
+          content: '자식댓글1',
+          memberName: 'member1',
+          likeCount: 0,
+          createdAt: '2024-11-28T11:47:15.188453',
+          children: [],
+        },
+      ],
+    },
+  ];
+
   return (
     <PostDetailPageDesign showsVerticalScrollIndicator={false}>
       <PostTitle />
@@ -35,12 +100,12 @@ const PostDetailPage = () => {
           <PostButton>삭제</PostButton>
         </ButtonsBox>
       </Boxs>
-      <PostInputComment>
-        <PostButton>입력</PostButton>
-      </PostInputComment>
-      <PostComment>댓글입니다</PostComment>
-      <PostComment>댓글입니다</PostComment>
-      <PostComment>댓글입니다</PostComment>
+      <PostInputComment></PostInputComment>
+      <PostCommentList>
+        {commentData.map((comment, i) => {
+          return <PostParentComment />;
+        })}
+      </PostCommentList>
     </PostDetailPageDesign>
   );
 };
@@ -69,4 +134,8 @@ const Boxs = styled.View`
 const ButtonsBox = styled.View`
   flex-direction: row;
   height: 20px;
+`;
+
+const PostCommentList = styled.View`
+  width: 370px;
 `;
