@@ -5,6 +5,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SvgXml} from 'react-native-svg';
 import {useEffect, useState} from 'react';
+import * as SplashScreen from 'expo-splash-screen';
 
 import HomePage from '@/pages/home-page/HomePage';
 import ChatPage from '@/pages/chat-page/ChatPage';
@@ -35,10 +36,8 @@ const ButtonText = styled.Text`
   font-family: 'SCDream4';
 `;
 
-// Stack Navigator 생성 - MapPage와 SearchPage의 네비게이션을 위한 스택
 const Stack = createNativeStackNavigator();
 
-// 지도 관련 화면들을 위한 Stack Navigator 컴포넌트
 const MapStack = () => {
   return (
     <Stack.Navigator>
@@ -48,11 +47,17 @@ const MapStack = () => {
   );
 };
 
+SplashScreen.preventAutoHideAsync();
+
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
+
 const App = () => {
   const Tab = createBottomTabNavigator();
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
-  // 앱 시작시 폰트 로드
   useEffect(() => {
     async function loadFonts() {
       try {
@@ -68,6 +73,7 @@ const App = () => {
           SCDream9: require('./src/assets/font/SCDream9.otf'),
         });
         setFontsLoaded(true);
+        await SplashScreen.hideAsync();
       } catch (error) {
         console.error('Error loading fonts:', error);
       }
@@ -80,7 +86,6 @@ const App = () => {
     return xml.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
   };
 
-  // 폰트 로딩 전에는 아무것도 렌더링하지 않음
   if (!fontsLoaded) {
     return null;
   }
