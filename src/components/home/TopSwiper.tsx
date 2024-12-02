@@ -32,7 +32,7 @@ const TopSwiper = () => {
             autoplayTimeout={3}
             width={width}
             style={{borderColor: '#d9d9d9'}}
-            paginationStyle={{ position: 'absolute',  bottom: 20}}
+            paginationStyle={{ position: 'absolute',  bottom: 10}}
             activeDotStyle={{ backgroundColor: '#d9d9d9' }} 
             buttonWrapperStyle={{
             }}
