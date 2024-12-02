@@ -1,59 +1,82 @@
-import create from 'zustand';
+import { create } from 'zustand';
 
-// 1대1 채팅 메시지 타입
-interface Message {
-  text: string;
-  sender: 'user1' | 'user2';
-  timestamp: number;
+interface IChatData {
+  senderId: number;
+  message: string;
+  time: string;
+  pageNumber: number; // 현재 페이지
+  totalPages: number; // 총 페이지 수
 }
 
-// 커플 정보 타입
-interface Couple {
-  user1: { id: string; name: string };
-  user2: { id: string; name: string };
+interface ChatState {
+  chatData: IChatData[];
+  addMessage: (message: IChatData) => void;
 }
 
-// 상태 타입
-interface ChatStore {
-  messages: Message[];
-  currentMessage: string;
-  isLoading: boolean;
-  couple: Couple | null;
-
-  addMessage: (message: Message) => void;
-  setCurrentMessage: (message: string) => void;
-  setLoading: (loading: boolean) => void;
-  setCouple: (
-    user1: { id: string; name: string },
-    user2: { id: string; name: string },
-  ) => void;
-  resetChat: () => void;
-}
-
-const useChatStore = create<ChatStore>(set => ({
-  messages: [],
-  currentMessage: '',
-  isLoading: false,
-  couple: null,
-
-  // 메시지 추가
-  addMessage: message =>
+const useChatStore = create<ChatState>(set => ({
+  chatData: [
+    {
+      senderId: 1,
+      message: '동해물과',
+      time: '2024-12-02T10:52:32.737144',
+      pageNumber: 0,
+      totalPages: 1,
+    },
+    {
+      senderId: 2,
+      message: '백두산이백두산이백두산이',
+      time: '2024-12-02T10:53:28.104461',
+      pageNumber: 0,
+      totalPages: 1,
+    },
+    {
+      senderId: 1,
+      message: '마르고마르고마르고마르고마르고',
+      time: '2024-12-02T10:54:32.737144',
+      pageNumber: 0,
+      totalPages: 1,
+    },
+    {
+      senderId: 2,
+      message: '닳도록닳도록닳도록닳도록',
+      time: '2024-12-02T10:55:28.104461',
+      pageNumber: 0,
+      totalPages: 1,
+    },
+    {
+      senderId: 1,
+      message: '하느님이',
+      time: '2024-12-02T10:56:32.737144',
+      pageNumber: 0,
+      totalPages: 1,
+    },
+    {
+      senderId: 2,
+      message: '보우하사',
+      time: '2024-12-02T10:57:28.104461',
+      pageNumber: 0,
+      totalPages: 1,
+    },
+    {
+      senderId: 1,
+      message: '우리나라',
+      time: '2024-12-03T10:56:32.737144',
+      pageNumber: 0,
+      totalPages: 1,
+    },
+    {
+      senderId: 2,
+      message:
+        '만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세만세',
+      time: '2024-12-03T10:58:28.104461',
+      pageNumber: 0,
+      totalPages: 1,
+    },
+  ],
+  addMessage: (message: IChatData) =>
     set(state => ({
-      messages: [...state.messages, message],
+      chatData: [...state.chatData, message],
     })),
-
-  // 현재 입력 중인 메시지 설정
-  setCurrentMessage: message => set({ currentMessage: message }),
-
-  // 로딩 상태 설정
-  setLoading: loading => set({ isLoading: loading }),
-
-  // 커플 정보 설정
-  setCouple: (user1, user2) => set({ couple: { user1, user2 } }),
-
-  // 채팅 초기화
-  resetChat: () =>
-    set({ messages: [], currentMessage: '', isLoading: false, couple: null }),
 }));
 
 export default useChatStore;
