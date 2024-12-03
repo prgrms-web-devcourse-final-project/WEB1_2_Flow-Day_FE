@@ -15,6 +15,7 @@ import Header from './src/components/Header';
 import { svg } from '@/assets/icons/svg';
 import PostListPage from '@/pages/post-list-page/PostListPage';
 
+// 색상 설정
 const COLORS = {
   active: '#FF6666',
   inactive: '#000000',
@@ -52,6 +53,14 @@ const MapStack = () => {
         component={SearchPage}
         options={{ headerShown: false }}
       />
+    </Stack.Navigator>
+  );
+};
+
+// 게시글 관련 화면들을 위한 Stack Navigator 컴포넌트
+const PostStack = () => {
+  return (
+    <Stack.Navigator>
       <Stack.Screen
         name="PostListPage"
         component={PostListPage}
@@ -192,8 +201,8 @@ const App = () => {
         />
 
         <Tab.Screen
-          name="PostListPage"
-          component={PostListPage}
+          name="posts"
+          component={PostStack} // PostStack을 사용하도록 변경
           options={{
             headerShown: false,
             tabBarIcon: ({ focused }: { focused: boolean }) => {
