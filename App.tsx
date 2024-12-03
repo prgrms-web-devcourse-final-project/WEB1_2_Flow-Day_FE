@@ -14,6 +14,7 @@ import { SearchPage } from '@/pages/map-page/SearchPage';
 import Header from './src/components/Header';
 import { svg } from '@/assets/icons/svg';
 import PostListPage from '@/pages/post-list-page/PostListPage';
+import PostCreatePage from '@/pages/post-create-page/PostCreatePage';
 
 // 색상 설정
 const COLORS = {
@@ -64,6 +65,11 @@ const PostStack = () => {
       <Stack.Screen
         name="PostListPage"
         component={PostListPage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PostCreatePage"
+        component={PostCreatePage}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

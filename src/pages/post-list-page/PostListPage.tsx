@@ -7,6 +7,8 @@ import PostCategoryButton from '@/components/post/PostCategoryButton';
 import PostItem from '@/components/post/PostItem';
 import PostCategoryModal from '@/components/post/PostCategoryModal';
 import axios from 'axios';
+import Buttons from '@/components/Buttons';
+import { useNavigation } from '@react-navigation/native';
 
 /** API 완성 시 변경 예정 (게시글 페이지에서만 사용하는 인터페이스) */
 interface IPost {
@@ -23,6 +25,7 @@ interface IPost {
 }
 
 const PostListPage = () => {
+  const navigation = useNavigation();
   const [isLatest, setIsLatest] = useState(true);
   const [onCategoryModal, isOnCategoryModal] = useState(false);
   const [postData, setPostData] = useState([]);
@@ -81,6 +84,11 @@ const PostListPage = () => {
         data={postData}
         renderItem={renderItem}
         keyExtractor={(item: any) => item.id.toString()}
+      />
+      <Buttons.LongBtn
+        onPress={() => navigation.navigate('PostCreatePage')}
+        text="글쓰기"
+        style={{ marginBottom: 10 }}
       />
       {onCategoryModal && (
         <PostCategoryModal
