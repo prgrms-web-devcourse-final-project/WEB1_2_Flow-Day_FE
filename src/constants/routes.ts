@@ -4,4 +4,5 @@ export const ROUTES = {
     MAP: 'map',
     POST: 'post',
     MY: 'my',
-} as const
+    LOGIN: 'login',
+} as const;

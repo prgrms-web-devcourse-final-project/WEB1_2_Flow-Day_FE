@@ -1,11 +1,13 @@
-import {Button, SafeAreaView, Text, View} from 'react-native';
+import {SafeAreaView} from 'react-native';
 import styled from 'styled-components/native';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, createNavigationContainerRef} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SvgXml} from 'react-native-svg';
 import {useEffect, useState} from 'react';
 import * as SplashScreen from 'expo-splash-screen';
+import * as Font from 'expo-font';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import HomePage from '@/pages/home-page/HomePage';
 import ChatPage from '@/pages/chat-page/ChatPage';
@@ -14,7 +16,9 @@ import { svg } from '@/assets/icons/svg';
 import { ROUTES } from '@/constants/routes';
 import MapPage from '@/pages/map-page/MapPage';
 import {SearchPage} from '@/pages/map-page/SearchPage';
-import * as Font from 'expo-font';
+import LoginPage from '@/pages/login-page/LoginPage';
+import axios from 'axios';
+import useStore from '@/store/useStore';
 
 const COLORS = {
   active: '#FF6666',
@@ -38,14 +42,14 @@ const ButtonText = styled.Text`
 
 const Stack = createNativeStackNavigator();
 
-const MapStack = () => {
-  return (
+function MapStack() {
+  return(
     <Stack.Navigator>
       <Stack.Screen name={ROUTES.MAP} component={MapPage} options={{headerShown: false}} />
       <Stack.Screen name='Search' component={SearchPage} options={{headerShown: false}} />
     </Stack.Navigator>
-  );
-};
+  )
+}
 
 SplashScreen.preventAutoHideAsync();
 
@@ -54,9 +58,24 @@ SplashScreen.setOptions({
   fade: true,
 });
 
+export const navigationRef = createNavigationContainerRef();
+
 const App = () => {
-  const Tab = createBottomTabNavigator();
+  const { logOut, setAccessToken, isLoggedIn } = useStore();
   const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  useEffect(() => {
+    const validateToken = async () => {
+      try{
+        const response = await axios.get('endpoint');
+        const newAccessToken = response.data.accessToken;
+        setAccessToken(newAccessToken);
+      } catch(error) {
+        logOut();
+      }
+    };
+    validateToken();
+  }, [setAccessToken, logOut]);
 
   useEffect(() => {
     async function loadFonts() {
@@ -78,21 +97,44 @@ const App = () => {
         console.error('Error loading fonts:', error);
       }
     }
-
     loadFonts();
   }, []);
-
-  const getModifiedSvg = (xml: string, fillColor: string) => {
-    return xml.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
-  };
 
   if (!fontsLoaded) {
     return null;
   }
 
+  if (!isLoggedIn) {
+    return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <NavigationContainer ref={navigationRef}>
+          <Stack.Navigator>
+            <Stack.Screen
+              name={ROUTES.LOGIN}
+              component={LoginPage}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaView>
+    );
+  }
+
+  const Tab = createBottomTabNavigator();
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  const getModifiedSvg = (xml: string, fillColor: string) => {
+    return xml.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <Tab.Navigator
           screenOptions={{
             tabBarStyle: {
@@ -145,7 +187,7 @@ const App = () => {
 
           <Tab.Screen 
             name={ROUTES.MAP} 
-            component={ChatPage}
+            component={MapStack}
             options={{ 
               headerShown: false,
               tabBarIcon: ({ focused } : {focused: boolean}) => {
