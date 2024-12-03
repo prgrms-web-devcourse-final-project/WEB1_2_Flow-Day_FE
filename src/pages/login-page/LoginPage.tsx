@@ -2,10 +2,12 @@ import axios from "axios";
 import { useState } from "react";
 import { View, Image } from "react-native";
 import styled from 'styled-components/native';
+import { useNavigation } from '@react-navigation/native';
 
 import Buttons from "@/components/Buttons";
 import { REACT_APP_SERVER_URL } from '@env';
 import { useStore } from '@/store/useStore';
+import { ROUTES } from "@/constants/routes";
  
 const Container = styled.View`
     justify-content: center;
@@ -17,10 +19,11 @@ const Container = styled.View`
 const Input = styled.TextInput`
     border: 1px solid #DDDDDD;
     width: 300px;
-    margin: 14px 0;
+    height: 42px;
+    margin: 12px 0;
     border-radius: 6px;
     font-family: 'SCDream4';
-    padding: 9px 12px;
+    padding: 0 12px;
 `
 
 const TextContainer = styled.View`
@@ -75,6 +78,8 @@ const LoginPage = () => {
     const [pw, setPw] = useState('');
     const { setAccessToken, setIsLoggedIn } = useStore();
 
+    const navigation = useNavigation();
+
     const handleLogin = async () => {
         try {
             const response = await axios.post(`${REACT_APP_SERVER_URL}/members/login`, {
@@ -127,7 +132,7 @@ const LoginPage = () => {
             <BottomBox>
                 <BottomText style={{ width: '100%' }}>
                     <TextGrey>아직 플로우데이 계정이 없으신가요? </TextGrey>
-                    <TextColored>회원가입</TextColored>
+                    <TextColored onPress={() => navigation.navigate(ROUTES.JOIN as never)}>회원가입</TextColored>
                 </BottomText>
                 <BottomText>
                     <TextGrey>비밀번호를 잊으셨나요? </TextGrey>

@@ -1,4 +1,4 @@
-import {SafeAreaView} from 'react-native';
+import {Button, SafeAreaView} from 'react-native';
 import styled from 'styled-components/native';
 import {NavigationContainer, createNavigationContainerRef} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -19,6 +19,7 @@ import {SearchPage} from '@/pages/map-page/SearchPage';
 import LoginPage from '@/pages/login-page/LoginPage';
 import axios from 'axios';
 import useStore from '@/store/useStore';
+import JoinPage from '@/pages/join-page/JoinPage';
 
 const COLORS = {
   active: '#FF6666',
@@ -113,6 +114,16 @@ const App = () => {
               name={ROUTES.LOGIN}
               component={LoginPage}
               options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name={ROUTES.JOIN}
+              component={JoinPage}
+              options={{
+                headerTitle: '',
+                headerStyle: { 
+                  backgroundColor: '#FFFFFF'
+                },
+              }}
             />
           </Stack.Navigator>
         </NavigationContainer>

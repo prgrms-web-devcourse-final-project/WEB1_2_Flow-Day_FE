@@ -1,6 +1,5 @@
 import { svg } from '@/assets/icons/svg';
 import { ROUTES } from '@/constants/routes';
-import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import styled from 'styled-components/native';

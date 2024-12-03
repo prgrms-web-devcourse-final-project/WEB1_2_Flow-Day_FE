@@ -5,4 +5,5 @@ export const ROUTES = {
     POST: 'post',
     MY: 'my',
     LOGIN: 'login',
+    JOIN: 'join'
 } as const;
