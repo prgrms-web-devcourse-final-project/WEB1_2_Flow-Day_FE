@@ -220,6 +220,7 @@ export default PostListPage;
 
 const PostListPageDesign = styled.View`
   flex: 1;
+  background-color: #fff;
 `;
 
 const PostSearchCategory = styled.View`

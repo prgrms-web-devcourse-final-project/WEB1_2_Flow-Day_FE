@@ -1,18 +1,19 @@
-import {Button, Text, View} from 'react-native';
+import { Button, Text, View } from 'react-native';
 import styled from 'styled-components/native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {SvgXml} from 'react-native-svg';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SvgXml } from 'react-native-svg';
 import * as Font from 'expo-font';
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 
 import HomePage from '@/pages/home-page/HomePage';
 import ChatPage from '@/pages/chat-page/ChatPage';
 import MapPage from '@/pages/map-page/MapPage';
-import {SearchPage} from '@/pages/map-page/SearchPage';
+import { SearchPage } from '@/pages/map-page/SearchPage';
 import Header from './src/components/Header';
-import {svg} from '@/assets/icons/svg';
+import { svg } from '@/assets/icons/svg';
+import PostListPage from '@/pages/post-list-page/PostListPage';
 
 const COLORS = {
   active: '#FF6666',
@@ -41,8 +42,21 @@ const Stack = createNativeStackNavigator();
 const MapStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name='MapMain' component={MapPage} options={{headerShown: false}} />
-      <Stack.Screen name='Search' component={SearchPage} options={{headerShown: false}} />
+      <Stack.Screen
+        name="MapMain"
+        component={MapPage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Search"
+        component={SearchPage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PostListPage"
+        component={PostListPage}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };
@@ -103,15 +117,24 @@ const App = () => {
         }}
       >
         <Tab.Screen
-          name='home'
+          name="home"
           component={HomePage}
           options={{
             header: () => <Header>D+134</Header>,
-            tabBarIcon: ({focused}: {focused: boolean}) => {
+            tabBarIcon: ({ focused }: { focused: boolean }) => {
               return (
                 <ButtonBox>
-                  <SvgXml xml={getModifiedSvg(svg.home, focused ? COLORS.active : COLORS.inactive)} />
-                  <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>홈</ButtonText>
+                  <SvgXml
+                    xml={getModifiedSvg(
+                      svg.home,
+                      focused ? COLORS.active : COLORS.inactive,
+                    )}
+                  />
+                  <ButtonText
+                    style={{ color: focused ? COLORS.active : COLORS.inactive }}
+                  >
+                    홈
+                  </ButtonText>
                 </ButtonBox>
               );
             },
@@ -119,15 +142,24 @@ const App = () => {
         />
 
         <Tab.Screen
-          name='chat'
+          name="chat"
           component={ChatPage}
           options={{
             header: () => <Header>D+1234</Header>,
-            tabBarIcon: ({focused}: {focused: boolean}) => {
+            tabBarIcon: ({ focused }: { focused: boolean }) => {
               return (
                 <ButtonBox>
-                  <SvgXml xml={getModifiedSvg(svg.chat, focused ? COLORS.active : COLORS.inactive)} />
-                  <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>채팅</ButtonText>
+                  <SvgXml
+                    xml={getModifiedSvg(
+                      svg.chat,
+                      focused ? COLORS.active : COLORS.inactive,
+                    )}
+                  />
+                  <ButtonText
+                    style={{ color: focused ? COLORS.active : COLORS.inactive }}
+                  >
+                    채팅
+                  </ButtonText>
                 </ButtonBox>
               );
             },
@@ -135,15 +167,24 @@ const App = () => {
         />
 
         <Tab.Screen
-          name='map'
+          name="map"
           component={MapStack}
           options={{
             headerShown: false,
-            tabBarIcon: ({focused}: {focused: boolean}) => {
+            tabBarIcon: ({ focused }: { focused: boolean }) => {
               return (
                 <ButtonBox>
-                  <SvgXml xml={getModifiedSvg(svg.map, focused ? COLORS.active : COLORS.inactive)} />
-                  <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>지도</ButtonText>
+                  <SvgXml
+                    xml={getModifiedSvg(
+                      svg.map,
+                      focused ? COLORS.active : COLORS.inactive,
+                    )}
+                  />
+                  <ButtonText
+                    style={{ color: focused ? COLORS.active : COLORS.inactive }}
+                  >
+                    지도
+                  </ButtonText>
                 </ButtonBox>
               );
             },
@@ -151,15 +192,24 @@ const App = () => {
         />
 
         <Tab.Screen
-          name='post'
-          component={ChatPage}
+          name="PostListPage"
+          component={PostListPage}
           options={{
-            header: () => <Header>게시글</Header>,
-            tabBarIcon: ({focused}: {focused: boolean}) => {
+            headerShown: false,
+            tabBarIcon: ({ focused }: { focused: boolean }) => {
               return (
                 <ButtonBox>
-                  <SvgXml xml={getModifiedSvg(svg.post, focused ? COLORS.active : COLORS.inactive)} />
-                  <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>게시글</ButtonText>
+                  <SvgXml
+                    xml={getModifiedSvg(
+                      svg.post,
+                      focused ? COLORS.active : COLORS.inactive,
+                    )}
+                  />
+                  <ButtonText
+                    style={{ color: focused ? COLORS.active : COLORS.inactive }}
+                  >
+                    게시글
+                  </ButtonText>
                 </ButtonBox>
               );
             },
@@ -167,15 +217,24 @@ const App = () => {
         />
 
         <Tab.Screen
-          name='my'
+          name="my"
           component={ChatPage}
           options={{
             header: () => <Header>마이페이지</Header>,
-            tabBarIcon: ({focused}: {focused: boolean}) => {
+            tabBarIcon: ({ focused }: { focused: boolean }) => {
               return (
                 <ButtonBox>
-                  <SvgXml xml={getModifiedSvg(svg.my, focused ? COLORS.active : COLORS.inactive)} />
-                  <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>마이</ButtonText>
+                  <SvgXml
+                    xml={getModifiedSvg(
+                      svg.my,
+                      focused ? COLORS.active : COLORS.inactive,
+                    )}
+                  />
+                  <ButtonText
+                    style={{ color: focused ? COLORS.active : COLORS.inactive }}
+                  >
+                    마이
+                  </ButtonText>
                 </ButtonBox>
               );
             },
