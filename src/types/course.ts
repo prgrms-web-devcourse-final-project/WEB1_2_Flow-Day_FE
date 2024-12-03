@@ -16,6 +16,8 @@ export interface Course {
     sequence: number;
     courseId: number;
     voteId: number;
+    memberId: number;  
+    isOwner?: boolean; 
   }>;
 }
 
