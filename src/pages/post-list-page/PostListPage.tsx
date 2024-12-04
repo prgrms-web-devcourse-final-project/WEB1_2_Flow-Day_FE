@@ -6,6 +6,7 @@ import PostSearch from '@/components/post/PostSearch';
 import PostCategoryButton from '@/components/post/PostCategoryButton';
 import PostItem from '@/components/post/PostItem';
 import PostCategoryModal from '@/components/post/PostCategoryModal';
+import axios from 'axios';
 
 /** API 완성 시 변경 예정 (게시글 페이지에서만 사용하는 인터페이스) */
 interface IPost {
@@ -24,154 +25,30 @@ interface IPost {
 const PostListPage = () => {
   const [isLatest, setIsLatest] = useState(true);
   const [onCategoryModal, isOnCategoryModal] = useState(false);
+  const [postData, setPostData] = useState([]);
 
-  /** 테스트 코드 : 게시글 리스트 API 완성 시 수정 예정 */
-  const postData = [
-    {
-      id: 1,
-      nickName: '홍길동',
-      region: '서울 경기',
-      season: '봄 여름',
-      title: '게시글 제목',
-      contents: '게시글 내용',
-      tags: '#홍대 #서울데이트',
-      courseId: 1,
-      createdAt: '2024-11-27T12:17:39.316713',
-      updatedAt: '2024-11-27T12:17:39.316713',
-    },
-    {
-      id: 2,
-      nickName: '하하하',
-      region: '대구 경북',
-      season: '가을 겨울',
-      title: '게시글 제목입니다아아아아아',
-      contents: '게시글 내용ㅇ니데요오오오옹',
-      tags: '#홍대 #서울데이트',
-      courseId: 1,
-      createdAt: '2024-11-27T12:17:39.316713',
-      updatedAt: '2024-11-27T12:17:39.316713',
-    },
-    {
-      id: 3,
-      nickName: '홍길동',
-      region: '서울 경기',
-      season: '봄 여름',
-      title: '게시글 제목',
-      contents: '게시글 내용',
-      tags: '#홍대 #서울데이트',
-      courseId: 1,
-      createdAt: '2024-11-27T12:17:39.316713',
-      updatedAt: '2024-11-27T12:17:39.316713',
-    },
-    {
-      id: 4,
-      nickName: '하하하',
-      region: '대구 경북',
-      season: '가을 겨울',
-      title: '게시글 제목입니다아아아아아',
-      contents: '게시글 내용ㅇ니데요오오오옹',
-      tags: '#홍대 #서울데이트',
-      courseId: 1,
-      createdAt: '2024-11-27T12:17:39.316713',
-      updatedAt: '2024-11-27T12:17:39.316713',
-    },
-    {
-      id: 5,
-      nickName: '홍길동',
-      region: '서울 경기',
-      season: '봄 여름',
-      title: '게시글 제목',
-      contents: '게시글 내용',
-      tags: '#홍대 #서울데이트',
-      courseId: 1,
-      createdAt: '2024-11-27T12:17:39.316713',
-      updatedAt: '2024-11-27T12:17:39.316713',
-    },
-    {
-      id: 6,
-      nickName: '하하하',
-      region: '대구 경북',
-      season: '가을 겨울',
-      title: '게시글 제목입니다아아아아아',
-      contents: '게시글 내용ㅇ니데요오오오옹',
-      tags: '#홍대 #서울데이트',
-      courseId: 1,
-      createdAt: '2024-11-27T12:17:39.316713',
-      updatedAt: '2024-11-27T12:17:39.316713',
-    },
-    {
-      id: 7,
-      nickName: '홍길동',
-      region: '서울 경기',
-      season: '봄 여름',
-      title: '게시글 제목',
-      contents: '게시글 내용',
-      tags: '#홍대 #서울데이트',
-      courseId: 1,
-      createdAt: '2024-11-27T12:17:39.316713',
-      updatedAt: '2024-11-27T12:17:39.316713',
-    },
-    {
-      id: 8,
-      nickName: '하하하',
-      region: '대구 경북',
-      season: '가을 겨울',
-      title: '게시글 제목입니다아아아아아',
-      contents: '게시글 내용ㅇ니데요오오오옹',
-      tags: '#홍대 #서울데이트',
-      courseId: 1,
-      createdAt: '2024-11-27T12:17:39.316713',
-      updatedAt: '2024-11-27T12:17:39.316713',
-    },
-    {
-      id: 9,
-      nickName: '홍길동',
-      region: '서울 경기',
-      season: '봄 여름',
-      title: '게시글 제목',
-      contents: '게시글 내용',
-      tags: '#홍대 #서울데이트',
-      courseId: 1,
-      createdAt: '2024-11-27T12:17:39.316713',
-      updatedAt: '2024-11-27T12:17:39.316713',
-    },
-    {
-      id: 10,
-      nickName: '하하하',
-      region: '대구 경북',
-      season: '가을 겨울',
-      title: '게시글 제목입니다아아아아아',
-      contents: '게시글 내용ㅇ니데요오오오옹',
-      tags: '#홍대 #서울데이트',
-      courseId: 1,
-      createdAt: '2024-11-27T12:17:39.316713',
-      updatedAt: '2024-11-27T12:17:39.316713',
-    },
-    {
-      id: 11,
-      nickName: '홍길동',
-      region: '서울 경기',
-      season: '봄 여름',
-      title: '게시글 제목',
-      contents: '게시글 내용',
-      tags: '#홍대 #서울데이트',
-      courseId: 1,
-      createdAt: '2024-11-27T12:17:39.316713',
-      updatedAt: '2024-11-27T12:17:39.316713',
-    },
-    {
-      id: 12,
-      nickName: '하하하',
-      region: '대구 경북',
-      season: '가을 겨울',
-      title: '게시글 제목입니다아아아아아',
-      contents: '게시글 내용ㅇ니데요오오오옹',
-      tags: '#홍대 #서울데이트',
-      courseId: 1,
-      createdAt: '2024-11-27T12:17:39.316713',
-      updatedAt: '2024-11-27T12:17:39.316713',
-    },
-  ];
+  useEffect(() => {
+    const getPostList = async () => {
+      try {
+        const token =
+          'eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImxvZ2luSWQiOiJ0ZXN0MTIzNCIsImNhdGVnb3J5IjoiYWNjZXNzVG9rZW4iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjV9LCJpYXQiOjE3MzMxOTIzMTQsImV4cCI6MTczMzIyODMxNH0.gy5VDE4yTX7yel7mpzZaE-XCDJOdBSR0-5TOsYOwIaU';
+        const res = await axios.get(
+          'http://flowday.kro.kr:5000/api/v1/posts/all/latest?pageSize=10&page=0',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+        const postData = await res.data.content;
+        setPostData(postData);
+        console.log(postData);
+      } catch (err) {
+        console.error('getPostList 실패 : ', err);
+      }
+    };
+    getPostList();
+  }, []);
 
   // item의 타입은 추후 API가 완성되면 수정하겠습니다.
   const renderItem = ({ item }: any) => {
@@ -203,7 +80,7 @@ const PostListPage = () => {
       <FlatList
         data={postData}
         renderItem={renderItem}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item: any) => item.id.toString()}
       />
       {onCategoryModal && (
         <PostCategoryModal
@@ -220,6 +97,7 @@ export default PostListPage;
 
 const PostListPageDesign = styled.View`
   flex: 1;
+  background-color: #fff;
 `;
 
 const PostSearchCategory = styled.View`

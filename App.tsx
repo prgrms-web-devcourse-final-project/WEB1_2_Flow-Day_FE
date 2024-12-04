@@ -1,4 +1,4 @@
-import {Button, SafeAreaView} from 'react-native';
+import { SafeAreaView } from 'react-native';
 import styled from 'styled-components/native';
 import {NavigationContainer, createNavigationContainerRef} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -8,6 +8,8 @@ import {useEffect, useState} from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useStore } from '@/store/useStore';
 
 import HomePage from '@/pages/home-page/HomePage';
 import ChatPage from '@/pages/chat-page/ChatPage';
@@ -17,11 +19,11 @@ import { ROUTES } from '@/constants/routes';
 import MapPage from '@/pages/map-page/MapPage';
 import {SearchPage} from '@/pages/map-page/SearchPage';
 import LoginPage from '@/pages/login-page/LoginPage';
-import axios from 'axios';
-import { useStore } from '@/store/useStore';
 import JoinPage from '@/pages/join-page/JoinPage';
 import ProfileSetPage from '@/pages/join-page/ProfileSetPage';
+import PostListPage from '@/pages/post-list-page/PostListPage';
 
+// 색상 설정
 const COLORS = {
   active: '#FF6666',
   inactive: '#000000',
@@ -47,8 +49,29 @@ const Stack = createNativeStackNavigator();
 function MapStack() {
   return(
     <Stack.Navigator>
-      <Stack.Screen name={ROUTES.MAP} component={MapPage} options={{headerShown: false}} />
-      <Stack.Screen name='Search' component={SearchPage} options={{headerShown: false}} />
+      <Stack.Screen
+        name="MapMain"
+        component={MapPage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Search"
+        component={SearchPage}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+// 게시글 관련 화면들을 위한 Stack Navigator 컴포넌트
+const PostStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="PostListPage"
+        component={PostListPage}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   )
 }
@@ -230,15 +253,24 @@ const App = () => {
           />
 
           <Tab.Screen
-            name={ROUTES.POST}
-            component={ChatPage}
+            name="posts"
+            component={PostStack} // PostStack을 사용하도록 변경
             options={{
-              header: () => <Header>게시글</Header>,
-              tabBarIcon: ({focused}: {focused: boolean}) => {
+              headerShown: false,
+              tabBarIcon: ({ focused }: { focused: boolean }) => {
                 return (
                   <ButtonBox>
-                    <SvgXml xml={getModifiedSvg(svg.post, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>게시글</ButtonText>
+                    <SvgXml
+                      xml={getModifiedSvg(
+                        svg.post,
+                        focused ? COLORS.active : COLORS.inactive,
+                      )}
+                    />
+                    <ButtonText
+                      style={{ color: focused ? COLORS.active : COLORS.inactive }}
+                    >
+                      게시글
+                    </ButtonText>
                   </ButtonBox>
                 );
               },
@@ -263,7 +295,6 @@ const App = () => {
         </Tab.Navigator>
       </NavigationContainer>
     </SafeAreaView>
-
   );
 };
 

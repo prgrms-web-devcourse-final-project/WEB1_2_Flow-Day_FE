@@ -10,17 +10,17 @@ const PostItem = (data: any) => {
     <PostItemDesign>
       <PostTexts>
         <Title>{postData.title}</Title>
-        <ContentPreview>{postData.contents}</ContentPreview>
+        <ContentPreview>{postData.content}</ContentPreview>
         <PostInfo>
           <InfoBox>
             {/* import 방식으로 PNG 이미지파일을 가져오지 못하여 이런식으로 작성 - 리팩토링 필요 */}
             {/* API 완성 시 "좋아요수", "댓글수" 수정 예정 - 리팩토링 필요 */}
             <InfoIcon source={require('../../assets/icons/like.png')} />
-            <InfoText>좋아요수</InfoText>
+            <InfoText>{postData.likeCount}</InfoText>
           </InfoBox>
           <InfoBox>
             <InfoIcon source={require('../../assets/icons/comment.png')} />
-            <InfoText>댓글수</InfoText>
+            <InfoText>{postData.commentCount}</InfoText>
           </InfoBox>
           <InfoBox>
             <InfoIcon source={require('../../assets/icons/nickname.png')} />
