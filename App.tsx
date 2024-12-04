@@ -6,6 +6,10 @@ import Header from './src/components/Header'; // 상단 헤더 가져오기
 import BottomBar from './src/components/BottomBar'; // 하단 바 가져오기
 import ChatPage from '@/pages/chat-page/ChatPage';
 
+import { TextEncoder } from 'text-encoding';
+
+global.TextEncoder = TextEncoder;
+
 const Content = styled.View`
   flex: 1;
   justify-content: 'center';

@@ -1,120 +1,99 @@
 import { StyleSheet, Text, View, FlatList } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components/native';
 import SockJS from 'sockjs-client';
 import { Client, Message } from '@stomp/stompjs';
-import ChatInputText from '@/components/chat/ChatInputText';
 import MyMessage from '@/components/chat/MyMessage';
 import YourMessage from '@/components/chat/YourMessage';
 import useChatStore from '@/store/chat/ChatStore';
-import axios from 'axios';
 
-// BASE_URL, JWT 등은 그대로 사용
-const BASE_URL = 'https://flowday.kro.kr:80';
-
-// 메시지 타입 정의
+// 채팅 메시지 타입 정의
 interface ChatMessage {
-  senderId: number;
-  content: string;
-  timestamp: string;
+  senderId: number; // 메시지 송신자 ID
+  message: string; // 메시지 내용
+  sendTime: string; // 메시지 전송 시간
 }
 
-// STOMP 클라이언트 관련 타입
-
 const ChatPage = (): JSX.Element => {
-  const { chatData, setChatData } = useChatStore(); // 채팅 데이터 상태
-  const [message, setMessage] = useState('');
-  const [isConnected, setIsConnected] = useState(false);
-  const yourId = 1; // 현재 사용자의 ID
-  const roomId = 3; // 방 ID (실제로 동적으로 설정해야 할 수 있음)
-  const getTest = axios.get('${BASE_URL}');
+  const { chatData } = useChatStore(); // 전역 상태에서 채팅 데이터 가져오기
 
-  // 웹소켓 초기화 함수
-  const initializeWebSocket = (): void => {
-    const jwtToken =
-      'eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImxvZ2luSWQiOiJ0ZXN0MTIzNCIsImNhdGVnb3J5IjoiYWNjZXNzVG9rZW4iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjV9LCJpYXQiOjE3MzMyNzY3NzksImV4cCI6MTczMzMxMjc3OX0.V3XTcNZ-mM17LfqeLUQquvpvO-A4fLgEhEcVXV96kYs';
-    const socket = new SockJS(`${BASE_URL}/connect/websocket`);
-    // console.log(socket);
-    const client = new Client({
-      webSocketFactory: () => socket,
+  // 상태 변수 타입 정의
+  const [connected, setConnected] = useState<boolean>(false); // WebSocket 연결 상태
+  const [messages, setMessages] = useState<ChatMessage[]>([]); // 메시지 배열 상태
+  const [input, setInput] = useState<string>(''); // 입력된 메시지 상태
+  const clientRef = useRef<Client | null>(null); // STOMP 클라이언트를 참조하는 useRef
+  const roomId: number = 1; // 방 ID (예시로 1번 방 설정)
+  const yourId = 1;
+
+  // WebSocket 연결 및 STOMP 클라이언트 설정
+  useEffect(() => {
+    const socket = new SockJS('http://flowday.kro.kr:/connect'); // SockJS를 사용한 연결
+    const stompClient = new Client({
+      brokerURL: 'ws://flowday.kro.kr:/connect/websocket', // STOMP 브로커 URL
       connectHeaders: {
-        Authorization: `${jwtToken}`,
+        'Access-Control-Allow-Origin': 'http://localhost:3000', // CORS 허용
       },
-      // debug: str => console.log(str),
+      debug: str => console.log('===== 디버거 =====:', str), // 디버그 메시지 출력
+      appendMissingNULLonIncoming: true,
+      forceBinaryWSFrames: true,
       onConnect: () => {
-        setIsConnected(true);
-        client.subscribe(`/topic/rooms/${roomId}`, message => {
-          if (message.body) {
-            const newMessage = JSON.parse(message.body);
-          } else {
-          }
+        // WebSocket 연결이 성공적으로 이루어진 후 호출
+        setConnected(true);
+        console.log('===== 웹소켓 연결 완료되었습니다 =====');
+
+        // 채팅방에 대한 메시지 구독 설정
+        stompClient.subscribe(`/topic/rooms/${roomId}`, (message: Message) => {
+          const body = JSON.parse(message.body); // 서버에서 온 메시지 파싱
+          console.log('body:', body);
+          setMessages(prev => [
+            ...prev, // 기존 메시지에 새로운 메시지 추가
+            {
+              senderId: body.senderId,
+              message: body.message,
+              sendTime: body.sendTime,
+            },
+          ]);
         });
       },
-    });
-
-    // 연결 이벤트 핸들러
-    client.onConnect = (frame: any) => {
-      console.log('웹소켓 연결성공 :', frame);
-
-      // 토픽 구독 (roomId를 동적으로 대체)
-      client.subscribe(
-        `${BASE_URL}/topic/rooms/${roomId}`,
-        (message: Message) => {
-          console.log('전달받은 메시지 :', message.body);
-          addMessageToChat(message.body);
-        },
-      );
-    };
-
-    // 연결 실패 이벤트 핸들러
-    client.onStompError = (frame: any): void => {
-      console.error('Broker reported error:', frame.headers['message']);
-      console.error('Additional details:', frame.body);
-    };
-
-    // 클라이언트 연결
-    client.activate();
-
-    // 임의로 연결 해제를 원할 때 사용할 함수
-    function disconnect() {
-      client.deactivate();
-    }
-
-    // // SockJS 다시 실행 함수
-    // function restartSockJS() {
-    //   console.log('Attempting to restart SockJS...');
-    //   socket = new SockJS('http://your-server/sockjs');
-    //   client.webSocketFactory = () => socket;
-    //   client.activate();
-    // }
-  };
-
-  // 메시지 데이터를 상태에 반영하는 함수
-  const addMessageToChat = (messageBody: string): void => {
-    setChatData((prevMessages: ChatMessage[]) => [
-      ...prevMessages,
-      {
-        senderId: 2,
-        content: messageBody,
-        timestamp: new Date().toISOString(),
+      onDisconnect: () => {
+        // WebSocket 연결이 끊어졌을 때 호출
+        console.log('===== 웹소켓 연결이 끊어졌습니다! =====');
+        setConnected(false);
       },
-    ]);
-  };
-
-  // 메시지 보내기 함수
-  const sendMessage = (): void => {
-    if (message.trim() === '') return;
-    client.publish({
-      destination: `${BASE_URL}/chat/${roomId}`, // roomId를 동적으로 설정
-      headers: { Authorization: jwtToken },
-      body: message,
+      onStompError: frame => {
+        // STOMP 에러 처리
+        console.error('STOMP Error:', frame.headers['message']);
+      },
+      onWebSocketClose: () => {
+        // WebSocket이 닫힐 때 호출
+        setConnected(false);
+      },
     });
-    setMessage(''); // 메시지 전송 후 입력창 비우기
-  };
 
-  initializeWebSocket();
-  // 컴포넌트 마운트 시 웹소켓 초기화
-  useEffect(() => {}, []);
+    stompClient.activate(); // STOMP 클라이언트 활성화
+    clientRef.current = stompClient; // STOMP 클라이언트 참조 저장
+
+    // 컴포넌트 언마운트 시 STOMP 클라이언트 비활성화
+    return () => stompClient.deactivate();
+  }, [roomId]); // roomId가 변경될 때마다 effect 실행
+
+  // 메시지 전송 함수
+  const sendMessage = (): void => {
+    console.log(input);
+    if (clientRef.current && input.trim() !== '' && connected) {
+      // WebSocket이 연결되어 있고 입력된 메시지가 있을 때
+      const chatMessage = {
+        message: input, // 전송할 메시지
+      };
+      clientRef.current.publish({
+        destination: `/app/chat/${roomId}`, // 메시지를 보낼 목적지
+        body: JSON.stringify(chatMessage), // 메시지 본문
+      });
+      setInput(''); // 메시지 전송 후 입력란 초기화
+    } else {
+      console.log('Not connected to the WebSocket.'); // 연결되지 않은 상태에서 메시지 전송 시
+    }
+  };
 
   return (
     <ChatDesign>
@@ -128,10 +107,16 @@ const ChatPage = (): JSX.Element => {
         })}
       </ChatList>
       <ChatInputText
-        message={message}
-        setMessage={setMessage}
-        sendMessage={sendMessage}
-      />
+        value={input}
+        onChangeText={text => setInput(text)} // TextInput에 입력된 값을 상태로 업데이트
+        placeholder="텍스트를 입력해주세요"
+        onSubmitEditing={sendMessage} // 엔터키를 누르면 메시지 전송
+        returnKeyType="send" // iOS에서 키보드 'Send' 버튼으로 표시
+        blurOnSubmit={false} // 메시지 전송 후 포커스를 유지
+      ></ChatInputText>
+      <SubmitButton onPress={sendMessage}>
+        <Text>전송</Text>
+      </SubmitButton>
     </ChatDesign>
   );
 };
@@ -139,6 +124,7 @@ const ChatPage = (): JSX.Element => {
 export default ChatPage;
 
 // Styled components
+// 전체 채팅 화면 디자인
 const ChatDesign = styled.View`
   flex: 1;
   width: 100%;
@@ -148,8 +134,27 @@ const ChatDesign = styled.View`
   border-color: #eeeeee;
 `;
 
+// 채팅 메시지를 표시할 리스트 컴포넌트
 const ChatList = styled.ScrollView`
   flex: 1;
   width: 100%;
   height: 100%;
+`;
+
+const ChatInputText = styled.TextInput`
+  width: 370px;
+  height: 50px;
+  border: 1px solid #ff6666;
+  border-radius: 6px;
+  padding: 10px;
+  margin: 10px auto;
+  text-align: left; /* 텍스트를 왼쪽으로 정렬 */
+`;
+
+const SubmitButton = styled.TouchableOpacity`
+  width: 50px;
+  height: 20px;
+  background-color: #ff6666;
+  color: #ffffff;
+  font-size: 14px;
 `;

@@ -29,6 +29,7 @@
     "socketjs-client": "^1.0.2",
     "sockjs-client": "^1.6.1",
     "styled-components": "^6.1.13",
+    "text-encoding": "^0.7.0",
     "zustand": "^5.0.1"
   },
   "devDependencies": {
@@ -38,6 +39,7 @@
     "@types/react": "~18.3.12",
     "@types/sockjs-client": "^1.5.4",
     "@types/styled-components": "^5.1.34",
+    "@types/text-encoding": "^0.0.40",
     "@typescript-eslint/eslint-plugin": "^8.16.0",
     "@typescript-eslint/parser": "^8.16.0",
     "eslint": "^8.57.1",
