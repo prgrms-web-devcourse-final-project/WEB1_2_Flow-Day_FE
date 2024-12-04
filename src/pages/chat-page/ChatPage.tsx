@@ -7,12 +7,10 @@ import ChatInputText from '@/components/chat/ChatInputText';
 import MyMessage from '@/components/chat/MyMessage';
 import YourMessage from '@/components/chat/YourMessage';
 import useChatStore from '@/store/chat/ChatStore';
+import axios from 'axios';
 
 // BASE_URL, JWT 등은 그대로 사용
-const BASE_URL = 'http://flowday.kro.kr:80';
-
-const jwtToken =
-  'eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImNhdGVnb3J5IjoiYWNjZXNzVG9rZW4iLCJsb2dpbklkIjoidGVzdDEyMzQiLCJpZCI6NSwicm9sZSI6IlJPTEVfVVNFUiJ9LCJpYXQiOjE3MzMyMDgxMDEsImV4cCI6MTczMzI0NDEwMX0.ZXVKD15J4kuElzZSE6KiUesViErJkK8y3L6icL4uIcs'; // JWT 토큰을 여기에 설정하세요.
+const BASE_URL = 'https://flowday.kro.kr:80';
 
 // 메시지 타입 정의
 interface ChatMessage {
@@ -22,26 +20,36 @@ interface ChatMessage {
 }
 
 // STOMP 클라이언트 관련 타입
-let socket: SockJS;
-let client: Client;
 
 const ChatPage = (): JSX.Element => {
   const { chatData, setChatData } = useChatStore(); // 채팅 데이터 상태
-  const [message, setMessage] = useState<string>(''); // 메시지 상태
+  const [message, setMessage] = useState('');
+  const [isConnected, setIsConnected] = useState(false);
   const yourId = 1; // 현재 사용자의 ID
   const roomId = 3; // 방 ID (실제로 동적으로 설정해야 할 수 있음)
+  const getTest = axios.get('${BASE_URL}');
 
   // 웹소켓 초기화 함수
   const initializeWebSocket = (): void => {
-    client = new Client({
-      webSocketFactory: () => {
-        socket = new SockJS(`${BASE_URL}/connect/websocket`);
-        console.log('SockJS:', socket);
-        return socket;
+    const jwtToken =
+      'eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImxvZ2luSWQiOiJ0ZXN0MTIzNCIsImNhdGVnb3J5IjoiYWNjZXNzVG9rZW4iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjV9LCJpYXQiOjE3MzMyNzY3NzksImV4cCI6MTczMzMxMjc3OX0.V3XTcNZ-mM17LfqeLUQquvpvO-A4fLgEhEcVXV96kYs';
+    const socket = new SockJS(`${BASE_URL}/connect/websocket`);
+    // console.log(socket);
+    const client = new Client({
+      webSocketFactory: () => socket,
+      connectHeaders: {
+        Authorization: `${jwtToken}`,
       },
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
+      // debug: str => console.log(str),
+      onConnect: () => {
+        setIsConnected(true);
+        client.subscribe(`/topic/rooms/${roomId}`, message => {
+          if (message.body) {
+            const newMessage = JSON.parse(message.body);
+          } else {
+          }
+        });
+      },
     });
 
     // 연결 이벤트 핸들러
@@ -72,13 +80,13 @@ const ChatPage = (): JSX.Element => {
       client.deactivate();
     }
 
-    // SockJS 다시 실행 함수
-    function restartSockJS() {
-      console.log('Attempting to restart SockJS...');
-      socket = new SockJS('http://your-server/sockjs');
-      client.webSocketFactory = () => socket;
-      client.activate();
-    }
+    // // SockJS 다시 실행 함수
+    // function restartSockJS() {
+    //   console.log('Attempting to restart SockJS...');
+    //   socket = new SockJS('http://your-server/sockjs');
+    //   client.webSocketFactory = () => socket;
+    //   client.activate();
+    // }
   };
 
   // 메시지 데이터를 상태에 반영하는 함수
