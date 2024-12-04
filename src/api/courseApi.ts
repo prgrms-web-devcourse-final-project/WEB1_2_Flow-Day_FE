@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Course, CreateCourseRequest, PageResponse } from '@/types/course';
 
-const BASE_URL = 'http://flowday.kro.kr:5000/api/v1';
+const BASE_URL = 'http://flowday.kro.kr:80/api/v1';
 
 export const decodeToken = (token: string) => {
   try {

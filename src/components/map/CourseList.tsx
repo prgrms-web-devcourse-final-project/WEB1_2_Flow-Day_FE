@@ -207,7 +207,7 @@ export const CourseList = () => {
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [menuVisible, setMenuVisible] = useState(false);
   
-  const token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImNhdGVnb3J5IjoiYWNjZXNzVG9rZW4iLCJsb2dpbklkIjoidGVzdCIsImlkIjoxLCJyb2xlIjoiUk9MRV9VU0VSIn0sImlhdCI6MTczMzIwNDg0MywiZXhwIjoxNzMzMjQwODQzfQ.A0wT19zaUB7pcL4ruq0lm1ESFSjZJ353KFadv_DOTQg";
+  const token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7InJvbGUiOiJST0xFX1VTRVIiLCJjYXRlZ29yeSI6ImFjY2Vzc1Rva2VuIiwibG9naW5JZCI6InN0ZXA0MDUiLCJpZCI6OH0sImlhdCI6MTczMzI4MjUzNiwiZXhwIjoxNzMzMzE4NTM2fQ.H0tR8J7cs3uI6CEESLsCakhlm8SgwYzQbsTdHfXOtsg";
 
   useEffect(() => {
     setSlideHeight(MINIMAL_VISIBLE_HEIGHT);
@@ -331,7 +331,7 @@ const loadCourses = async () => {
         await courseApi.updateCourse(selectedCourse.id, courseData, token);
         Alert.alert('성공', '코스가 수정되었습니다.');
       } else {
-        await courseApi.createCourse(1, courseData, token);
+        await courseApi.createCourse(8, courseData, token);
         Alert.alert('성공', '새로운 코스가 추가되었습니다.');
       }
   
