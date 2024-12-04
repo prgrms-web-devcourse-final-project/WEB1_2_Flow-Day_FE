@@ -2,6 +2,8 @@ import { Text, View } from "react-native"
 import styled from 'styled-components/native';
 import { useState } from "react";
 import Buttons from "@/components/Buttons";
+import { useNavigation } from "@react-navigation/native";
+import { ROUTES } from "@/constants/routes";
 
 const Container = styled.View`
     padding: 70px 50px 100px;
@@ -44,9 +46,11 @@ const JoinPage = () => {
     const [pw, setPw] = useState<string>();
     const [pwCheck, setPwCheck] = useState<string>();
 
+    const navigation = useNavigation();
+
     return(
         <Container>
-            <View style={{ width: 300}}>
+            <View style={{ width: 300 }}>
                 <TopText>안녕하세요</TopText>
                 <Textbox>
                     <TopText color="#FCAEAE">플로우데이</TopText>
@@ -75,14 +79,14 @@ const JoinPage = () => {
                     placeholder="비밀번호 입력"
                     placeholderTextColor='#DDDDDD'
                 />
-                    <Input 
+                <Input 
                     value={pwCheck}
                     onChangeText={(text) => setPwCheck(text)}
                     placeholder="비밀번호 확인"
                     placeholderTextColor='#DDDDDD'
                 />
             </View>
-            <Buttons.ShortBtn text="다음 단계로" />
+            <Buttons.ShortBtn text="다음 단계로" onPress={() => navigation.navigate(ROUTES.PROFILE_SET as never)}/>
         </Container>
         
     )

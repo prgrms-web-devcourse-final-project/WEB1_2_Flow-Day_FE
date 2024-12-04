@@ -92,7 +92,9 @@ const LoginPage = () => {
             if (accessToken) {
                 setAccessToken(accessToken);
                 setIsLoggedIn(true);
+                console.log(accessToken);
             }
+
         } catch (error) {
         console.error('로그인 실패:', error);
         }

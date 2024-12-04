@@ -1,3 +1,5 @@
+import apiClient from '@/utils/apiClient';
+import { useEffect, useState } from 'react';
 import { ScrollView, View, Text } from 'react-native';
 import styled from 'styled-components/native';
 
@@ -74,8 +76,23 @@ const regions = [
   ['제주', require('../../assets/images/jeju.png')]
 ]
 
-
 const MainContent = () => {
+    const [spots, setSpots] = useState();
+
+    const fetchSpots = async (city: string) => {
+        try {
+            const response = await apiClient.get(`spots?city=${city}`);
+            setSpots(response.data);
+            console.log(response.data);
+        } catch (error) {
+            console.error('Error fetching spots:', error);
+        }
+    }
+
+    useEffect(() => {
+        fetchSpots('서울');
+    }, [])
+
     return(
         <Container>
             <TopText>🔥지역별 데이트 핫플</TopText>
@@ -84,7 +101,7 @@ const MainContent = () => {
                 showsHorizontalScrollIndicator={false}>
             {
                 regions.map(([name, image], index) => (
-                <ButtonContainer key={index}>
+                <ButtonContainer key={index} onPress={() => fetchSpots(name)}>
                     <ImageContainer source={image}>
                     <ImageButton>
                         <ButtonText>{name}</ButtonText>

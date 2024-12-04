@@ -18,8 +18,9 @@ import MapPage from '@/pages/map-page/MapPage';
 import {SearchPage} from '@/pages/map-page/SearchPage';
 import LoginPage from '@/pages/login-page/LoginPage';
 import axios from 'axios';
-import useStore from '@/store/useStore';
+import { useStore } from '@/store/useStore';
 import JoinPage from '@/pages/join-page/JoinPage';
+import ProfileSetPage from '@/pages/join-page/ProfileSetPage';
 
 const COLORS = {
   active: '#FF6666',
@@ -120,9 +121,23 @@ const App = () => {
               component={JoinPage}
               options={{
                 headerTitle: '',
-                headerStyle: { 
-                  backgroundColor: '#FFFFFF'
-                },
+                headerStyle: { backgroundColor: '#FFFFFF' },
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.PROFILE_SET}
+              component={ProfileSetPage}
+              options={{
+                headerTitle: '',
+                headerStyle: { backgroundColor: '#FFFFFF' },
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.COUPLE_REGISTER}
+              component={ProfileSetPage}
+              options={{
+                headerTitle: '',
+                headerStyle: { backgroundColor: '#FFFFFF' },
               }}
             />
           </Stack.Navigator>
@@ -133,11 +148,11 @@ const App = () => {
 
   const Tab = createBottomTabNavigator();
 
-  useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
+  // useEffect(() => {
+  //   if (fontsLoaded) {
+  //     SplashScreen.hideAsync();
+  //   }
+  // }, [fontsLoaded]);
 
   const getModifiedSvg = (xml: string, fillColor: string) => {
     return xml.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
