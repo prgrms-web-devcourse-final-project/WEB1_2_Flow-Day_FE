@@ -56,5 +56,5 @@
     "typescript-eslint": "^8.15.0"
   },
   "private": true,
-  "proxy": "http://flowday.kro.kr:5000"
+  "proxy": "http://flowday.kro.kr:80"
 }

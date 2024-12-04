@@ -9,7 +9,7 @@ import YourMessage from '@/components/chat/YourMessage';
 import useChatStore from '@/store/chat/ChatStore';
 
 // BASE_URL, JWT 등은 그대로 사용
-const BASE_URL = 'http://flowday.kro.kr:5000';
+const BASE_URL = 'http://flowday.kro.kr:80';
 
 const jwtToken =
   'eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImNhdGVnb3J5IjoiYWNjZXNzVG9rZW4iLCJsb2dpbklkIjoidGVzdDEyMzQiLCJpZCI6NSwicm9sZSI6IlJPTEVfVVNFUiJ9LCJpYXQiOjE3MzMyMDgxMDEsImV4cCI6MTczMzI0NDEwMX0.ZXVKD15J4kuElzZSE6KiUesViErJkK8y3L6icL4uIcs'; // JWT 토큰을 여기에 설정하세요.
@@ -36,6 +36,7 @@ const ChatPage = (): JSX.Element => {
     client = new Client({
       webSocketFactory: () => {
         socket = new SockJS(`${BASE_URL}/connect/websocket`);
+        console.log('SockJS:', socket);
         return socket;
       },
       reconnectDelay: 5000,
@@ -43,7 +44,6 @@ const ChatPage = (): JSX.Element => {
       heartbeatOutgoing: 4000,
     });
 
-    console.log(client);
     // 연결 이벤트 핸들러
     client.onConnect = (frame: any) => {
       console.log('웹소켓 연결성공 :', frame);
