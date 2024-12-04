@@ -1,18 +1,13 @@
-import { svg } from '@/assets/icons/svg';
+import { View } from 'react-native';
+
 import TopSwiper from '@/components/home/TopSwiper';
-import { View, Text, Image } from 'react-native';
-import { SvgXml } from 'react-native-svg';
-import Swiper from 'react-native-swiper'
-import styled from 'styled-components/native';
-
-
+import MainContent from '@/components/home/MainContent';
 
 const HomePage = () => {
-  
-  
   return (
     <View style={{flex: 1, position: 'relative'}}>
       <TopSwiper />
+      <MainContent />
     </View>
   );
 };
