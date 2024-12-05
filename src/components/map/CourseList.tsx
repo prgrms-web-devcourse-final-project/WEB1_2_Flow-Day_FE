@@ -5,6 +5,8 @@ import { SvgXml } from 'react-native-svg';
 import { svg } from '@/assets/icons/svg';
 import { courseApi } from '@/api/courseApi';
 import { Course, CreateCourseRequest } from '@/types/course';
+import { useStore } from '@/store/useStore';
+
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -206,8 +208,9 @@ export const CourseList = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [menuVisible, setMenuVisible] = useState(false);
+  const { accessToken } = useStore();
   
-  const token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7InJvbGUiOiJST0xFX1VTRVIiLCJjYXRlZ29yeSI6ImFjY2Vzc1Rva2VuIiwibG9naW5JZCI6InN0ZXA0MDUiLCJpZCI6OH0sImlhdCI6MTczMzI4MjUzNiwiZXhwIjoxNzMzMzE4NTM2fQ.H0tR8J7cs3uI6CEESLsCakhlm8SgwYzQbsTdHfXOtsg";
+  
 
   useEffect(() => {
     setSlideHeight(MINIMAL_VISIBLE_HEIGHT);
@@ -238,7 +241,6 @@ export const CourseList = () => {
       setIsEditing(true);
       setModalVisible(true);
     }
-    // setActionSheetVisible(false);
   };
 
   const handleDeletePress = async () => {
@@ -255,24 +257,15 @@ export const CourseList = () => {
           onPress: async () => {
             try {
               setLoading(true);
-              await courseApi.deleteCourse(selectedCourse.id, token);
+              await courseApi.deleteCourse(selectedCourse.id); 
               
               setCourses(prev => prev.filter(course => course.id !== selectedCourse.id));
-              // setActionSheetVisible(false);
               Alert.alert('성공', '코스가 삭제되었습니다.');
             } catch (error) {
               const errorMessage = error instanceof Error ? error.message : '삭제 실패';
           
               if (errorMessage.includes('로그인') || errorMessage.includes('인증')) {
-          
-                Alert.alert('알림', errorMessage, [
-                  {
-                    text: '확인',
-                    onPress: () => {
-                   
-                    }
-                  }
-                ]);
+                Alert.alert('알림', errorMessage);
                 return;
               }
               
@@ -286,29 +279,29 @@ export const CourseList = () => {
     );
   };
 
-const loadCourses = async () => {
-  try {
-    setLoading(true);
-    setError(null);
-    
-    console.log('코스 목록 로드 시작');
-    const response = await courseApi.getCourses(token);
-    console.log('받아온 코스 목록:', response.content);
-    
-    if (response.content && Array.isArray(response.content)) {
-      setCourses(response.content);
-      console.log('코스 목록 업데이트 완료');
-    } else {
-      throw new Error('유효하지 않은 데이터 형식입니다.');
+  const loadCourses = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const tokenData = JSON.parse(atob(accessToken.split('.')[1]));
+      const memberId = tokenData.data.id;
+      
+      const response = await courseApi.getCourses(memberId);
+      console.log('받아온 코스 목록:', response);
+      
+      if (response?.content) {
+        setCourses(response.content);
+      }
+    } catch (error) {
+      console.error('코스 목록 로드 실패:', error);
+      const errorMessage = error instanceof Error ? error.message : '코스 목록을 불러오는데 실패했습니다.';
+      setError(errorMessage);
+      Alert.alert('오류', errorMessage);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error('코스 목록 로드 실패:', error);
-    setError(error instanceof Error ? error.message : '코스 목록을 불러오는데 실패했습니다.');
-    Alert.alert('오류', error instanceof Error ? error.message : '코스 목록을 불러오는데 실패했습니다.');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleCreateOrUpdateCourse = async () => {
     if (!title.trim()) {
@@ -318,20 +311,22 @@ const loadCourses = async () => {
   
     try {
       setLoading(true);
-      setError(null);
-  
+      
+      const tokenData = JSON.parse(atob(accessToken.split('.')[1]));
+      const memberId = tokenData.data.id;
+
       const courseData: CreateCourseRequest = {
         title: title.trim(),
-        status: isShared ? 'COUPLE' : 'PRIVATE',
+        status: isShared ? 'COUPLE' : 'PRIVATE' as const, 
         date: new Date().toISOString().split('T')[0],
         color: selectedColor
       };
   
       if (isEditing && selectedCourse) {
-        await courseApi.updateCourse(selectedCourse.id, courseData, token);
+        await courseApi.updateCourse(selectedCourse.id, courseData);
         Alert.alert('성공', '코스가 수정되었습니다.');
       } else {
-        await courseApi.createCourse(8, courseData, token);
+        await courseApi.createCourse(courseData);
         Alert.alert('성공', '새로운 코스가 추가되었습니다.');
       }
   
@@ -339,9 +334,8 @@ const loadCourses = async () => {
       resetModalState();
       await loadCourses();
     } catch (error) {
-      const action = isEditing ? '수정' : '생성';
-      setError(error instanceof Error ? error.message : `코스 ${action}에 실패했습니다.`);
-      Alert.alert('오류', error instanceof Error ? error.message : `코스 ${action}에 실패했습니다.`);
+      const errorMessage = error instanceof Error ? error.message : '처리 중 오류가 발생했습니다.';
+      Alert.alert('오류', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -349,7 +343,7 @@ const loadCourses = async () => {
 
  
   const renderCourseItem = (course: Course) => (
-    <CourseItem key={course.id}>
+    <CourseItem>   
       <CourseColor color={course.color || '#666666'} />
       <CourseTitle>
         {course.title || (course.spots && course.spots.length > 0 ? course.spots[0].name : '제목 없음')}
@@ -404,25 +398,29 @@ const loadCourses = async () => {
             </CreateButton>
           </HeaderContent>
         </Header>
-          <Content>
-              {loading ? (
-                <View style={{ padding: 16 }}>
-                  <Text style={{ textAlign: 'center', color: '#666' }}>로딩 중...</Text>
+            <Content>
+            {loading ? (
+              <View style={{ padding: 16 }}>
+                <Text style={{ textAlign: 'center', color: '#666' }}>로딩 중...</Text>
+              </View>
+            ) : error ? (
+              <View style={{ padding: 16 }}>
+                <Text style={{ textAlign: 'center', color: 'red' }}>{error}</Text>
+              </View>
+            ) : courses && courses.length > 0 ? (
+              courses.map(course => (
+                <View key={course.id}> 
+                  {renderCourseItem(course)}
                 </View>
-              ) : error ? (
-                <View style={{ padding: 16 }}>
-                  <Text style={{ textAlign: 'center', color: 'red' }}>{error}</Text>
-                </View>
-              ) : courses && courses.length > 0 ? (
-                courses.map(renderCourseItem)
-              ) : (
-                <View style={{ padding: 16 }}>
-                  <Text style={{ textAlign: 'center', color: '#666' }}>
-                    코스가 없습니다.
-                  </Text>
-                </View>
-              )}
-        </Content>
+              ))
+            ) : (
+              <View style={{ padding: 16 }}>
+                <Text style={{ textAlign: 'center', color: '#666' }}>
+                  코스가 없습니다.
+                </Text>
+              </View>
+            )}
+          </Content>
       </SlideContainer>
 
     {menuVisible && (
