@@ -17,16 +17,14 @@ import PostCreateContents from '@/components/post/post-create/PostCreateContents
 import PostCreateCourseSlide from '@/components/post/post-create/PostCreateCourseSlide';
 import {REACT_APP_SERVER_URL} from '@env';
 import usePostCreateStore from '@/store/post/post-create-store';
+import {useStore} from '@/store/useStore';
 
 const PostCreatePage = () => {
   const navigation = useNavigation();
   const [onModal, setOnModal] = useState(false);
   const [onSlide, setOnSlide] = useState(false);
   const {postCreateData} = usePostCreateStore();
-  console.log(postCreateData);
-
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImNhdGVnb3J5IjoiYWNjZXNzVG9rZW4iLCJsb2dpbklkIjoic3RlcDQwNSIsImlkIjo4LCJyb2xlIjoiUk9MRV9VU0VSIn0sImlhdCI6MTczMzQ0OTAxNSwiZXhwIjoxNzMzODA5MDE1fQ.avGBI0OYO__C_49fYvwutooom_Oa7AEuFfF8UfQasE0';
+  const {accessToken} = useStore();
 
   const uploadData = async () => {
     const formData = new FormData();
@@ -37,14 +35,12 @@ const PostCreatePage = () => {
     formData.append('courseId', postCreateData.courseId.toString());
     formData.append('contents', postCreateData.contents);
     formData.append('status', postCreateData.status);
-    // formData.append('images', postCreateData.images);
-
-    console.log(formData);
+    // formData.append('images', postCreateData.images); // 에러 나는 곳!! 폼 데이터로 사진을 보내는게 문제가 있는듯
 
     try {
       const res = await axios.post(`${REACT_APP_SERVER_URL}/posts`, formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
           'content-type': 'multipart/form-data',
         },
       });

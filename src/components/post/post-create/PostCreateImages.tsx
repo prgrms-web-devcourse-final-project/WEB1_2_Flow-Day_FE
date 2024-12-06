@@ -35,7 +35,6 @@ const PostCreateImages = () => {
     });
   };
 
-  console.log(postCreateData.images);
   return (
     <ContetnsInputDesign>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
