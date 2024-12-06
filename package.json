@@ -24,7 +24,7 @@
     "expo-image-picker": "^16.0.3",
     "expo-splash-screen": "~0.29.13",
     "expo-status-bar": "~2.0.0",
-    "fs": "^0.0.1-security",
+    "jwt-decode": "^4.0.0",
     "react": "18.3.1",
     "react-native": "0.76.3",
     "react-native-bit-swiper": "^1.1.8",
@@ -42,6 +42,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@eslint/js": "^9.15.0",
+    "@react-native-community/cli": "latest",
     "@react-native/typescript-config": "^0.76.3",
     "@types/react": "~18.3.12",
     "@types/styled-components": "^5.1.34",
