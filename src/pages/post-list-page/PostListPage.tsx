@@ -1,13 +1,13 @@
-import {StyleSheet, Text, View, FlatList} from 'react-native';
 import React, {useState, useEffect} from 'react';
+import {StyleSheet, Text, View, FlatList} from 'react-native';
 import styled from 'styled-components/native';
+import axios from 'axios';
+import {useStore} from '@/store/useStore';
 import PostHeader from '@/components/post/PostHeader';
 import PostSearch from '@/components/post/PostSearch';
 import PostCategoryButton from '@/components/post/PostCategoryButton';
 import PostItem from '@/components/post/PostItem';
 import PostCategoryModal from '@/components/post/PostCategoryModal';
-import axios from 'axios';
-import {useStore} from '@/store/useStore';
 
 interface IPost {
   id: string;
@@ -29,6 +29,7 @@ const PostListPage = () => {
   const [page, setPage] = useState(0); // 현재 페이지
   const [isLoading, setIsLoading] = useState(false); // 로딩 상태
   const [searchKeyword, setSearchKeyword] = useState(''); // 검색 키워드
+  const [selectedCategories, setSelectedCategories] = useState<{seasons: string[]; regions: string[]}>({seasons: [], regions: []});
   const {accessToken} = useStore();
 
   const getPostList = async (pageNumber: number, isLatest: boolean, keyword: string) => {
@@ -36,8 +37,11 @@ const PostListPage = () => {
 
     setIsLoading(true); // 로딩 시작
     try {
-      const url = keyword
-        ? `http://flowday.kro.kr:80/api/v1/posts/all/list?kw=${keyword}&pageSize=10&page=${pageNumber}`
+      const categoryKeyword = [...selectedCategories.seasons, ...selectedCategories.regions].join(' ');
+      const finalKeyword = keyword ? `${keyword} ${categoryKeyword}` : categoryKeyword;
+
+      const url = finalKeyword
+        ? `http://flowday.kro.kr:80/api/v1/posts/all/list?kw=${finalKeyword}&pageSize=10&page=${pageNumber}`
         : isLatest
           ? `http://flowday.kro.kr:80/api/v1/posts/all/latest?pageSize=10&page=${pageNumber}`
           : `http://flowday.kro.kr:80/api/v1/posts/all/mostLike?pageSize=10&page=${pageNumber}`;
@@ -63,7 +67,7 @@ const PostListPage = () => {
   // 페이지가 바뀔 때마다 호출
   useEffect(() => {
     getPostList(page, isLatest, searchKeyword);
-  }, [page, isLatest, searchKeyword]);
+  }, [page, isLatest, searchKeyword, selectedCategories]);
 
   // FlatList의 아이템 렌더링
   const renderItem = ({item}: {item: IPost}) => {
@@ -87,6 +91,11 @@ const PostListPage = () => {
     setSearchKeyword(keyword); // 검색된 키워드로 상태 업데이트
     setPage(0); // 페이지 초기화 (새로운 검색 결과 요청)
     await getPostList(0, isLatest, keyword); // 검색 결과 요청
+  };
+
+  const handleCategoryComplete = (selectedCategories: {seasons: string[]; regions: string[]}) => {
+    setSelectedCategories(selectedCategories);
+    setPage(0); // 페이지 초기화 (새로운 데이터 요청)
   };
 
   return (
@@ -114,6 +123,7 @@ const PostListPage = () => {
           onPress={() => {
             isOnCategoryModal(false);
           }}
+          onComplete={handleCategoryComplete}
         />
       )}
     </PostListPageDesign>
