@@ -1,6 +1,7 @@
 import styled from 'styled-components/native';
 import MapView, { PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import { MapSearch } from '@/components/map/MapSearch';
+import { CourseList } from '@/components/map/CourseList';
 
 const Container = styled.View`
   flex: 1;
@@ -26,6 +27,7 @@ const MapPage = () => {
         initialRegion={initialRegion}
       />
       <MapSearch />
+      <CourseList />
     </Container>
   );
 };

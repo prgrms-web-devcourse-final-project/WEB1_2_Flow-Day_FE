@@ -8,6 +8,8 @@ import PostSearch from '@/components/post/PostSearch';
 import PostCategoryButton from '@/components/post/PostCategoryButton';
 import PostItem from '@/components/post/PostItem';
 import PostCategoryModal from '@/components/post/PostCategoryModal';
+import Buttons from '@/components/Buttons';
+import { useNavigation } from '@react-navigation/native';
 
 interface IPost {
   id: string;
@@ -23,7 +25,8 @@ interface IPost {
 }
 
 const PostListPage = () => {
-  const [isLatest, setIsLatest] = useState(true); // true: 최신순, false: 인기순
+  const navigation = useNavigation();
+  const [isLatest, setIsLatest] = useState(true);
   const [onCategoryModal, isOnCategoryModal] = useState(false);
   const [postData, setPostData] = useState<IPost[]>([]);
   const [page, setPage] = useState(0); // 현재 페이지
@@ -117,6 +120,11 @@ const PostListPage = () => {
         onEndReached={handleEndReached} // 끝에 도달했을 때 호출
         onEndReachedThreshold={0.5} // 리스트의 50% 지점에서 호출
         ListFooterComponent={isLoading ? <LoadingIndicator /> : null} // 로딩 표시
+      />
+      <Buttons.LongBtn
+        onPress={() => navigation.navigate('PostCreatePage')}
+        text="글쓰기"
+        style={{ marginBottom: 10 }}
       />
       {onCategoryModal && (
         <PostCategoryModal

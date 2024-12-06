@@ -22,6 +22,7 @@ import LoginPage from '@/pages/login-page/LoginPage';
 import JoinPage from '@/pages/join-page/JoinPage';
 import ProfileSetPage from '@/pages/join-page/ProfileSetPage';
 import PostListPage from '@/pages/post-list-page/PostListPage';
+import PostCreatePage from '@/pages/post-create-page/PostCreatePage';
 
 // 색상 설정
 const COLORS = {
@@ -45,6 +46,7 @@ const ButtonText = styled.Text`
 `;
 
 const Stack = createNativeStackNavigator();
+
 
 function MapStack() {
   return(
@@ -70,6 +72,11 @@ const PostStack = () => {
       <Stack.Screen
         name="PostListPage"
         component={PostListPage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PostCreatePage"
+        component={PostCreatePage}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
