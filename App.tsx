@@ -41,22 +41,22 @@ const ButtonText = styled.Text`
 const Stack = createNativeStackNavigator();
 
 // 지도 관련 화면들을 위한 Stack Navigator 컴포넌트
-const MapStack = () => {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="MapMain"
-        component={MapPage}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Search"
-        component={SearchPage}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
-  );
-};
+// const MapStack = () => {
+//   return (
+//     <Stack.Navigator>
+//       <Stack.Screen
+//         name="MapMain"
+//         component={MapPage}
+//         options={{ headerShown: false }}
+//       />
+//       <Stack.Screen
+//         name="Search"
+//         component={SearchPage}
+//         options={{ headerShown: false }}
+//       />
+//     </Stack.Navigator>
+//   );
+// };
 
 // 게시글 관련 화면들을 위한 Stack Navigator 컴포넌트
 const PostStack = () => {
@@ -181,7 +181,7 @@ const App = () => {
           }}
         />
 
-        <Tab.Screen
+        {/* <Tab.Screen
           name="map"
           component={MapStack}
           options={{
@@ -204,7 +204,7 @@ const App = () => {
               );
             },
           }}
-        />
+        /> */}
 
         <Tab.Screen
           name="posts"
