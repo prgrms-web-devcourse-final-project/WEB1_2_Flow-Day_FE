@@ -284,10 +284,7 @@ export const CourseList = () => {
       setLoading(true);
       setError(null);
       
-      const tokenData = JSON.parse(atob(accessToken.split('.')[1]));
-      const memberId = tokenData.data.id;
-      
-      const response = await courseApi.getCourses(memberId);
+      const response = await courseApi.getCourses();
       console.log('받아온 코스 목록:', response);
       
       if (response?.content) {

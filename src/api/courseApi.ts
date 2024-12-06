@@ -18,10 +18,10 @@ export const courseApi = {
     }
   },
 
-  getCourses: async (memberId: number): Promise<PageResponse<Course>> => {
+  getCourses: async (): Promise<PageResponse<Course>> => {
     try {
       const response = await apiClient.get<PageResponse<Course>>(
-        `${BASE_URL}/courses/member/${memberId}`
+        `${BASE_URL}/courses`
       );
       return response.data;
     } catch (error) {
