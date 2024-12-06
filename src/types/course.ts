@@ -1,3 +1,16 @@
+export interface Spot {
+  id: number;
+  placeId: string;
+  name: string;
+  city: string;
+  comment: string;
+  sequence: number;
+  courseId: number;
+  voteId: number;
+  memberId: number;  
+  isOwner?: boolean; 
+}
+
 export interface Course {
   id: number;
   memberId: number;
@@ -7,18 +20,7 @@ export interface Course {
   color: string;
   createdAt?: string;
   updatedAt?: string;
-  spots?: Array<{
-    id: number;
-    placeId: string;
-    name: string;
-    city: string;
-    comment: string;
-    sequence: number;
-    courseId: number;
-    voteId: number;
-    memberId: number;  
-    isOwner?: boolean; 
-  }>;
+  spots?: Spot[];  // Array<Spot> 대신 Spot[]를 사용
 }
 
 export interface CreateCourseRequest {
@@ -58,3 +60,8 @@ export interface PageResponse<T> {
   last: boolean;
   empty: boolean;
 }
+
+export type RootStackParamList = {
+  MapMain: undefined;
+  Search: undefined;
+};

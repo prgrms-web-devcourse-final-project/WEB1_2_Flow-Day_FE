@@ -51,19 +51,19 @@ const Stack = createNativeStackNavigator();
 function MapStack() {
   return(
     <Stack.Navigator>
-      <Stack.Screen
-        name="MapMain"
-        component={MapPage}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Search"
-        component={SearchPage}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
+    <Stack.Screen
+      name="MapMain"
+      component={MapPage}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="Search"
+      component={SearchPage}
+      options={{ headerShown: false }}
+    />
+  </Stack.Navigator>
   );
-};
+}
 
 // 게시글 관련 화면들을 위한 Stack Navigator 컴포넌트
 const PostStack = () => {

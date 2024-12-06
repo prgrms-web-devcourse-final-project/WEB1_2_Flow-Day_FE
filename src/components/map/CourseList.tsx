@@ -1,12 +1,23 @@
+
 import { useRef, useState, useEffect } from 'react';
-import { Modal, PanResponder, Dimensions, View, Text, Alert, TouchableOpacity, GestureResponderEvent } from 'react-native';
+import { 
+  Modal, 
+  PanResponder, 
+  Dimensions, 
+  View, 
+  Text, 
+  Alert, 
+  TouchableOpacity, 
+  GestureResponderEvent 
+} from 'react-native';
+
 import styled from 'styled-components/native';
 import { SvgXml } from 'react-native-svg';
 import { svg } from '@/assets/icons/svg';
 import { courseApi } from '@/api/courseApi';
 import { Course, CreateCourseRequest } from '@/types/course';
 import { useStore } from '@/store/useStore';
-
+import CourseDetail from './CourseDetail'; 
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -209,6 +220,20 @@ export const CourseList = () => {
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [menuVisible, setMenuVisible] = useState(false);
   const { accessToken } = useStore();
+
+  const [isDetailView, setIsDetailView] = useState(false);
+
+  const handleCourseClick = (course: Course) => {
+    setSelectedCourse(course);
+    setIsDetailView(true);
+    setSlideHeight(FULL_HEIGHT);
+  };
+
+  const handleBackToList = () => {
+    setIsDetailView(false);
+    setSelectedCourse(null);
+    setSlideHeight(MINIMAL_VISIBLE_HEIGHT);
+  };
   
   
 
@@ -339,18 +364,23 @@ export const CourseList = () => {
   };
 
  
-  const renderCourseItem = (course: Course) => (
-    <CourseItem>   
-      <CourseColor color={course.color || '#666666'} />
-      <CourseTitle>
-        {course.title || (course.spots && course.spots.length > 0 ? course.spots[0].name : '제목 없음')}
-      </CourseTitle>
-      <MoreButton onPress={(event) => handleMorePress(course, event)}>
-        <SvgXml xml={svg.more} width={20} height={20} />
-      </MoreButton>
-    </CourseItem>
-  );
 
+  const renderCourseItem = (course: Course) => (
+    <TouchableOpacity onPress={() => handleCourseClick(course)}>
+      <CourseItem>   
+        <CourseColor color={course.color || '#666666'} />
+        <CourseTitle>
+          {course.title || (course.spots && course.spots.length > 0 ? course.spots[0].name : '제목 없음')}
+        </CourseTitle>
+        <MoreButton onPress={(event) => {
+          event.stopPropagation();
+          handleMorePress(course, event);
+        }}>
+          <SvgXml xml={svg.more} width={20} height={20} />
+        </MoreButton>
+      </CourseItem>
+    </TouchableOpacity>
+  );
 
   const getModalTitle = () => {
     return isEditing ? '코스 수정' : '새코스 생성';
@@ -382,144 +412,152 @@ export const CourseList = () => {
     })
   ).current;
 
-  return (
-    <>
-      <SlideContainer height={slideHeight} {...panResponder.panHandlers}>
-        <Header>
-          <DragIndicator />
-          <HeaderContent>
-          <HeaderTitle>전체 리스트</HeaderTitle>
-            <CreateButton onPress={() => setModalVisible(true)}>
-              <SvgXml xml={svg.plusCircle} width={20} height={20} />
-              <CreateText>새코스 생성</CreateText>
-            </CreateButton>
-          </HeaderContent>
-        </Header>
-            <Content>
-            {loading ? (
-              <View style={{ padding: 16 }}>
-                <Text style={{ textAlign: 'center', color: '#666' }}>로딩 중...</Text>
-              </View>
-            ) : error ? (
-              <View style={{ padding: 16 }}>
-                <Text style={{ textAlign: 'center', color: 'red' }}>{error}</Text>
-              </View>
-            ) : courses && courses.length > 0 ? (
-              courses.map(course => (
-                <View key={course.id}> 
-                  {renderCourseItem(course)}
-                </View>
-              ))
-            ) : (
-              <View style={{ padding: 16 }}>
-                <Text style={{ textAlign: 'center', color: '#666' }}>
-                  코스가 없습니다.
-                </Text>
-              </View>
-            )}
-          </Content>
-      </SlideContainer>
+ return (
+ <>
+   <SlideContainer height={slideHeight} {...panResponder.panHandlers}>
+     {isDetailView && selectedCourse ? (
+       <CourseDetail 
+         course={selectedCourse}
+         onBack={handleBackToList}
+       />
+     ) : (
+       <>
+         <Header>
+           <DragIndicator />
+           <HeaderContent>
+             <HeaderTitle>전체 리스트</HeaderTitle>
+             <CreateButton onPress={() => setModalVisible(true)}>
+               <SvgXml xml={svg.plusCircle} width={20} height={20} />
+               <CreateText>새코스 생성</CreateText>
+             </CreateButton>
+           </HeaderContent>
+         </Header>
+         <Content>
+           {loading ? (
+             <View style={{ padding: 16 }}>
+               <Text style={{ textAlign: 'center', color: '#666' }}>로딩 중...</Text>
+             </View>
+           ) : error ? (
+             <View style={{ padding: 16 }}>
+               <Text style={{ textAlign: 'center', color: 'red' }}>{error}</Text>
+             </View>
+           ) : courses && courses.length > 0 ? (
+             courses.map(course => (
+               <View key={course.id}> 
+                 {renderCourseItem(course)}
+               </View>
+             ))
+           ) : (
+             <View style={{ padding: 16 }}>
+               <Text style={{ textAlign: 'center', color: '#666' }}>
+                 코스가 없습니다.
+               </Text>
+             </View>
+           )}
+         </Content>
+       </>
+     )}
+   </SlideContainer>
 
-    {menuVisible && (
-      <>
-        <TouchableOpacity 
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'transparent'
-          }}
-          onPress={() => setMenuVisible(false)}
-        />
-        <ActionMenu
-          style={{
-            position: 'absolute',
-            top: menuPosition.y,
-            right: 20, 
-            width: 80 
-          }}
-        >
-          <ActionMenuItem onPress={() => {
-            setMenuVisible(false);
-            handleEditPress();
-          }}>
-            <ActionMenuText>수정</ActionMenuText>
-          </ActionMenuItem>
-          <ActionMenuItem onPress={() => {
-            setMenuVisible(false);
-            handleDeletePress();
-          }}>
-            <ActionMenuText color="#FF0000">삭제</ActionMenuText>
-          </ActionMenuItem>
-        </ActionMenu>
-      </>
-    )}
+   {menuVisible && (
+     <>
+       <TouchableOpacity 
+         style={{
+           position: 'absolute',
+           top: 0,
+           left: 0,
+           right: 0,
+           bottom: 0,
+           backgroundColor: 'transparent'
+         }}
+         onPress={() => setMenuVisible(false)}
+       />
+       <ActionMenu
+         style={{
+           position: 'absolute',
+           top: menuPosition.y,
+           right: 20, 
+           width: 80 
+         }}
+       >
+         <ActionMenuItem onPress={() => {
+           setMenuVisible(false);
+           handleEditPress();
+         }}>
+           <ActionMenuText>수정</ActionMenuText>
+         </ActionMenuItem>
+         <ActionMenuItem onPress={() => {
+           setMenuVisible(false);
+           handleDeletePress();
+         }}>
+           <ActionMenuText color="#FF0000">삭제</ActionMenuText>
+         </ActionMenuItem>
+       </ActionMenu>
+     </>
+   )}
 
-      <Modal
-          visible={modalVisible}
-          transparent
-          animationType="fade"
-          onRequestClose={() => {
-            setModalVisible(false);
-            setIsEditing(false);
-            setTitle('');
-            setSelectedColor(colors[0]);
-            setIsShared(false);
-          }}
-        >
-          <ModalContainer>
-            <ModalContent>
-              <ModalTitle>{getModalTitle()}</ModalTitle>
-              <Input
-                placeholder="제목을 입력하세요"
-                value={title}
-                onChangeText={setTitle}
-                editable={!loading}
-              />
-              <ColorContainer>
-                {colors.map(color => (
-                  <ColorButton
-                    key={color}
-                    color={color}
-                    selected={color === selectedColor}
-                    onPress={() => setSelectedColor(color)}
-                    disabled={loading}
-                  />
-                ))}
-              </ColorContainer>
-              <CheckboxContainer onPress={() => !loading && setIsShared(!isShared)}>
-                <View style={{
-                  width: 20,
-                  height: 20,
-                  borderWidth: 1,
-                  borderColor: '#666',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                  {isShared && <Text style={{ color: '#666' }}>✓</Text>}
-                </View>
-                <CheckboxLabel>연인과 코스 공유하기</CheckboxLabel>
-              </CheckboxContainer>
-              <ButtonContainer>
-                <Button onPress={() => {
-                  setModalVisible(false);
-                  setIsEditing(false);
-                  setTitle('');
-                  setSelectedColor(colors[0]);
-                  setIsShared(false);
-                }} disabled={loading}>
-                  <ButtonText>취소</ButtonText>
-                </Button>
-                <Button onPress={handleCreateOrUpdateCourse} disabled={loading}>
-                  <ButtonText>{loading ? '처리 중...' : isEditing ? '수정' : '추가'}</ButtonText>
-                </Button>
-              </ButtonContainer>
-            </ModalContent>
-          </ModalContainer>
-      </Modal>
-              
-    </>
-  );
-}; 
+   <Modal
+     visible={modalVisible}
+     transparent
+     animationType="fade"
+     onRequestClose={() => {
+       setModalVisible(false);
+       setIsEditing(false);
+       setTitle('');
+       setSelectedColor(colors[0]);
+       setIsShared(false);
+     }}
+   >
+     <ModalContainer>
+       <ModalContent>
+         <ModalTitle>{getModalTitle()}</ModalTitle>
+         <Input
+           placeholder="제목을 입력하세요"
+           value={title}
+           onChangeText={setTitle}
+           editable={!loading}
+         />
+         <ColorContainer>
+           {colors.map(color => (
+             <ColorButton
+               key={color}
+               color={color}
+               selected={color === selectedColor}
+               onPress={() => setSelectedColor(color)}
+               disabled={loading}
+             />
+           ))}
+         </ColorContainer>
+         <CheckboxContainer onPress={() => !loading && setIsShared(!isShared)}>
+           <View style={{
+             width: 20,
+             height: 20,
+             borderWidth: 1,
+             borderColor: '#666',
+             alignItems: 'center',
+             justifyContent: 'center',
+           }}>
+             {isShared && <Text style={{ color: '#666' }}>✓</Text>}
+           </View>
+           <CheckboxLabel>연인과 코스 공유하기</CheckboxLabel>
+         </CheckboxContainer>
+         <ButtonContainer>
+           <Button onPress={() => {
+             setModalVisible(false);
+             setIsEditing(false);
+             setTitle('');
+             setSelectedColor(colors[0]);
+             setIsShared(false);
+           }} disabled={loading}>
+             <ButtonText>취소</ButtonText>
+           </Button>
+           <Button onPress={handleCreateOrUpdateCourse} disabled={loading}>
+             <ButtonText>{loading ? '처리 중...' : isEditing ? '수정' : '추가'}</ButtonText>
+           </Button>
+         </ButtonContainer>
+       </ModalContent>
+     </ModalContainer>
+   </Modal>
+ </>
+);
+}

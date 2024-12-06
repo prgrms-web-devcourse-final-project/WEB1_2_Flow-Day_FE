@@ -50,5 +50,29 @@ export const courseApi = {
       console.error('코스 삭제 오류:', error);
       throw error;
     }
-  }
+  },
+
+
+  getCourseById: async (courseId: number): Promise<Course> => {
+    try {
+      const response = await apiClient.get<Course>(
+        `${BASE_URL}/courses/${courseId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('코스 상세 조회 오류:', error);
+      throw error;
+    }
+  },
+
+  deleteSpot: async (courseId: number, spotId: number): Promise<void> => {
+    try {
+      await apiClient.delete(`${BASE_URL}/courses/${courseId}/spot/${spotId}`);
+    } catch (error) {
+      console.error('코스 내 장소 삭제 오류:', error);
+      throw error;
+    }
+  },
+
+
 };
