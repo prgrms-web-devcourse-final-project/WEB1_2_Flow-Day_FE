@@ -28,14 +28,26 @@ const PostCreatePage = () => {
 
   const uploadData = async () => {
     const formData = new FormData();
+
     formData.append('title', postCreateData.title);
     formData.append('tags', postCreateData.tags);
     formData.append('region', postCreateData.region);
     formData.append('season', postCreateData.season);
-    formData.append('courseId', postCreateData.courseId.toString());
+    if (postCreateData.courseId !== 0) {
+      formData.append('courseId', postCreateData.courseId as any);
+    }
     formData.append('contents', postCreateData.contents);
     formData.append('status', postCreateData.status);
-    // formData.append('images', postCreateData.images); // 에러 나는 곳!! 폼 데이터로 사진을 보내는게 문제가 있는듯
+    if (postCreateData.images.length > 0) {
+      postCreateData.images.map((img, index) => {
+        var photo = {
+          uri: img.uri,
+          type: 'image/png',
+          name: `image${index}.png`,
+        };
+        formData.append('images', photo as any);
+      });
+    }
 
     try {
       const res = await axios.post(`${REACT_APP_SERVER_URL}/posts`, formData, {
