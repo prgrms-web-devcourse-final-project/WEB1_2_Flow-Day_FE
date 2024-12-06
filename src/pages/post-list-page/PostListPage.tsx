@@ -9,7 +9,7 @@ import PostCategoryButton from '@/components/post/PostCategoryButton';
 import PostItem from '@/components/post/PostItem';
 import PostCategoryModal from '@/components/post/PostCategoryModal';
 import Buttons from '@/components/Buttons';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 interface IPost {
   id: string;
@@ -54,9 +54,7 @@ const PostListPage = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-
       const newPosts = res.data.content;
-      console.log(newPosts);
       if (newPosts.length > 0) {
         setPostData((prevData) => (pageNumber === 0 ? newPosts : [...prevData, ...newPosts])); // 페이지가 0이면 기존 데이터 덮어쓰기
       }
@@ -72,10 +70,14 @@ const PostListPage = () => {
     getPostList(page, isLatest, searchKeyword);
   }, [page, isLatest, searchKeyword, selectedCategories]);
 
-  // FlatList의 아이템 렌더링
   const renderItem = ({item}: {item: IPost}) => {
     return <PostItem postData={item} />;
   };
+
+  // PostItem 클릭 시 호출되는 함수
+  // const handlePostItemPress = (postId: string) => {
+  //   navigation.navigate('PostDetailPage'); // 네비게이션에 postId 전달
+  // };
 
   // 스크롤 끝에 도달했을 때 호출
   const handleEndReached = () => {
@@ -116,16 +118,12 @@ const PostListPage = () => {
       <FlatList
         data={postData}
         renderItem={renderItem}
-        keyExtractor={(item: IPost) => item.id.toString()}
-        onEndReached={handleEndReached} // 끝에 도달했을 때 호출
-        onEndReachedThreshold={0.5} // 리스트의 50% 지점에서 호출
-        ListFooterComponent={isLoading ? <LoadingIndicator /> : null} // 로딩 표시
+        keyExtractor={(item: IPost, index: number) => `${item.id}-${index}`} // id와 index를 결합하여 고유한 키 생성
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={isLoading ? <LoadingIndicator /> : null}
       />
-      <Buttons.LongBtn
-        onPress={() => navigation.navigate('PostCreatePage')}
-        text="글쓰기"
-        style={{ marginBottom: 10 }}
-      />
+      <Buttons.LongBtn onPress={() => navigation.navigate('PostCreatePage')} text='글쓰기' style={{marginBottom: 10}} />
       {onCategoryModal && (
         <PostCategoryModal
           onPress={() => {
