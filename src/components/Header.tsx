@@ -1,10 +1,9 @@
 import { svg } from '@/assets/icons/svg';
-import HomePage from '@/pages/home-page/HomePage';
-import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { Button, TouchableOpacity } from 'react-native';
+import { ROUTES } from '@/constants/routes';
+import { TouchableOpacity } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import styled from 'styled-components/native';
+import { navigationRef } from '../../App'
 
 type HeaderProps = {
   children: React.ReactNode;
@@ -34,11 +33,10 @@ const AlertImage = styled.View`
 `
 
 export default function Header({children}: HeaderProps) {
-  const navigation =  useNavigation();
   
   return (
     <Container>
-      <TouchableOpacity onPress={() => navigation.navigate('home' as never)}>
+      <TouchableOpacity onPress={() => navigationRef.navigate(ROUTES.HOME as never)}>
         <LogoImage>
           <SvgXml xml={svg.logo} />
         </LogoImage>
