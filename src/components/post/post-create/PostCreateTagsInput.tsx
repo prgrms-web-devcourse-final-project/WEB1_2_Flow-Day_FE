@@ -19,7 +19,6 @@ const PostCreateTagsInput = () => {
     }
   };
 
-  console.log(postCreateData);
   return (
     <TagsInputDesign>
       <TagsInput value={inputValue} onChangeText={setInputValue} onKeyPress={handleKeyPress} placeholder='Enter tags with #' isTagComplete={isTagComplete} />
