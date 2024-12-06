@@ -1,7 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import axios from 'axios';
 
 const InputText = styled.TextInput`
   width: 330px;
@@ -12,34 +11,28 @@ const InputText = styled.TextInput`
   border-radius: 6px;
 `;
 
-const PostSearch = () => {
+interface PostSearchProps {
+  onSearch: (keyword: string) => void;
+}
+
+const PostSearch = ({onSearch}: PostSearchProps) => {
   const [input, setInput] = useState('');
 
-  const getSearchedPost = async () => {
-    try {
-      const token = ''; // 토큰 넣어주기.
-      const res = await axios.get(
-        'http://flowday.kro.kr:5000/api/v1/posts/all/latest?pageSize=10&page=0',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      const searchedPost = res.data.content;
-      console.log(searchedPost); // 삭제 예정
-      // PostListPage에 있는 [postData,setPostData] props로 가져와서 데이터 수정해주기
-    } catch (err) {
-      console.error('포스트 검색 API 에러 : ', err);
+  const handleSearch = () => {
+    if (input.trim()) {
+      onSearch(input); // 부모 컴포넌트로 검색된 키워드 전달
     }
   };
 
   return (
-    <InputText
-      onChangeText={text => setInput(text)}
-      placeholder="제목, 태그를 입력해주세요"
-      value={input}
-    />
+    <View>
+      <InputText
+        onChangeText={(text) => setInput(text)}
+        placeholder='제목, 태그를 입력해주세요'
+        value={input}
+        onSubmitEditing={handleSearch} // 엔터를 누르면 검색 실행
+      />
+    </View>
   );
 };
 
