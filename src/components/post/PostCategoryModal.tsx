@@ -1,50 +1,29 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import React, {useState} from 'react';
 import styled from 'styled-components/native';
 
 interface PostCategoryModalProps {
   onPress: () => void;
+  onComplete: (selectedCategories: {seasons: string[]; regions: string[]}) => void;
 }
 
-const PostCategoryModal: React.FC<PostCategoryModalProps> = ({ onPress }) => {
+const PostCategoryModal: React.FC<PostCategoryModalProps> = ({onPress, onComplete}) => {
   const seasonArr = ['전체', '봄', '여름', '가을', '겨울'];
-  const regionArr = [
-    '전체',
-    '서울',
-    '부산',
-    '대구',
-    '인천',
-    '광주',
-    '대전',
-    '울산',
-    '세종',
-    '경기',
-    '강원',
-    '충북',
-    '충남',
-    '전북',
-    '전남',
-    '경북',
-    '경남',
-    '제주',
-  ];
+  const regionArr = ['전체', '서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'];
   const [selectSeason, setSelectSeason] = useState<string[]>([]);
   const [selectRegion, setSelectRegion] = useState<string[]>([]);
 
   const handleSelectSeason = (season: string) => {
-    setSelectSeason(prevState =>
-      prevState.includes(season)
-        ? prevState.filter(item => item !== season)
-        : [...prevState, season],
-    );
+    setSelectSeason((prevState) => (prevState.includes(season) ? prevState.filter((item) => item !== season) : [...prevState, season]));
   };
 
   const handleSelectRegion = (region: string) => {
-    setSelectRegion(prevState =>
-      prevState.includes(region)
-        ? prevState.filter(item => item !== region)
-        : [...prevState, region],
-    );
+    setSelectRegion((prevState) => (prevState.includes(region) ? prevState.filter((item) => item !== region) : [...prevState, region]));
+  };
+
+  const handleComplete = () => {
+    onComplete({seasons: selectSeason, regions: selectRegion});
+    onPress();
   };
 
   return (
@@ -59,14 +38,8 @@ const PostCategoryModal: React.FC<PostCategoryModalProps> = ({ onPress }) => {
           </ContentTitle>
           <SelectButtonList>
             {seasonArr.map((season, i) => (
-              <SelectButton
-                onPress={() => handleSelectSeason(season)}
-                selected={selectSeason.includes(season)}
-                key={i}
-              >
-                <SelectButtonText selected={selectSeason.includes(season)}>
-                  {season}
-                </SelectButtonText>
+              <SelectButton onPress={() => handleSelectSeason(season)} selected={selectSeason.includes(season)} key={i}>
+                <SelectButtonText selected={selectSeason.includes(season)}>{season}</SelectButtonText>
               </SelectButton>
             ))}
           </SelectButtonList>
@@ -77,20 +50,14 @@ const PostCategoryModal: React.FC<PostCategoryModalProps> = ({ onPress }) => {
           </ContentTitle>
           <SelectButtonList>
             {regionArr.map((region, i) => (
-              <SelectButton
-                onPress={() => handleSelectRegion(region)}
-                selected={selectRegion.includes(region)}
-                key={i}
-              >
-                <SelectButtonText selected={selectRegion.includes(region)}>
-                  {region}
-                </SelectButtonText>
+              <SelectButton onPress={() => handleSelectRegion(region)} selected={selectRegion.includes(region)} key={i}>
+                <SelectButtonText selected={selectRegion.includes(region)}>{region}</SelectButtonText>
               </SelectButton>
             ))}
           </SelectButtonList>
         </Content>
-        <CompleteButton>
-          <CompleteButtonText onPress={onPress}>완료</CompleteButtonText>
+        <CompleteButton onPress={handleComplete}>
+          <CompleteButtonText>완료</CompleteButtonText>
         </CompleteButton>
       </CategoryModal>
     </CategoryBlur>
@@ -149,21 +116,21 @@ const SelectButtonList = styled.View`
   flex-wrap: wrap;
 `;
 
-const SelectButton = styled.TouchableOpacity<{ selected: boolean }>`
+const SelectButton = styled.TouchableOpacity<{selected: boolean}>`
   width: 60px;
   height: 30px;
-  background-color: ${({ selected }) => (selected ? '#ff6666' : '#ffeadd')};
+  background-color: ${({selected}) => (selected ? '#ff6666' : '#ffeadd')};
   justify-content: center;
   border-radius: 6px;
   margin: 5px;
 `;
 
-const SelectButtonText = styled.Text<{ selected: boolean }>`
+const SelectButtonText = styled.Text<{selected: boolean}>`
   width: 50px;
   font-size: 13px;
   margin: auto;
   text-align: center;
-  color: ${({ selected }) => (selected ? '#ffffff' : '#000000')};
+  color: ${({selected}) => (selected ? '#ffffff' : '#000000')};
 `;
 
 const CompleteButton = styled.TouchableOpacity`
