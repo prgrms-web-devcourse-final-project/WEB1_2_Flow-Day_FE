@@ -6,6 +6,7 @@ import { Client, Message } from '@stomp/stompjs';
 import MyMessage from '@/components/chat/MyMessage';
 import YourMessage from '@/components/chat/YourMessage';
 import useChatStore from '@/store/chat/ChatStore';
+import axios from 'axios';
 
 // 채팅 메시지 타입 정의
 interface ChatMessage {
@@ -95,6 +96,15 @@ const ChatPage = (): JSX.Element => {
     }
   };
 
+  useEffect(() => {
+    const getChat = async () =>
+      axios.get(`http://flowday.kro.kr:80/api/v1/chat/${roomId}`, {
+        headers: {
+          // Authorization : `Bearer ${}`
+        },
+      });
+  }, []);
+
   return (
     <ChatDesign>
       <ChatList>
@@ -106,17 +116,19 @@ const ChatPage = (): JSX.Element => {
           );
         })}
       </ChatList>
-      <ChatInputText
-        value={input}
-        onChangeText={text => setInput(text)} // TextInput에 입력된 값을 상태로 업데이트
-        placeholder="텍스트를 입력해주세요"
-        onSubmitEditing={sendMessage} // 엔터키를 누르면 메시지 전송
-        returnKeyType="send" // iOS에서 키보드 'Send' 버튼으로 표시
-        blurOnSubmit={false} // 메시지 전송 후 포커스를 유지
-      ></ChatInputText>
-      <SubmitButton onPress={sendMessage}>
-        <Text>전송</Text>
-      </SubmitButton>
+      <StyleBox>
+        <ChatInputText
+          value={input}
+          onChangeText={text => setInput(text)} // TextInput에 입력된 값을 상태로 업데이트
+          placeholder="텍스트를 입력해주세요"
+          onSubmitEditing={sendMessage} // 엔터키를 누르면 메시지 전송
+          returnKeyType="send" // iOS에서 키보드 'Send' 버튼으로 표시
+          blurOnSubmit={false} // 메시지 전송 후 포커스를 유지
+        ></ChatInputText>
+        <SubmitButton onPress={sendMessage}>
+          <SubmitButtonText>전송</SubmitButtonText>
+        </SubmitButton>
+      </StyleBox>
     </ChatDesign>
   );
 };
@@ -142,19 +154,34 @@ const ChatList = styled.ScrollView`
 `;
 
 const ChatInputText = styled.TextInput`
-  width: 370px;
+  width: 325px;
   height: 50px;
   border: 1px solid #ff6666;
   border-radius: 6px;
   padding: 10px;
-  margin: 10px auto;
+  margin: 10px 5px;
+  margin-right: auto;
   text-align: left; /* 텍스트를 왼쪽으로 정렬 */
 `;
 
 const SubmitButton = styled.TouchableOpacity`
   width: 50px;
-  height: 20px;
+  height: 50px;
   background-color: #ff6666;
   color: #ffffff;
   font-size: 14px;
+  margin: auto 0px;
+  margin-right: 5px;
+  border-radius: 6px;
+`;
+
+const SubmitButtonText = styled.Text`
+  text-align: center;
+  margin: auto;
+  width: 100%;
+  color: #ffffff;
+`;
+
+const StyleBox = styled.View`
+  flex-direction: row;
 `;
