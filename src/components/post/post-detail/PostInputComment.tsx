@@ -4,10 +4,12 @@ import styled from 'styled-components/native';
 import axios from 'axios';
 import PostButton from './PostButton';
 import {useStore} from '@/store/useStore';
+import usePostDetailStore from '@/store/post/post-detail-store';
 
 const PostInputComment = ({postId}) => {
   const [text, setText] = useState('');
   const {accessToken} = useStore();
+  const {replyData, setReplyData} = usePostDetailStore(); // 댓글 데이터와 setReplyData 함수 가져오기
 
   // 댓글 전송 함수
   const postReply = async () => {
@@ -30,6 +32,10 @@ const PostInputComment = ({postId}) => {
 
       // 댓글 전송 성공 시
       console.log('댓글 작성 성공:', res.data);
+
+      // 새 댓글을 기존 댓글 목록에 추가하여 리렌더링
+      setReplyData([res.data, ...replyData]); // 서버에서 받아온 새 댓글을 가장 위에 추가
+
       setText(''); // 텍스트 입력창 초기화
     } catch (err) {
       console.error('댓글 추가 에러 : ', err);
