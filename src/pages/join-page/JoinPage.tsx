@@ -4,6 +4,9 @@ import { useState } from "react";
 import Buttons from "@/components/Buttons";
 import { useNavigation } from "@react-navigation/native";
 import { ROUTES } from "@/constants/routes";
+import apiClient from "@/utils/apiClient";
+import axios from "axios";
+import { useStore } from '@/store/useStore';
 
 const Container = styled.View`
     padding: 70px 50px 100px;
@@ -48,6 +51,61 @@ const JoinPage = () => {
 
     const navigation = useNavigation();
 
+    const handleJoin = async () => {
+        try {
+            const response = await apiClient.post('/members/register', {
+                loginId: id,
+                pw: pw,
+                email: email
+            });
+
+            console.log(response.data);
+            handleLogin();
+            navigation.navigate(ROUTES.PROFILE_SET as never);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.error('Error : ', error.response?.data);
+            } else {
+                console.error('Error: ', error);
+            }
+            navigation.navigate(ROUTES.PROFILE_SET as never); //삭제
+        }
+    }
+
+    const { setAccessToken } = useStore();
+
+
+    const handleLogin = async () => {
+        try {
+            const response = await apiClient.post('/members/login', {
+                loginId: id,
+                pw: pw,
+            });
+
+            const accessToken = response.headers['authorization']?.split(' ')[1];
+        
+            if (accessToken) {
+                setAccessToken(accessToken);
+                console.log(accessToken);
+            }
+
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.error('Error : ', error.response?.data);
+            } else {
+                console.error('Error: ', error);
+            }
+        }
+    }
+
+    const checkPassword = async () => {
+        if(pw !== pwCheck){
+
+
+        }
+    }
+
+
     return(
         <Container>
             <View style={{ width: 300 }}>
@@ -78,19 +136,19 @@ const JoinPage = () => {
                     onChangeText={(text) => setPw(text)}
                     placeholder="비밀번호 입력"
                     placeholderTextColor='#DDDDDD'
+                    secureTextEntry={true}
                 />
                 <Input 
                     value={pwCheck}
                     onChangeText={(text) => setPwCheck(text)}
                     placeholder="비밀번호 확인"
                     placeholderTextColor='#DDDDDD'
+                    secureTextEntry={true}
                 />
             </View>
-            <Buttons.ShortBtn text="다음 단계로" onPress={() => navigation.navigate(ROUTES.PROFILE_SET as never)}/>
-        </Container>
-        
+            <Buttons.ShortBtn text="다음 단계로" onPress={handleJoin}/>
+        </Container>   
     )
-
 }
 
 export default JoinPage

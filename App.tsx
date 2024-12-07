@@ -22,6 +22,9 @@ import LoginPage from '@/pages/login-page/LoginPage';
 import JoinPage from '@/pages/join-page/JoinPage';
 import ProfileSetPage from '@/pages/join-page/ProfileSetPage';
 import PostListPage from '@/pages/post-list-page/PostListPage';
+import CoupleRegisterPage from '@/pages/join-page/CoupleRegisterPage';
+import WelcomePage from '@/pages/join-page/WelcomePage';
+import CoupleCheckPage from '@/pages/join-page/CoupleCheckPage';
 
 // 색상 설정
 const COLORS = {
@@ -157,7 +160,23 @@ const App = () => {
             />
             <Stack.Screen
               name={ROUTES.COUPLE_REGISTER}
-              component={ProfileSetPage}
+              component={CoupleRegisterPage}
+              options={{
+                headerTitle: '',
+                headerStyle: { backgroundColor: '#FFFFFF' },
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.COUPLE_CHECK}
+              component={CoupleCheckPage}
+              options={{
+                headerTitle: '',
+                headerStyle: { backgroundColor: '#FFFFFF' },
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.WELCOME}
+              component={WelcomePage}
               options={{
                 headerTitle: '',
                 headerStyle: { backgroundColor: '#FFFFFF' },
@@ -171,11 +190,6 @@ const App = () => {
 
   const Tab = createBottomTabNavigator();
 
-  // useEffect(() => {
-  //   if (fontsLoaded) {
-  //     SplashScreen.hideAsync();
-  //   }
-  // }, [fontsLoaded]);
 
   const getModifiedSvg = (xml: string, fillColor: string) => {
     return xml.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);

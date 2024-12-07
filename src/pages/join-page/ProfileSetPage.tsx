@@ -1,9 +1,16 @@
 import { Image, View } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import styled from "styled-components/native";
-import Buttons from "@/components/Buttons";
 import { useState } from "react";
+import * as ImagePicker from 'expo-image-picker';
+
+import apiClient from "@/utils/apiClient";
 import { ROUTES } from "@/constants/routes";
+import Buttons from "@/components/Buttons";
+import { useStore } from "@/store/useStore";
+import axios from "axios";
+import { REACT_APP_SERVER_URL } from "@env";
+// import { request } from "axios";
 
 const Container = styled.View`
     flex: 1;
@@ -57,10 +64,76 @@ const InputBox = styled.View`
 `
 
 const ProfileSetPage = () => {
-    const [name, setName] = useState<string>();
-    const [date, setDate] = useState<string>();
+    const [name, setName] = useState('');
+    const [date, setDate] = useState('');
+    // const [image, setImage] = useState<ImagePicker.ImagePickerAsset>();
+    const [image, setImage] = useState('');
+
+
+    const { accessToken } = useStore.getState();
 
     const navigation = useNavigation();
+
+    const handlePostImage = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            quality: 1,
+            aspect: [1, 1],
+        });
+
+        if(!result.canceled){
+            // setImage(result.assets[0].uri);
+            setImage(result.assets[0].uri);
+        }
+    }
+
+    const handlesetProfile = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('birthDt', date);
+
+            if (image) {
+                // const response = await fetch(image.uri);
+                // const blob = await response.blob();
+                // console.log(blob);
+
+                // formData.append('file', blob);
+                // formData.append('file', image);
+
+            } 
+
+            // fetch(`http://flowday.kro.kr:80/api/v1/members/myInfo`, {
+            //     method: 'PUT',
+            //     body: formData,
+            //     headers: {
+            //         Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImNhdGVnb3J5IjoiYWNjZXNzVG9rZW4iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjE2LCJsb2dpbklkIjoidGVzdGVyIn0sImlhdCI6MTczMzM2NDM5NywiZXhwIjoxNzY5MzY0Mzk3fQ.7HD2TzWVoImj28ntr-__kxFe0wuzYfudN4PIkVVjXW4`,
+            //         "Content-Type": "multipart/form-data",
+            //     },
+            // })
+            // .then((res) => {
+            //     console.log("성공이랄까");
+            //     console.log(res);
+            //   })
+            //   .catch((err) => {
+            //     console.log(" 에러랄까");
+            //     console.log(err);
+            //   });
+        
+
+            const response = await axios.put(`${REACT_APP_SERVER_URL}/members/myInfo`, formData, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'content-type': 'multipart/form-data',
+                }
+            });
+
+            console.log(response.data);
+        } catch (error) {
+            console.error('Error: ', error);
+        }
+    }
 
     return(
         <Container>
@@ -78,7 +151,11 @@ const ProfileSetPage = () => {
                 <ImageBox>
                     <Image source={require('../../assets/images/profile-icon.png')} />
                 </ImageBox>
-                <Buttons.ShortBtn text="이미지 업로드" style={{ backgroundColor: '#000000'}}/>
+                <Buttons.ShortBtn 
+                    text="이미지 업로드" 
+                    style={{ backgroundColor: '#000000'}}
+                    onPress={handlePostImage}
+                    />
             </ProfileBox>
             <InputBox>
                 <Label>닉네임</Label>
@@ -96,7 +173,7 @@ const ProfileSetPage = () => {
                     placeholderTextColor='#DDDDDD'
                 />
             </InputBox>
-            <Buttons.ShortBtn text="다음 단계로" onPress={() => navigation.navigate(ROUTES.COUPLE_REGISTER as never)}/>
+            <Buttons.ShortBtn text="다음 단계로" onPress={handlesetProfile}/>
         </Container>
     )
 }
