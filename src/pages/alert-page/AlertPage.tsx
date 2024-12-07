@@ -1,14 +1,14 @@
-import {Alert, StyleSheet, Text, View} from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import styled from 'styled-components/native';
 import useAlertStore from '@/store/alert/alert-store';
 import AlertItemIcon from '@/components/alert/AlertItemIcon';
 import AlertItemText from '@/components/alert/AlertItemText';
 import AlertItemDate from '@/components/alert/AlertItemDate';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const AlertPage = () => {
-  const {alerts} = useAlertStore();
+  const { alerts } = useAlertStore();
   const navigation = useNavigation();
   return (
     <AlertPageDesign>
