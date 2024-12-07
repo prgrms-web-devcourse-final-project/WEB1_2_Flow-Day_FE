@@ -1,16 +1,27 @@
-
-import React, { useState } from 'react';
-import { View, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, Alert, TouchableOpacity, Text } from 'react-native';
 import styled from 'styled-components/native';
 import { SvgXml } from 'react-native-svg';
 import { svg } from '@/assets/icons/svg';
 import { Course, Spot } from '@/types/course';
 import { courseApi } from '@/api/courseApi';
+import { GOOGLE_MAPS_API_KEY } from '@env';
+
 
 interface CourseDetailProps {
   course: Course;
   onBack: () => void;
 }
+
+interface SpotWithPhoto extends Spot {
+  photoUrl?: string;
+}
+
+interface CourseDetailProps {
+  course: Course;
+  onBack: () => void;
+}
+
 
 const DetailContainer = styled.View`
   flex: 1;
@@ -79,10 +90,12 @@ const SpotItem = styled.View`
   borderBottomColor: #EEEEEE;
 `;
 
+
 const SpotImage = styled.Image`
   width: 80px;
   height: 80px;
-  borderRadius: 8px;
+  border-radius: 8px;
+  background-color: #f0f0f0;
 `;
 
 const SpotInfo = styled.View`
@@ -146,49 +159,63 @@ const DeleteActionText = styled.Text`
   fontFamily: 'SCDream5';
 `;
 
-// 임시 더미 데이터
-const dummySpots: Spot[] = [
-  {
-    id: 1,
-    placeId: "ChIJN1t_tDeuEmsRUsoyG83frY4",
-    name: '청담과 본점',
-    city: '서울특별시 중구',
-    comment: '맛있는 레스토랑',
-    sequence: 1,
-    courseId: 1,
-    voteId: 0,
-    memberId: 1,
-    isOwner: true
-  },
-  {
-    id: 2,
-    placeId: "ChIJN2t_tDeuEmsRUsoyG83frY4",
-    name: '남산 서울타워',
-    city: '서울특별시 용산구',
-    comment: '전망이 좋은 관광지',
-    sequence: 2,
-    courseId: 1,
-    voteId: 0,
-    memberId: 1,
-    isOwner: true
-  },
-  {
-    id: 3,
-    placeId: "ChIJN3t_tDeuEmsRUsoyG83frY4",
-    name: '스타벅스 청담점',
-    city: '서울특별시 강남구',
-    comment: '편안한 카페',
-    sequence: 3,
-    courseId: 1,
-    voteId: 0,
-    memberId: 1,
-    isOwner: true
-  }
-];
 
 const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedSpots, setSelectedSpots] = useState<number[]>([]);
+  const [spots, setSpots] = useState<SpotWithPhoto[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const getPlacePhoto = async (placeId: string): Promise<string | undefined> => {
+    try {
+      // console.log('Fetching place details for placeId:', placeId);
+      const detailsResponse = await fetch(
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=photos&key=${GOOGLE_MAPS_API_KEY}`
+      );
+      const detailsData = await detailsResponse.json();
+      // console.log('Place details response:', detailsData);
+      
+      if (detailsData.result?.photos?.[0]?.photo_reference) {
+        const photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${detailsData.result.photos[0].photo_reference}&key=${GOOGLE_MAPS_API_KEY}`;
+        // console.log('Generated photo URL:', photoUrl);
+        return photoUrl;
+      }
+      
+      console.log('No photo reference found');
+      return undefined;
+    } catch (error) {
+      console.error('Error fetching place photo:', error);
+      return undefined;
+    }
+  };
+
+  const loadCourseDetails = async () => {
+    try {
+      setLoading(true);
+      const courseData = await courseApi.getCourseById(course.id);
+      
+      if (courseData.spots) {
+        // 각 장소에 대한 사진 URL 가져오기
+        const spotsWithPhotos = await Promise.all(
+          courseData.spots.map(async (spot) => {
+            const photoUrl = await getPlacePhoto(spot.placeId);
+            return { ...spot, photoUrl };
+          })
+        );
+        setSpots(spotsWithPhotos);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '코스 상세 정보를 불러오는데 실패했습니다.';
+      Alert.alert('오류', errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadCourseDetails();
+  }, [course.id]);
+
 
   const toggleDeleteMode = () => {
     setIsDeleteMode(!isDeleteMode);
@@ -196,13 +223,11 @@ const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
   };
 
   const toggleSpotSelection = (spotId: number) => {
-    if (selectedSpots.includes(spotId)) {
-      // 이미 선택된 경우 제거
-      setSelectedSpots(selectedSpots.filter(id => id !== spotId));
-    } else {
-      // 선택되지 않은 경우 추가
-      setSelectedSpots([...selectedSpots, spotId]);
-    }
+    setSelectedSpots(prev =>
+      prev.includes(spotId) 
+        ? prev.filter(id => id !== spotId)
+        : [...prev, spotId]
+    );
   };
 
   const handleDeleteSelectedSpots = async () => {
@@ -221,14 +246,14 @@ const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              // 선택된 모든 장소 삭제
               for (const spotId of selectedSpots) {
                 await courseApi.deleteSpot(course.id, spotId);
               }
+              // 삭제 후 목록 새로고침
+              loadCourseDetails();
               Alert.alert('성공', '선택한 장소들이 삭제되었습니다.');
               setSelectedSpots([]);
               setIsDeleteMode(false);
-              // TODO: 장소 목록 새로고침 로직 추가
             } catch (error) {
               const errorMessage = error instanceof Error ? error.message : '삭제 실패';
               Alert.alert('오류', errorMessage);
@@ -238,53 +263,63 @@ const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
       ]
     );
   };
+  
+
 
   return (
-
-        <DetailContainer>
-            <DetailHeader>
-            <DragIndicator />
-                <HeaderContent>
-                    <BackButton onPress={onBack}>
-                    <SvgXml xml={svg.back} width={24} height={24} />
-                    </BackButton>
-                    <DetailTitle>{course?.title || '코스 상세'}</DetailTitle>
-                    <DeleteButton onPress={toggleDeleteMode}>
-                    <SvgXml xml={svg.trash} width={20} height={20} />
-                    <DeleteText>삭제</DeleteText>
-                    </DeleteButton>
-                </HeaderContent>
-            </DetailHeader>
-      
-      
+    <DetailContainer>
+      <DetailHeader>
+        <DragIndicator />
+        <HeaderContent>
+          <BackButton onPress={onBack}>
+            <SvgXml xml={svg.back} width={24} height={24} />
+          </BackButton>
+          <DetailTitle>{course?.title || '코스 상세'}</DetailTitle>
+          <DeleteButton onPress={toggleDeleteMode}>
+            <SvgXml xml={svg.trash} width={20} height={20} />
+            <DeleteText>삭제</DeleteText>
+          </DeleteButton>
+        </HeaderContent>
+      </DetailHeader>
 
       <ScrollView>
-        {dummySpots.map((spot, index) => (
-          <SpotItemContainer key={spot.id}>
-            <SpotItem>
-              <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                <SequenceCircle>
-                  <SequenceNumber>{index + 1}</SequenceNumber>
-                </SequenceCircle>
-                <SpotImage />
-                <SpotInfo>
-                  <SpotName>{spot.name}</SpotName>
-                  <SpotAddress>{spot.city}</SpotAddress>
-                  <SpotCategory>{spot.comment}</SpotCategory>
-                </SpotInfo>
-                <CategoryButton onPress={() => isDeleteMode && toggleSpotSelection(spot.id)}>
-                  <SvgXml 
-                    xml={isDeleteMode 
-                      ? (selectedSpots.includes(spot.id) ? svg.add : svg.check)
-                      : svg.list} 
-                    width={20} 
-                    height={20}
-                  />
-                </CategoryButton>
-              </View>
-            </SpotItem>
-          </SpotItemContainer>
-        ))}
+        {loading ? (
+          <View style={{ padding: 20, alignItems: 'center' }}>
+            <Text>로딩 중...</Text>
+          </View>
+        ) : (
+          spots.map((spot, index) => (
+            <SpotItemContainer key={spot.id}>
+              <SpotItem>
+                <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                  <SequenceCircle>
+                    <SequenceNumber>{index + 1}</SequenceNumber>
+                  </SequenceCircle>
+                  <SpotImage 
+                      source={{ uri: spot.photoUrl || '' }}
+                      style={{ width: 80, height: 80 }}  
+                      resizeMode="cover"  
+                      onError={(e) => console.log('Image loading error:', e.nativeEvent.error)}  
+                    />
+                  <SpotInfo>
+                    <SpotName>{spot.name}</SpotName>
+                    <SpotAddress>{spot.city}</SpotAddress>
+                    <SpotCategory>{spot.comment}</SpotCategory>
+                  </SpotInfo>
+                  <CategoryButton onPress={() => isDeleteMode && toggleSpotSelection(spot.id)}>
+                    <SvgXml 
+                      xml={isDeleteMode 
+                        ? (selectedSpots.includes(spot.id) ? svg.check : svg.add)
+                        : svg.list} 
+                      width={20} 
+                      height={20}
+                    />
+                  </CategoryButton>
+                </View>
+              </SpotItem>
+            </SpotItemContainer>
+          ))
+        )}
       </ScrollView>
 
       {isDeleteMode && (
@@ -292,7 +327,7 @@ const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
           <DeleteActionText>삭제</DeleteActionText>
         </DeleteActionButton>
       )}
-  </DetailContainer>
+    </DetailContainer>
   );
 };
 
