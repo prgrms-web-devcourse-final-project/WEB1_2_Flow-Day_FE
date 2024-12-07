@@ -27,6 +27,8 @@ import ProfileSetPage from '@/pages/join-page/ProfileSetPage';
 import PostListPage from '@/pages/post-list-page/PostListPage';
 import PostCreatePage from '@/pages/post-create-page/PostCreatePage';
 import PostDetailPage from '@/pages/post-detail-page/PostDetailPage';
+import { TextEncoder } from 'text-encoding';
+global.TextEncoder = TextEncoder;
 
 // 색상 설정
 const COLORS = {

@@ -7,6 +7,7 @@ import MyMessage from '@/components/chat/MyMessage';
 import YourMessage from '@/components/chat/YourMessage';
 import useChatStore from '@/store/chat/ChatStore';
 import axios from 'axios';
+import { useStore } from '@/store/useStore';
 
 // 채팅 메시지 타입 정의
 interface ChatMessage {
@@ -17,6 +18,7 @@ interface ChatMessage {
 
 const ChatPage = (): JSX.Element => {
   const { chatData } = useChatStore(); // 전역 상태에서 채팅 데이터 가져오기
+  const { accessToken } = useStore();
 
   // 상태 변수 타입 정의
   const [connected, setConnected] = useState<boolean>(false); // WebSocket 연결 상태
@@ -28,7 +30,7 @@ const ChatPage = (): JSX.Element => {
 
   // WebSocket 연결 및 STOMP 클라이언트 설정
   useEffect(() => {
-    const socket = new SockJS('http://flowday.kro.kr:/connect'); // SockJS를 사용한 연결
+    const socket = new SockJS('http://flowday.kro.kr:80/connect'); // SockJS를 사용한 연결
     const stompClient = new Client({
       brokerURL: 'ws://flowday.kro.kr:/connect/websocket', // STOMP 브로커 URL
       connectHeaders: {
@@ -80,7 +82,7 @@ const ChatPage = (): JSX.Element => {
 
   // 메시지 전송 함수
   const sendMessage = (): void => {
-    console.log(input);
+    // console.log(input);
     if (clientRef.current && input.trim() !== '' && connected) {
       // WebSocket이 연결되어 있고 입력된 메시지가 있을 때
       const chatMessage = {
@@ -90,6 +92,7 @@ const ChatPage = (): JSX.Element => {
         destination: `/app/chat/${roomId}`, // 메시지를 보낼 목적지
         body: JSON.stringify(chatMessage), // 메시지 본문
       });
+
       setInput(''); // 메시지 전송 후 입력란 초기화
     } else {
       console.log('Not connected to the WebSocket.'); // 연결되지 않은 상태에서 메시지 전송 시
@@ -97,13 +100,24 @@ const ChatPage = (): JSX.Element => {
   };
 
   useEffect(() => {
-    const getChat = async () =>
-      axios.get(`http://flowday.kro.kr:80/api/v1/chat/${roomId}`, {
-        headers: {
-          // Authorization : `Bearer ${}`
-        },
-      });
-  }, []);
+    const getChat = async () => {
+      try {
+        const res = await axios.get(
+          `http://flowday.kro.kr:80/api/v1/chat/${roomId}?page=1&size=10`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
+        const data = (await res).data;
+        console.log('채팅 로그 :', data);
+      } catch (err) {
+        console.error('채팅 로그 요청 에러:', err);
+      }
+    };
+    getChat();
+  }, [roomId]);
 
   return (
     <ChatDesign>
@@ -144,6 +158,7 @@ const ChatDesign = styled.View`
   border-top-width: 1px;
   border-bottom-width: 1px;
   border-color: #eeeeee;
+  background-color: #fff;
 `;
 
 // 채팅 메시지를 표시할 리스트 컴포넌트
