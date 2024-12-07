@@ -1,30 +1,36 @@
-import {SafeAreaView} from 'react-native';
+import { SafeAreaView } from 'react-native';
 import styled from 'styled-components/native';
-import {NavigationContainer, createNavigationContainerRef} from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {SvgXml} from 'react-native-svg';
-import {useEffect, useState} from 'react';
+import {
+  NavigationContainer,
+  createNavigationContainerRef,
+} from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SvgXml } from 'react-native-svg';
+import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {useStore} from '@/store/useStore';
+import { useStore } from '@/store/useStore';
 
 import HomePage from '@/pages/home-page/HomePage';
 import ChatPage from '@/pages/chat-page/ChatPage';
 import Header from './src/components/Header';
-import {svg} from '@/assets/icons/svg';
-import {ROUTES} from '@/constants/routes';
+import { svg } from '@/assets/icons/svg';
+import { ROUTES } from '@/constants/routes';
 import MapPage from '@/pages/map-page/MapPage';
-import {SearchPage} from '@/pages/map-page/SearchPage';
+import { SearchPage } from '@/pages/map-page/SearchPage';
 import LoginPage from '@/pages/login-page/LoginPage';
 import JoinPage from '@/pages/join-page/JoinPage';
 import ProfileSetPage from '@/pages/join-page/ProfileSetPage';
 import PostListPage from '@/pages/post-list-page/PostListPage';
 import PostCreatePage from '@/pages/post-create-page/PostCreatePage';
 import PostDetailPage from '@/pages/post-detail-page/PostDetailPage';
+import { TextEncoder } from 'text-encoding';
+global.TextEncoder = TextEncoder;
 import PostEditPage from '@/pages/post-edit-page/PostEditPage';
+
 
 // 색상 설정
 const COLORS = {
@@ -52,8 +58,16 @@ const Stack = createNativeStackNavigator();
 function MapStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name='MapMain' component={MapPage} options={{headerShown: false}} />
-      <Stack.Screen name='Search' component={SearchPage} options={{headerShown: false}} />
+      <Stack.Screen
+        name="MapMain"
+        component={MapPage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Search"
+        component={SearchPage}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
@@ -80,7 +94,7 @@ SplashScreen.setOptions({
 export const navigationRef = createNavigationContainerRef();
 
 const App = () => {
-  const {logOut, setAccessToken, isLoggedIn} = useStore();
+  const { logOut, setAccessToken, isLoggedIn } = useStore();
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
@@ -125,16 +139,20 @@ const App = () => {
 
   if (!isLoggedIn) {
     return (
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer ref={navigationRef}>
           <Stack.Navigator>
-            <Stack.Screen name={ROUTES.LOGIN} component={LoginPage} options={{headerShown: false}} />
+            <Stack.Screen
+              name={ROUTES.LOGIN}
+              component={LoginPage}
+              options={{ headerShown: false }}
+            />
             <Stack.Screen
               name={ROUTES.JOIN}
               component={JoinPage}
               options={{
                 headerTitle: '',
-                headerStyle: {backgroundColor: '#FFFFFF'},
+                headerStyle: { backgroundColor: '#FFFFFF' },
               }}
             />
             <Stack.Screen
@@ -142,7 +160,7 @@ const App = () => {
               component={ProfileSetPage}
               options={{
                 headerTitle: '',
-                headerStyle: {backgroundColor: '#FFFFFF'},
+                headerStyle: { backgroundColor: '#FFFFFF' },
               }}
             />
             <Stack.Screen
@@ -150,7 +168,7 @@ const App = () => {
               component={ProfileSetPage}
               options={{
                 headerTitle: '',
-                headerStyle: {backgroundColor: '#FFFFFF'},
+                headerStyle: { backgroundColor: '#FFFFFF' },
               }}
             />
           </Stack.Navigator>
@@ -172,7 +190,7 @@ const App = () => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer ref={navigationRef}>
         <Tab.Navigator
           screenOptions={{
@@ -195,11 +213,22 @@ const App = () => {
             component={HomePage}
             options={{
               header: () => <Header>D+134</Header>,
-              tabBarIcon: ({focused}: {focused: boolean}) => {
+              tabBarIcon: ({ focused }: { focused: boolean }) => {
                 return (
                   <ButtonBox>
-                    <SvgXml xml={getModifiedSvg(svg.home, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>홈</ButtonText>
+                    <SvgXml
+                      xml={getModifiedSvg(
+                        svg.home,
+                        focused ? COLORS.active : COLORS.inactive,
+                      )}
+                    />
+                    <ButtonText
+                      style={{
+                        color: focused ? COLORS.active : COLORS.inactive,
+                      }}
+                    >
+                      홈
+                    </ButtonText>
                   </ButtonBox>
                 );
               },
@@ -211,11 +240,22 @@ const App = () => {
             component={ChatPage}
             options={{
               header: () => <Header>D+1234</Header>,
-              tabBarIcon: ({focused}: {focused: boolean}) => {
+              tabBarIcon: ({ focused }: { focused: boolean }) => {
                 return (
                   <ButtonBox>
-                    <SvgXml xml={getModifiedSvg(svg.chat, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>채팅</ButtonText>
+                    <SvgXml
+                      xml={getModifiedSvg(
+                        svg.chat,
+                        focused ? COLORS.active : COLORS.inactive,
+                      )}
+                    />
+                    <ButtonText
+                      style={{
+                        color: focused ? COLORS.active : COLORS.inactive,
+                      }}
+                    >
+                      채팅
+                    </ButtonText>
                   </ButtonBox>
                 );
               },
@@ -227,11 +267,22 @@ const App = () => {
             component={MapStack}
             options={{
               headerShown: false,
-              tabBarIcon: ({focused}: {focused: boolean}) => {
+              tabBarIcon: ({ focused }: { focused: boolean }) => {
                 return (
                   <ButtonBox>
-                    <SvgXml xml={getModifiedSvg(svg.map, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>지도</ButtonText>
+                    <SvgXml
+                      xml={getModifiedSvg(
+                        svg.map,
+                        focused ? COLORS.active : COLORS.inactive,
+                      )}
+                    />
+                    <ButtonText
+                      style={{
+                        color: focused ? COLORS.active : COLORS.inactive,
+                      }}
+                    >
+                      지도
+                    </ButtonText>
                   </ButtonBox>
                 );
               },
@@ -239,15 +290,26 @@ const App = () => {
           />
 
           <Tab.Screen
-            name='posts'
+            name="posts"
             component={PostStack} // PostStack을 사용하도록 변경
             options={{
               headerShown: false,
-              tabBarIcon: ({focused}: {focused: boolean}) => {
+              tabBarIcon: ({ focused }: { focused: boolean }) => {
                 return (
                   <ButtonBox>
-                    <SvgXml xml={getModifiedSvg(svg.post, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>게시글</ButtonText>
+                    <SvgXml
+                      xml={getModifiedSvg(
+                        svg.post,
+                        focused ? COLORS.active : COLORS.inactive,
+                      )}
+                    />
+                    <ButtonText
+                      style={{
+                        color: focused ? COLORS.active : COLORS.inactive,
+                      }}
+                    >
+                      게시글
+                    </ButtonText>
                   </ButtonBox>
                 );
               },
@@ -259,11 +321,22 @@ const App = () => {
             component={ChatPage}
             options={{
               header: () => <Header>마이페이지</Header>,
-              tabBarIcon: ({focused}: {focused: boolean}) => {
+              tabBarIcon: ({ focused }: { focused: boolean }) => {
                 return (
                   <ButtonBox>
-                    <SvgXml xml={getModifiedSvg(svg.my, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>마이</ButtonText>
+                    <SvgXml
+                      xml={getModifiedSvg(
+                        svg.my,
+                        focused ? COLORS.active : COLORS.inactive,
+                      )}
+                    />
+                    <ButtonText
+                      style={{
+                        color: focused ? COLORS.active : COLORS.inactive,
+                      }}
+                    >
+                      마이
+                    </ButtonText>
                   </ButtonBox>
                 );
               },
