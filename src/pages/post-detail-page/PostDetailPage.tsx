@@ -27,7 +27,6 @@ const PostDetailPage = ({ route }) => {
   const navigation = useNavigation();
 
   const [loading, setLoading] = useState(true);
-  const [commentList, setCommentList] = useState([]);
 
   useEffect(() => {
     const fetchPostDetail = async () => {
@@ -39,7 +38,6 @@ const PostDetailPage = ({ route }) => {
           },
         );
         const newData = res.data;
-        console.log('newData', newData);
         updatePostDetailData(newData);
         setLoading(false); // 데이터 로딩 완료 후 로딩 상태 업데이트
       } catch (error) {
@@ -78,7 +76,6 @@ const PostDetailPage = ({ route }) => {
           },
         );
         const data = await res.data;
-        console.log('댓글 데이터 : ', replyData);
         setReplyData(data);
       } catch (err) {
         console.error('게시글 조회 에러:', err);
@@ -86,6 +83,10 @@ const PostDetailPage = ({ route }) => {
     };
     getReply();
   }, []);
+
+  const onPressEdit = () => {
+    navigation.navigate('PostEditPage', {postId});
+  };
 
   if (loading) {
     return (
@@ -113,7 +114,7 @@ const PostDetailPage = ({ route }) => {
           <PostCommentButton />
         </ButtonsBox>
         <ButtonsBox>
-          <PostButton>수정</PostButton>
+          <PostButton onPress={onPressEdit}>수정</PostButton>
           <PostButton onPress={deletePost}>삭제</PostButton>
         </ButtonsBox>
       </Boxs>
