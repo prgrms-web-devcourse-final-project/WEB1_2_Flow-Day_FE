@@ -25,59 +25,56 @@ interface IImage {
 interface IPostDetailData {
   id: number;
   nickName: string;
-  region: string;
-  season: string;
+  region?: string;
+  season?: string;
   title: string;
   contents: string;
-  tags: string;
+  tags?: string;
   likeCount: number;
   commentCount: number;
-  courseId: number;
+  courseId?: number;
   createdAt: string;
   updatedAt: string;
-  spots: ISpot[];
-  images: IImage[];
+  spots?: ISpot[];
+  images?: IImage[];
+}
+
+interface IReply {
+  id: number;
+  content: string;
+  memberName: string | null;
+  likeCount: number;
+  createdAt: string;
 }
 
 // Zustand 스토어 생성
-const usePostDetailStore = create<{postDetailData: IPostDetailData; updatePostDetailData: (newData: Partial<IPostDetailData>) => void}>((set) => ({
+const usePostDetailStore = create<{
+  postDetailData: IPostDetailData;
+  replyData: IReply[];
+  updatePostDetailData: (newData: Partial<IPostDetailData>) => void;
+  replaceReply: (updatedReply: IReply) => void;
+  setReplyData: (newReplies: IReply[]) => void;
+}>((set) => ({
   postDetailData: {
-    id: 1,
-    nickName: 'member1',
-    region: '서울 경기',
-    season: '봄 여름',
-    title: '게시글 제목인데요오옹',
-    contents:
-      '게시글 내용입니다. 서울에서 이렇쿵 저렁쿵 데이트를 했는데, 여기가 좋고 저기가 좋고 했어요. 거기는 별로고 조기는 좋아요. 여러분도 가보세요.서울에서 이렇쿵 저렁쿵 데이트를 했는데, 여기가 좋고 저기가 좋고 했어요. 거기는 별로고 조기는 좋아요. 여러분도 가보세요.서울에서 이렇쿵 저렁쿵 데이트를 했는데, 여기가 좋고 저기가 좋고 했어요. 거기는 별로고 조기는 좋아요. 여러분도 가보세요.서울에서 이렇쿵 저렁쿵 데이트를 했는데, 여기가 좋고 저기가 좋고 했어요. 거기는 별로고 조기는 좋아요. 여러분도 가보세요.서울에서 이렇쿵 저렁쿵 데이트를 했는데, 여기가 좋고 저기가 좋고 했어요. 거기는 별로고 조기는 좋아요. 여러분도 가보세요.서울에서 이렇쿵 저렁쿵 데이트를 했는데, 여기가 좋고 저기가 좋고 했어요. 거기는 별로고 조기는 좋아요. 여러분도 가보세요.서울에서 이렇쿵 저렁쿵 데이트를 했는데, 여기가 좋고 저기가 좋고 했어요. 거기는 별로고 조기는 좋아요. 여러분도 가보세요.서울에서 이렇쿵 저렁쿵 데이트를 했는데, 여기가 좋고 저기가 좋고 했어요. 거기는 별로고 조기는 좋아요. 여러분도 가보세요.서울에서 이렇쿵 저렁쿵 데이트를 했는데, 여기가 좋고 저기가 좋고 했어요. 거기는 별로고 조기는 좋아요. 여러분도 가보세요.',
-    tags: '#홍대 #서울데이트 #하하하하 #히히히히 #후후후후후후',
-    likeCount: 123,
-    commentCount: 30,
-    courseId: 1,
-    createdAt: '2024-11-27T14:47:30.980604',
-    updatedAt: '2024-11-27T14:47:30.980604',
-    spots: [
-      {
-        id: 1,
-        placeId: 'place1',
-        name: '카페',
-        city: '서울 종로',
-        comment: '코멘트',
-        sequence: 1,
-        courseId: 1,
-        voteId: null,
-      },
-    ],
-    images: [
-      {
-        id: 1,
-        url: 'https://flowday.s3.ap-northeast-2.amazonaws.com/post/2024_11_27/4e0f76ff-61f4-4369-a633-bdf026826b88_Flow%20Day%20%281%29.png',
-        originFileName: 'Flow Day (1).png',
-        fileSize: 678295,
-        fileExt: 'png',
-      },
-    ],
+    id: 0,
+    nickName: '',
+    region: '',
+    season: '',
+    title: '',
+    contents: '',
+    tags: '',
+    likeCount: 0,
+    commentCount: 0,
+    courseId: 0,
+    createdAt: '2022-12-15T12:15:12.15151',
+    updatedAt: '2022-12-15T12:15:12.15151',
+    spots: [],
+    images: [],
   },
-  // 상태를 업데이트하는 함수 예시
+
+  replyData: [],
+
+  // 게시글 데이터 업데이트 함수
   updatePostDetailData: (newData) =>
     set((state) => ({
       postDetailData: {
@@ -85,6 +82,18 @@ const usePostDetailStore = create<{postDetailData: IPostDetailData; updatePostDe
         ...newData,
       },
     })),
+
+  // 댓글 교체 함수
+  replaceReply: (updatedReply) =>
+    set((state) => ({
+      replyData: state.replyData.map((reply) => (reply.id === updatedReply.id ? {...reply, ...updatedReply} : reply)),
+    })),
+
+  // 댓글 목록을 새로 설정하는 함수
+  setReplyData: (newReplies) =>
+    set({
+      replyData: newReplies,
+    }),
 }));
 
 export default usePostDetailStore;
