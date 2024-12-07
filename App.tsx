@@ -24,6 +24,7 @@ import ProfileSetPage from '@/pages/join-page/ProfileSetPage';
 import PostListPage from '@/pages/post-list-page/PostListPage';
 import PostCreatePage from '@/pages/post-create-page/PostCreatePage';
 import PostDetailPage from '@/pages/post-detail-page/PostDetailPage';
+import PostEditPage from '@/pages/post-edit-page/PostEditPage';
 
 // 색상 설정
 const COLORS = {
@@ -64,6 +65,7 @@ const PostStack = () => {
       <Stack.Screen name='PostListPage' component={PostListPage} options={{headerShown: false}} />
       <Stack.Screen name='PostDetailPage' component={PostDetailPage} options={{headerShown: false}} />
       <Stack.Screen name='PostCreatePage' component={PostCreatePage} options={{headerShown: false}} />
+      <Stack.Screen name='PostEditPage' component={PostEditPage} options={{headerShown: false}} />
     </Stack.Navigator>
   );
 };

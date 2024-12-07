@@ -3,33 +3,33 @@ import React, {useState, useEffect} from 'react';
 import styled from 'styled-components/native';
 import axios from 'axios';
 import {REACT_APP_SERVER_URL} from '@env';
-import usePostCreateStore from '@/store/post/post-create-store';
+import usePostEditStore from '@/store/post/post-edit-store'; // 수정 페이지 store로 변경
 import Buttons from '@/components/Buttons';
 import {SvgXml} from 'react-native-svg';
 import {svg} from '../../../assets/icons/svg';
 import {useStore} from '@/store/useStore';
 
-const PostCreateCourseSlide = ({onPress}: {onPress: () => void}) => {
-  const {postList, setPostList, postCreateData, setPostCreateData} = usePostCreateStore();
+const PostEditCourseSlide = ({onPress}: {onPress: () => void}) => {
+  const {postEditData, setPostEditData} = usePostEditStore(); // 수정 페이지에서 사용하는 데이터
   const {accessToken} = useStore();
+
   useEffect(() => {
-    const getCouserList = async () => {
+    const getCourseList = async () => {
       try {
         const res = await axios.get(`${REACT_APP_SERVER_URL}/courses`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        const data = (await res).data;
-        setPostList({...data});
+        const data = res.data;
+        setPostEditData({...data}); // 수정 데이터 저장
       } catch (err) {
-        console.error('포스트 생성 페이지에서 코스 목록 가져오기 에러 : ', err);
+        console.error('수정 페이지에서 코스 목록 가져오기 에러 : ', err);
       }
     };
-    getCouserList();
+    getCourseList();
   }, []);
 
-  console.log(postCreateData.courseId);
   const getModifiedSvg = (xml: string, fillColor: string) => {
     return xml.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
   };
@@ -44,18 +44,18 @@ const PostCreateCourseSlide = ({onPress}: {onPress: () => void}) => {
         </CourseCreateButton>
       </SlideHeader>
       <CourseList>
-        {postList.content.map((course, i) => {
+        {postEditData.content?.map((course, i) => {
           return (
             <CourseItem
               key={i}
               onPress={() => {
-                setPostCreateData({...postCreateData, courseId: `${course.id}`});
+                setPostEditData({...postEditData, courseId: `${course.id}`}); // 수정된 데이터 업데이트
               }}
             >
               <ItemIcon source={require('../../../assets/icons/spot.svg')} />
               <SvgXml xml={getModifiedSvg(svg.spotItem, course.color ? course.color : '#000000')} />
               <CourseTitle>{`${course.title}`}</CourseTitle>
-              {postCreateData.courseId === `${course.id}` ? <CheckIcon source={require('../../../assets/icons/check.png')} /> : <CheckIcon source={require('../../../assets/icons/unCheck.png')} />}
+              {postEditData.courseId === `${course.id}` ? <CheckIcon source={require('../../../assets/icons/check.png')} /> : <CheckIcon source={require('../../../assets/icons/unCheck.png')} />}
             </CourseItem>
           );
         })}
@@ -65,7 +65,7 @@ const PostCreateCourseSlide = ({onPress}: {onPress: () => void}) => {
   );
 };
 
-export default PostCreateCourseSlide;
+export default PostEditCourseSlide;
 
 const CourseSlideDesign = styled.View`
   width: 100%;
@@ -111,6 +111,7 @@ const CourseCraeteText = styled.Text`
   margin: 0 auto;
   text-align: center;
 `;
+
 const CourseList = styled.ScrollView`
   width: 100%;
   border: 1px solid #eeeeee;
@@ -126,8 +127,8 @@ const CourseItem = styled.TouchableOpacity`
 const ItemIcon = styled.Image`
   width: 16px;
   height: 16px;
-  /* margin: auto 5px; */
 `;
+
 const CourseTitle = styled.Text`
   margin: auto 10px;
   width: 200px;
