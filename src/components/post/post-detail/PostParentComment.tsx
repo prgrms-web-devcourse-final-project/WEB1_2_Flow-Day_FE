@@ -1,8 +1,8 @@
-import {StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import styled from 'styled-components/native';
 import usePostDetailStore from '@/store/post/post-detail-store';
-import {useStore} from '@/store/useStore';
+import { useStore } from '@/store/useStore';
 import axios from 'axios';
 
 interface IReply {
@@ -13,9 +13,9 @@ interface IReply {
   createdAt: string;
 }
 
-const PostParentComment = ({comment}: {comment: IReply}) => {
-  const {replyData, setReplyData} = usePostDetailStore();
-  const {accessToken} = useStore();
+const PostParentComment = ({ comment }: { comment: IReply }) => {
+  const { replyData, setReplyData } = usePostDetailStore();
+  const { accessToken } = useStore();
 
   // 댓글 작성일과 시간 포맷 처리
   const [date, time] = comment.createdAt.split('T');
@@ -25,16 +25,19 @@ const PostParentComment = ({comment}: {comment: IReply}) => {
   // 좋아요 API 호출 후 상태 업데이트
   const postLikeReply = async (replyId: number) => {
     try {
-      const res = await axios.get(`http://flowday.kro.kr:80/api/v1/likes/replies/${comment.id}`, {
-        headers: {Authorization: `Bearer ${accessToken}`},
-      });
-      const data = res.data;
-      console.log('댓글 좋아요 성공!');
+      const res = await axios.post(
+        `http://flowday.kro.kr:80/api/v1/likes/replies/${comment.id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      const data = await res.data;
       // 좋아요 카운트를 하나 증가시킨 후 상태 업데이트
       setReplyData(
-        replyData.map((reply) =>
+        replyData.map(reply =>
           reply.id === replyId
-            ? {...reply, likeCount: reply.likeCount + 1} // 좋아요 수 증가
+            ? { ...reply, likeCount: reply.likeCount + 1 } // 좋아요 수 증가
             : reply,
         ),
       );
