@@ -23,8 +23,12 @@ import LoginPage from '@/pages/login-page/LoginPage';
 import JoinPage from '@/pages/join-page/JoinPage';
 import ProfileSetPage from '@/pages/join-page/ProfileSetPage';
 import PostListPage from '@/pages/post-list-page/PostListPage';
+import CoupleRegisterPage from '@/pages/join-page/CoupleRegisterPage';
+import WelcomePage from '@/pages/join-page/WelcomePage';
+import CoupleCheckPage from '@/pages/join-page/CoupleCheckPage';
 import PostCreatePage from '@/pages/post-create-page/PostCreatePage';
 import PostDetailPage from '@/pages/post-detail-page/PostDetailPage';
+import SpotDetailPage from '@/pages/map-page/SpotDetailPage';
 import {TextEncoder} from 'text-encoding';
 global.TextEncoder = TextEncoder;
 import PostEditPage from '@/pages/post-edit-page/PostEditPage';
@@ -52,20 +56,12 @@ const ButtonText = styled.Text`
 
 const Stack = createNativeStackNavigator();
 
-function HomeStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name='ROUTES.HOME' component={HomePage} options={{headerShown: false}} />
-      <Stack.Screen name='AlertPage' component={AlertPage} options={{headerShown: false}} />
-    </Stack.Navigator>
-  );
-}
-
-function MapStack() {
+export function MapStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name='MapMain' component={MapPage} options={{headerShown: false}} />
       <Stack.Screen name='Search' component={SearchPage} options={{headerShown: false}} />
+      <Stack.Screen name='SpotDetail' component={SpotDetailPage} options={{headerShown: false}} />
     </Stack.Navigator>
   );
 }
@@ -82,6 +78,14 @@ const PostStack = () => {
   );
 };
 
+const MainStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name='Home' component={HomePage} options={{header: () => <Header>D+134</Header>}} />
+      <Stack.Screen name='SpotDetail' component={SpotDetailPage} options={{headerShown: false, tabBarStyle: {display: 'none'}}} />
+    </Stack.Navigator>
+  );
+};
 SplashScreen.preventAutoHideAsync();
 
 SplashScreen.setOptions({
@@ -160,7 +164,23 @@ const App = () => {
             />
             <Stack.Screen
               name={ROUTES.COUPLE_REGISTER}
-              component={ProfileSetPage}
+              component={CoupleRegisterPage}
+              options={{
+                headerTitle: '',
+                headerStyle: {backgroundColor: '#FFFFFF'},
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.COUPLE_CHECK}
+              component={CoupleCheckPage}
+              options={{
+                headerTitle: '',
+                headerStyle: {backgroundColor: '#FFFFFF'},
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.WELCOME}
+              component={WelcomePage}
               options={{
                 headerTitle: '',
                 headerStyle: {backgroundColor: '#FFFFFF'},
@@ -173,12 +193,6 @@ const App = () => {
   }
 
   const Tab = createBottomTabNavigator();
-
-  // useEffect(() => {
-  //   if (fontsLoaded) {
-  //     SplashScreen.hideAsync();
-  //   }
-  // }, [fontsLoaded]);
 
   const getModifiedSvg = (xml: string, fillColor: string) => {
     return xml.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
@@ -205,9 +219,9 @@ const App = () => {
         >
           <Tab.Screen
             name={ROUTES.HOME}
-            component={HomeStack}
+            component={MainStack}
             options={{
-              header: () => <Header>D+134</Header>,
+              headerShown: false,
               tabBarIcon: ({focused}: {focused: boolean}) => {
                 return (
                   <ButtonBox>

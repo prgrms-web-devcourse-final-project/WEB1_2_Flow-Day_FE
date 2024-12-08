@@ -9,4 +9,5 @@ export const ROUTES = {
   PROFILE_SET: 'profile-set',
   COUPLE_REGISTER: 'couple-register',
   WELCOME: 'welcome',
+  COUPLE_CHECK: 'couple-check',
 } as const;
