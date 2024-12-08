@@ -18,7 +18,7 @@ interface ChatMessage {
 
 const ChatPage = (): JSX.Element => {
   const {chatData} = useChatStore(); // 전역 상태에서 채팅 데이터 가져오기
-  const {accessToken} = useStore();
+  const {userId, accessToken} = useStore();
 
   // 상태 변수 타입 정의
   const [connected, setConnected] = useState<boolean>(false); // WebSocket 연결 상태
@@ -26,7 +26,6 @@ const ChatPage = (): JSX.Element => {
   const [input, setInput] = useState<string>(''); // 입력된 메시지 상태
   const clientRef = useRef<Client | null>(null); // STOMP 클라이언트를 참조하는 useRef
   const roomId: number = 3006; // 방 ID (예시로 1번 방 설정)
-  const yourId = 5;
 
   // WebSocket 연결 및 STOMP 클라이언트 설정
   useEffect(() => {
@@ -87,7 +86,7 @@ const ChatPage = (): JSX.Element => {
       // WebSocket이 연결되어 있고 입력된 메시지가 있을 때
       const chatMessage = {
         message: input, // 전송할 메시지
-        senderId: 5,
+        senderId: userId,
       };
       console.log(chatMessage);
       clientRef.current.publish({
@@ -122,7 +121,7 @@ const ChatPage = (): JSX.Element => {
     <ChatDesign>
       <ChatList>
         {chatData.map((data, i) => {
-          return data.senderId === yourId ? <MyMessage data={data} key={i} /> : <YourMessage data={data} key={i} />;
+          return data.senderId === +userId ? <MyMessage data={data} key={i} /> : <YourMessage data={data} key={i} />;
         })}
       </ChatList>
       <StyleBox>
