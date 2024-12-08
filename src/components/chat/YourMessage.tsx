@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components/native';
 
-const YourMessage = ({ data }: any) => {
-  const [date, time] = data.time.split('T');
-  const [hour, minute, second] = time.split(':');
+const YourMessage = ({data}: any) => {
+  // const [date, time] = data.time.split('T');
+  // const [hour, minute, second] = time.split(':');
   return (
     <YourMessageDesign>
       <Profle source={require('../../assets/images/profile.png')} />
@@ -13,7 +13,7 @@ const YourMessage = ({ data }: any) => {
           <YourMessageText>{data.message}</YourMessageText>
         </TextDesign>
       </Boxs>
-      <SendTime>{`${hour}:${minute}`}</SendTime>
+      {/* <SendTime>{`${hour}:${minute}`}</SendTime> */}
     </YourMessageDesign>
   );
 };

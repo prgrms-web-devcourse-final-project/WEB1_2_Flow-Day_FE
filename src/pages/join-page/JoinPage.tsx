@@ -68,7 +68,6 @@ const JoinPage = () => {
             } else {
                 console.error('Error: ', error);
             }
-            navigation.navigate(ROUTES.PROFILE_SET as never); //삭제
         }
     }
 

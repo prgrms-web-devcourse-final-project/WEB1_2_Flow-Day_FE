@@ -22,6 +22,7 @@ const ImageBox = styled.Image`
 `;
 
 const Content = styled.Text`
+
   /* width: 40%; */
 `;
 
@@ -33,6 +34,7 @@ const ProfileContent = styled.View`
 
 const Comment = styled.View`
   padding: 10px 0;
+  font-family: 'SCDream4';
 `;
 
 const TempView = styled.View`
@@ -44,7 +46,7 @@ const Review = (placeData) => {
   const data = placeData.data.reviews;
   console.log(data);
   const {width} = useWindowDimensions();
-  const getStars = (rating) => {
+  const getStars = (rating: number) => {
     const stars = [];
     for (let i = 0; i < rating; i++) {
       stars.push(<ImageBox key={i} source={require('../../assets/icons/star.png')} />);
@@ -55,8 +57,8 @@ const Review = (placeData) => {
   return (
     <Container>
       <TempView>
-        {data.map((review, index) => (
-          <Comment>
+        {data.map((review, index: number) => (
+          <Comment key={index}>
             <ProfileContent>
               <ProfileImage source={require('../../assets/images/daejeon.png')} />
               <View>
