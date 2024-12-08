@@ -1,12 +1,13 @@
-import { svg } from '@/assets/icons/svg';
+import {svg} from '@/assets/icons/svg';
 import HomePage from '@/pages/home-page/HomePage';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import React from 'react';
-import { Button, TouchableOpacity } from 'react-native';
-import { SvgXml } from 'react-native-svg';
-import { ROUTES } from '@/constants/routes';
+import {Button, TouchableOpacity} from 'react-native';
+import {SvgXml} from 'react-native-svg';
+import {ROUTES} from '@/constants/routes';
 import styled from 'styled-components/native';
-import { navigationRef } from '../../App';
+import {navigationRef} from '../../App';
+import AlertPage from '@/pages/alert-page/AlertPage';
 
 type HeaderProps = {
   children: React.ReactNode;
@@ -36,21 +37,23 @@ const AlertImage = styled.View`
   margin-left: auto;
 `;
 
-export default function Header({ children }: HeaderProps) {
+export default function Header({children}: HeaderProps) {
   const navigation = useNavigation();
 
   return (
     <Container>
-      <TouchableOpacity
-        onPress={() => navigationRef.navigate(ROUTES.HOME as never)}
-      >
+      <TouchableOpacity onPress={() => navigationRef.navigate(ROUTES.HOME as never)}>
         <LogoImage>
           <SvgXml xml={svg.logo} />
         </LogoImage>
       </TouchableOpacity>
       <HeaderText>{children}</HeaderText>
       <AlertImage>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigationRef.navigate('AlertPage'); // navigationRef를 통해 이동
+          }}
+        >
           <SvgXml xml={svg.alert} />
         </TouchableOpacity>
       </AlertImage>
