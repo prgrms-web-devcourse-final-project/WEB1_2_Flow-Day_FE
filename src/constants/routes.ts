@@ -8,5 +8,6 @@ export const ROUTES = {
     JOIN: 'join',
     PROFILE_SET: 'profile-set',
     COUPLE_REGISTER: 'couple-register',
-    WELCOME: 'welcome'
+    WELCOME: 'welcome',
+    COUPLE_CHECK: 'couple-check'
 } as const;

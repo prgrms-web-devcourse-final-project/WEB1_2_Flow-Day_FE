@@ -56,7 +56,7 @@ export const useStore = create<State>((set, get) => ({
   accessToken: '',
   refreshToken: '',
   isLoggedIn: false,
-  setAccessToken: (token) => set({ accessToken: token, isLoggedIn: true }),
+  setAccessToken: (token) => set({ accessToken: token }),
   logOut: () => set({ accessToken: '', refreshToken: '', isLoggedIn: false }),
   setIsLoggedIn: (loggedIn) => set({ isLoggedIn: loggedIn }),
   refreshAccessToken: async () => {
