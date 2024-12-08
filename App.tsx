@@ -27,6 +27,7 @@ import WelcomePage from '@/pages/join-page/WelcomePage';
 import CoupleCheckPage from '@/pages/join-page/CoupleCheckPage';
 import PostCreatePage from '@/pages/post-create-page/PostCreatePage';
 import PostDetailPage from '@/pages/post-detail-page/PostDetailPage';
+import SpotDetailPage from '@/pages/map-page/SpotDetailPage';
 import {TextEncoder} from 'text-encoding';
 global.TextEncoder = TextEncoder;
 import PostEditPage from '@/pages/post-edit-page/PostEditPage';
@@ -54,11 +55,12 @@ const ButtonText = styled.Text`
 
 const Stack = createNativeStackNavigator();
 
-function MapStack() {
+export function MapStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name='MapMain' component={MapPage} options={{headerShown: false}} />
       <Stack.Screen name='Search' component={SearchPage} options={{headerShown: false}} />
+      <Stack.Screen name='SpotDetail' component={SpotDetailPage} options={{headerShown: false}} />
     </Stack.Navigator>
   );
 }
@@ -75,6 +77,14 @@ const PostStack = () => {
   );
 };
 
+const MainStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name='Home' component={HomePage} options={{header: () => <Header>D+134</Header>}} />
+      <Stack.Screen name='SpotDetail' component={SpotDetailPage} options={{headerShown: false, tabBarStyle: {display: 'none'}}} />
+    </Stack.Navigator>
+  );
+};
 SplashScreen.preventAutoHideAsync();
 
 SplashScreen.setOptions({
@@ -207,9 +217,9 @@ const App = () => {
         >
           <Tab.Screen
             name={ROUTES.HOME}
-            component={HomePage}
+            component={MainStack}
             options={{
-              header: () => <Header>D+134</Header>,
+              headerShown: false,
               tabBarIcon: ({focused}: {focused: boolean}) => {
                 return (
                   <ButtonBox>
