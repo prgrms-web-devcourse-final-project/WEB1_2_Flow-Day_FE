@@ -1,11 +1,10 @@
-import {Text, View} from 'react-native';
+import {Text, View, ScrollView} from 'react-native';
 import styled from 'styled-components/native';
 import {useWindowDimensions} from 'react-native';
 
-const Container = styled.View`
-  height: 55%;
+const Container = styled(ScrollView)`
+  height: 74%;
   padding: 20px 10px;
-  padding-bottom: 0;
   background-color: #ffffff;
 `;
 
@@ -36,6 +35,11 @@ const Comment = styled.View`
   padding: 10px 0;
 `;
 
+const TempView = styled.View`
+  height: 100%;
+  padding-bottom: 30px;
+`;
+
 const Review = (placeData) => {
   const data = placeData.data.reviews;
   console.log(data);
@@ -50,21 +54,23 @@ const Review = (placeData) => {
 
   return (
     <Container>
-      {data.map((review, index) => (
-        <Comment>
-          <ProfileContent>
-            <ProfileImage source={require('../../assets/images/daejeon.png')} />
-            <View>
-              <Text style={{paddingVirtical: 5}}>{review.author_name}</Text>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                {getStars(review.rating)}
-                <Text style={{paddingLeft: 5}}>{review.relative_time_description}</Text>
+      <TempView>
+        {data.map((review, index) => (
+          <Comment>
+            <ProfileContent>
+              <ProfileImage source={require('../../assets/images/daejeon.png')} />
+              <View>
+                <Text style={{paddingVirtical: 5}}>{review.author_name}</Text>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  {getStars(review.rating)}
+                  <Text style={{paddingLeft: 5}}>{review.relative_time_description}</Text>
+                </View>
               </View>
-            </View>
-          </ProfileContent>
-          <Content style={{width: width * 0.92}}>{review.text}</Content>
-        </Comment>
-      ))}
+            </ProfileContent>
+            <Content style={{width: width * 0.92}}>{review.text}</Content>
+          </Comment>
+        ))}
+      </TempView>
     </Container>
   );
 };
