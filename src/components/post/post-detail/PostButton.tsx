@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import styled from 'styled-components/native';
 
-const PostButton = ({ children }, onPress: any) => {
+const PostButton = ({children, onPress}: any) => {
   return (
     <PostButtonDesign onPress={onPress}>
       <ButtonText>{children}</ButtonText>

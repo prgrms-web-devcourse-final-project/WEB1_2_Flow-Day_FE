@@ -1,15 +1,13 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
+import usePostEditStore from '@/store/post/post-edit-store'; // 수정 페이지 store로 변경
 import styled from 'styled-components/native';
 
-interface PostCategoryModalProps {
-  onPress: () => void;
-  onComplete: (selectedCategories: {seasons: string[]; regions: string[]}) => void;
-}
-
-const PostCategoryModal: React.FC<PostCategoryModalProps> = ({onPress, onComplete}) => {
+const PostEditCategoryModal = ({onPress}: {onPress: () => void}) => {
+  const {postEditData, setPostEditData} = usePostEditStore(); // 수정 데이터 사용
   const seasonArr = ['전체', '봄', '여름', '가을', '겨울'];
   const regionArr = ['전체', '서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'];
+
   const [selectSeason, setSelectSeason] = useState<string[]>([]);
   const [selectRegion, setSelectRegion] = useState<string[]>([]);
 
@@ -22,8 +20,12 @@ const PostCategoryModal: React.FC<PostCategoryModalProps> = ({onPress, onComplet
   };
 
   const handleComplete = () => {
-    onComplete({seasons: selectSeason, regions: selectRegion});
-    onPress();
+    setPostEditData({
+      ...postEditData,
+      season: selectSeason.join(' '),
+      region: selectRegion.join(' '),
+    });
+    onPress(); // 모달 닫기
   };
 
   return (
@@ -39,7 +41,7 @@ const PostCategoryModal: React.FC<PostCategoryModalProps> = ({onPress, onComplet
           <SelectButtonList>
             {seasonArr.map((season, i) => (
               <SelectButton onPress={() => handleSelectSeason(season)} selected={selectSeason.includes(season)} key={i}>
-                <SelectButtonText selected={selectSeason.includes(season)}>{season}</SelectButtonText>
+                <SelectButtonText selected={selectSeason.includes(season)}>{`${season}`}</SelectButtonText>
               </SelectButton>
             ))}
           </SelectButtonList>
@@ -51,7 +53,7 @@ const PostCategoryModal: React.FC<PostCategoryModalProps> = ({onPress, onComplet
           <SelectButtonList>
             {regionArr.map((region, i) => (
               <SelectButton onPress={() => handleSelectRegion(region)} selected={selectRegion.includes(region)} key={i}>
-                <SelectButtonText selected={selectRegion.includes(region)}>{region}</SelectButtonText>
+                <SelectButtonText selected={selectRegion.includes(region)}>{`${region}`}</SelectButtonText>
               </SelectButton>
             ))}
           </SelectButtonList>
@@ -64,7 +66,7 @@ const PostCategoryModal: React.FC<PostCategoryModalProps> = ({onPress, onComplet
   );
 };
 
-export default PostCategoryModal;
+export default PostEditCategoryModal;
 
 const CategoryModal = styled.View`
   width: 300px;
@@ -73,7 +75,6 @@ const CategoryModal = styled.View`
   z-index: 100;
   border-radius: 8px;
   margin: 0 auto;
-  /* 모달 내부 요소는 pointer events를 허용하지 않음 */
   pointer-events: auto;
 `;
 

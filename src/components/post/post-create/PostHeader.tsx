@@ -1,7 +1,23 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+
+const PostHeader = () => {
+  return (
+    <PostHeaderDesign>
+      <PostHeaderBackButton>
+        <PostHeaderBackImage
+          source={require('../../../assets/icons/back.png')}
+        />
+      </PostHeaderBackButton>
+      <PostHeaderTitle>
+        <Text>게시글</Text>
+      </PostHeaderTitle>
+    </PostHeaderDesign>
+  );
+};
+
+export default PostHeader;
 
 const PostHeaderDesign = styled.View`
   background-color: white;
@@ -29,19 +45,3 @@ const PostHeaderBackImage = styled.Image`
   width: 24px;
   height: 24px;
 `;
-
-const PostHeader = () => {
-  const navigation = useNavigation();
-  return (
-    <PostHeaderDesign>
-      <PostHeaderBackButton onPress={() => navigation.goBack()}>
-        <PostHeaderBackImage source={require('../../assets/icons/back.png')} />
-      </PostHeaderBackButton>
-      <PostHeaderTitle>
-        <Text>게시글</Text>
-      </PostHeaderTitle>
-    </PostHeaderDesign>
-  );
-};
-
-export default PostHeader;
