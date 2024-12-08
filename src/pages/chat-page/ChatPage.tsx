@@ -17,15 +17,34 @@ interface ChatMessage {
 }
 
 const ChatPage = (): JSX.Element => {
-  const {chatData} = useChatStore(); // 전역 상태에서 채팅 데이터 가져오기
-  const {userId, accessToken} = useStore();
+  const {chatData, setMessage} = useChatStore(); // 전역 상태에서 채팅 데이터 가져오기
+  const {userId, roomId, accessToken} = useStore();
 
   // 상태 변수 타입 정의
   const [connected, setConnected] = useState<boolean>(false); // WebSocket 연결 상태
-  const [messages, setMessages] = useState<ChatMessage[]>([]); // 메시지 배열 상태
   const [input, setInput] = useState<string>(''); // 입력된 메시지 상태
+  const [pageNumber, setPageNumber] = useState(1);
+  const [refresh, setRefresh] = useState(true);
   const clientRef = useRef<Client | null>(null); // STOMP 클라이언트를 참조하는 useRef
-  const roomId: number = 3006; // 방 ID (예시로 1번 방 설정)
+
+  useEffect(() => {
+    const getChat = async () => {
+      try {
+        const res = await axios.get(`http://flowday.kro.kr:80/api/v1/chat/${roomId}?page=${pageNumber}&size=20`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        const data = (await res).data;
+        // console.log('==========getChat Data ==========');
+        // console.log(data.data);
+        setMessage(data.data);
+      } catch (err) {
+        console.error('채팅 로그 요청 에러:', err);
+      }
+    };
+    getChat();
+  }, [roomId, input]);
 
   // WebSocket 연결 및 STOMP 클라이언트 설정
   useEffect(() => {
@@ -46,14 +65,6 @@ const ChatPage = (): JSX.Element => {
         stompClient.subscribe(`/topic/rooms/${roomId}`, (message) => {
           const body = JSON.parse(message.body); // 서버에서 온 메시지 파싱
           console.log('채팅방 구독 설정 : ', body);
-          // setMessages(prev => [
-          //   ...prev, // 기존 메시지에 새로운 메시지 추가
-          //   {
-          //     senderId: body.senderId,
-          //     message: body.message,
-          //     sendTime: body.sendTime,
-          //   },
-          // ]);
         });
       },
       onDisconnect: () => {
@@ -81,49 +92,36 @@ const ChatPage = (): JSX.Element => {
 
   // 메시지 전송 함수
   const sendMessage = (): void => {
-    // console.log(input);
     if (clientRef.current && input.trim() !== '' && connected) {
       // WebSocket이 연결되어 있고 입력된 메시지가 있을 때
       const chatMessage = {
         message: input, // 전송할 메시지
         senderId: userId,
       };
-      console.log(chatMessage);
       clientRef.current.publish({
         destination: `/app/chat/${roomId}`, // 메시지를 보낼 목적지
         body: JSON.stringify(chatMessage), // 메시지 본문
       });
-
       setInput(''); // 메시지 전송 후 입력란 초기화
     } else {
-      console.log('Not connected to the WebSocket.'); // 연결되지 않은 상태에서 메시지 전송 시
+      console.log('웹소켓 연결이 안되어있어, 메시지를 보낼 수 없습니다.'); // 연결되지 않은 상태에서 메시지 전송 시
     }
   };
 
-  useEffect(() => {
-    const getChat = async () => {
-      try {
-        const res = await axios.get(`http://flowday.kro.kr:80/api/v1/chat/${roomId}?page=1&size=10`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        const data = (await res).data;
-        console.log('채팅 로그 :', data);
-      } catch (err) {
-        console.error('채팅 로그 요청 에러:', err);
-      }
-    };
-    getChat();
-  }, [roomId]);
+  const renderItem = ({item}: {item: ChatMessage}) => {
+    if (item?.senderId) {
+      return item.senderId === +userId ? <MyMessage data={item} /> : <YourMessage data={item} />;
+    }
+  };
 
   return (
     <ChatDesign>
-      <ChatList>
-        {chatData.map((data, i) => {
-          return data.senderId === +userId ? <MyMessage data={data} key={i} /> : <YourMessage data={data} key={i} />;
-        })}
-      </ChatList>
+      <FlatList
+        data={chatData} // 채팅 데이터 배열을 전달
+        renderItem={renderItem} // 각 항목을 렌더링할 컴포넌트
+        keyExtractor={(item, index) => index.toString()} // 각 항목의 고유 키를 제공
+        inverted // 메시지가 아래에서 위로 스크롤되도록 설정
+      />
       <StyleBox>
         <ChatInputText
           value={input}
@@ -156,12 +154,6 @@ const ChatDesign = styled.View`
 `;
 
 // 채팅 메시지를 표시할 리스트 컴포넌트
-const ChatList = styled.ScrollView`
-  flex: 1;
-  width: 100%;
-  height: 100%;
-`;
-
 const ChatInputText = styled.TextInput`
   width: 325px;
   height: 50px;

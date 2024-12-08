@@ -104,12 +104,14 @@ const LoginPage = () => {
       });
 
       const accessToken = response.headers['authorization']?.split(' ')[1];
-      const data = response.data;
+      const userId = response.data;
+      console.log('res:', response.data);
+      // console.log
 
       if (accessToken) {
         setAccessToken(accessToken);
         setIsLoggedIn(true);
-        setUserId(data.id); // 로그인 시 유저 아이디 저장
+        setUserId(userId); // 로그인 시 유저 아이디 저장
       } else {
         Alert.alert('로그인 실패', '로그인 처리 중 문제가 발생했습니다. 다시 시도해 주세요.');
       }

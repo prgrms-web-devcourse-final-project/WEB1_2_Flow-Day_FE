@@ -5,6 +5,8 @@ interface State {
   accessToken: string;
   refreshToken: string;
   userId: string;
+  roomId: number | null;
+  setRommId: (newRoomId: number | null) => void;
   setAccessToken: (token: string) => void;
   setUserId: (id: string) => void;
   isLoggedIn: boolean;
@@ -17,7 +19,9 @@ export const useStore = create<State>((set, get) => ({
   accessToken: '',
   refreshToken: '',
   userId: '',
+  roomId: null,
   isLoggedIn: false,
+  setRommId: (newRoomId) => set({roomId: newRoomId}),
   setAccessToken: (token) => set({accessToken: token, isLoggedIn: true}),
   setUserId: (id) => set({userId: id}),
   setIsLoggedIn: (loggedIn) => set({isLoggedIn: loggedIn}),
