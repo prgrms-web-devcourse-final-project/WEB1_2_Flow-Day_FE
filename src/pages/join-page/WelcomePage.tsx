@@ -33,7 +33,6 @@ const ImageBox = styled.View`
     align-items: center;
 `
 
-
 const WelcomePage = () => {
     const { setIsLoggedIn } = useStore();
     const [name, setName] = useState();
@@ -45,20 +44,19 @@ const WelcomePage = () => {
     useEffect(() => {
         const getName = async () => {
             try {
-                const response = await apiClient.get('/members');
+                const response = await apiClient.get('/members/');
                 setName(response.data.name);
             } catch (error) {
                 console.error('Error: ', error);
             }
         }
-
         getName();
     }, []);
 
     return(
         <Container>
             <View>
-                <TopText>${name}님</TopText>
+                <TopText>{name}님</TopText>
                 <Textbox>
                     <TopText color="#FCAEAE">플로우데이</TopText><TopText>에 오신것을</TopText>
                 </Textbox>

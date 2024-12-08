@@ -12,7 +12,6 @@ const Container = styled.View`
     padding: 70px 50px;
     justify-content: space-between;
     background-color: #FFFFFF;
-    /* align-items: center; */
 `
 
 const TopText = styled.Text<{ color?: string }>`
@@ -120,7 +119,7 @@ const CoupleCheckPage = ({ route }: any) => {
 
             </View>
            <View style={{alignItems: "center"}}>
-                <Image source={require('../../assets/images/daejeon.png')} />
+                <Image source={{uri: image}} />
                 <Name>{name}</Name>
            </View>
            <View style={{ paddingTop: 10}}>
