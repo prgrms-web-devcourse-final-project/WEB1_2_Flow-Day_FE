@@ -45,7 +45,7 @@ const Image = styled.Image`
     border-radius: 187px;
     justify-content: center;
     margin: 20px 0;
-
+    background-color: #EEEEEE;
 `
 
 const Name = styled.Text`

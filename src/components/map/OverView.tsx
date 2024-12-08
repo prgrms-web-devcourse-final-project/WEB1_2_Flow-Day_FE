@@ -4,7 +4,6 @@ import {useState} from 'react';
 import {useWindowDimensions} from 'react-native';
 
 import {GOOGLE_MAPS_API_KEY} from '@env';
-import apiClient from '@/utils/apiClient';
 import Buttons from '@/components/Buttons';
 import CourseChoiceSlide from '@/components/map/CourseChoiceSlide';
 
@@ -33,6 +32,7 @@ const PhotoBox = styled.Image`
   height: 80px;
   margin-right: 10px;
   margin-bottom: 10px;
+  background-color: #EEEEEE;
 `;
 
 const ContentText = styled.Text`
@@ -44,7 +44,7 @@ const ModalBox = styled.View`
   width: 100%;
 `;
 
-const OverView = (placeData) => {
+const OverView = (placeData: any) => {
   const {data} = placeData;
   const [show, setShow] = useState(false);
   const {height} = useWindowDimensions();
@@ -54,7 +54,7 @@ const OverView = (placeData) => {
       <Container>
         <View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {data?.photos?.map((photo, index) => {
+            {data?.photos?.map((photo: any, index: number) => {
               const photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo.photo_reference}&key=${GOOGLE_MAPS_API_KEY}`;
               return <PhotoBox key={index} source={{uri: photoUrl}} />;
             })}

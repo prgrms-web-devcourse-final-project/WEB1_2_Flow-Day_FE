@@ -9,7 +9,7 @@ import PostCategoryButton from '@/components/post/PostCategoryButton';
 import PostItem from '@/components/post/PostItem';
 import PostCategoryModal from '@/components/post/PostCategoryModal';
 import Buttons from '@/components/Buttons';
-import {useNavigation} from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 
 interface IPost {
   id: string;
@@ -24,8 +24,14 @@ interface IPost {
   images?: [];
 }
 
-const PostListPage = () => {
+interface PostListPageProps {
+  type?: string | null;
+  title?: string | null;
+}
+
+const PostListPage: React.FC<PostListPageProps> = ({ type, title }) => {
   const navigation = useNavigation();
+  const route = useRoute<RouteProp<{ params: { type: string | null; title: string | null } }, 'params'>>();
   const [isLatest, setIsLatest] = useState(true);
   const [onCategoryModal, isOnCategoryModal] = useState(false);
   const [postData, setPostData] = useState<IPost[]>([]);
@@ -34,20 +40,35 @@ const PostListPage = () => {
   const [searchKeyword, setSearchKeyword] = useState(''); // 검색 키워드
   const [selectedCategories, setSelectedCategories] = useState<{seasons: string[]; regions: string[]}>({seasons: [], regions: []});
   const {accessToken} = useStore();
+  const [header, setHeader] = useState('');
+
+  const { type: routeType, title: routeTitle } = route.params ||  {type: null, title: null};
+
+  useEffect(() => {
+    if (routeTitle) {
+      setHeader(routeTitle);
+    } else {
+      setHeader('게시글');
+    }
+  }, [routeTitle]);
 
   const getPostList = async (pageNumber: number, isLatest: boolean, keyword: string) => {
     if (!accessToken || isLoading) return; // 로딩 중이면 요청하지 않음
-
     setIsLoading(true); // 로딩 시작
     try {
       const categoryKeyword = [...selectedCategories.seasons, ...selectedCategories.regions].join(' ');
       const finalKeyword = keyword ? `${keyword} ${categoryKeyword}` : categoryKeyword;
+      let url = '';
 
-      const url = finalKeyword
+      if(!routeType && routeType !== '') {
+        url = finalKeyword
         ? `http://flowday.kro.kr:80/api/v1/posts/all/list?kw=${finalKeyword}&pageSize=10&page=${pageNumber}`
         : isLatest
           ? `http://flowday.kro.kr:80/api/v1/posts/all/latest?pageSize=10&page=${pageNumber}`
           : `http://flowday.kro.kr:80/api/v1/posts/all/mostLike?pageSize=10&page=${pageNumber}`;
+      } else {
+        url = `http://flowday.kro.kr:80/api/v1/posts/all${type}?pageSize=10&page=${pageNumber}`
+      }
 
       const res = await axios.get(url, {
         headers: {
@@ -55,7 +76,7 @@ const PostListPage = () => {
         },
       });
       const newPosts = res.data.content;
-      if (newPosts.length > 0) {
+      if (!routeType && routeType !== '' && newPosts.length > 0) {
         setPostData((prevData) => (pageNumber === 0 ? newPosts : [...prevData, ...newPosts])); // 페이지가 0이면 기존 데이터 덮어쓰기
       }
     } catch (err) {
@@ -103,27 +124,40 @@ const PostListPage = () => {
     setPage(0); // 페이지 초기화 (새로운 데이터 요청)
   };
 
+  console.log(title);
+
   return (
     <PostListPageDesign>
-      <PostHeader />
-      <PostSearchCategory>
-        <PostSearch onSearch={handleSearch} />
-        <PostCategoryButton
-          onPress={() => {
-            isOnCategoryModal(true);
-          }}
+      <PostHeader>{header}</PostHeader>
+      { !routeType && routeType !== '' && (
+        <>
+         <PostSearchCategory>
+            <PostSearch onSearch={handleSearch} />
+            <PostCategoryButton
+              onPress={() => {
+                isOnCategoryModal(true);
+              }}
+            />
+          </PostSearchCategory>
+          <PostSortButton onPress={handleSortButtonPress}>{isLatest ? <PostSortText>최신순</PostSortText> : <PostSortText>인기순</PostSortText>}</PostSortButton>
+        </>
+      )}
+      {isLoading && postData.length === 0 && (!routeType || routeType !== '') ? (
+        <LoadingIndicator />
+      ) : (
+        <FlatList
+          data={postData}
+          renderItem={renderItem}
+          keyExtractor={(item: IPost, index: number) => `${item.id}-${index}`} // id와 index를 결합하여 고유한 키 생성
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={isLoading ? <LoadingIndicator /> : null}
         />
-      </PostSearchCategory>
-      <PostSortButton onPress={handleSortButtonPress}>{isLatest ? <PostSortText>최신순</PostSortText> : <PostSortText>인기순</PostSortText>}</PostSortButton>
-      <FlatList
-        data={postData}
-        renderItem={renderItem}
-        keyExtractor={(item: IPost, index: number) => `${item.id}-${index}`} // id와 index를 결합하여 고유한 키 생성
-        onEndReached={handleEndReached}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={isLoading ? <LoadingIndicator /> : null}
-      />
-      <Buttons.LongBtn onPress={() => navigation.navigate('PostCreatePage')} text='글쓰기' style={{marginBottom: 10}} />
+      )}
+      {
+        !routeType && routeType !== '' &&
+        (<Buttons.LongBtn onPress={() => navigation.navigate('PostCreatePage')} text='글쓰기' style={{marginBottom: 10}} />)
+      }
       {onCategoryModal && (
         <PostCategoryModal
           onPress={() => {
