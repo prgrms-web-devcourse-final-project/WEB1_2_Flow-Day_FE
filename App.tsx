@@ -102,6 +102,16 @@ const MyStack = () => {
       <Stack.Screen name='MyInfo' component={MyInfo} options={{header: () => <PostHeader>회원 정보 수정</PostHeader>}} />
       <Stack.Screen name='CheckBreak' component={CheckBreak} options={{headerShown: false}} />
       <Stack.Screen name='CheckQuit' component={CheckQuit} options={{headerShown: false}} />
+      <Stack.Screen
+              name={ROUTES.COUPLE_REGISTER}
+              component={CoupleRegisterPage}
+              options={{header: () => <PostHeader> </PostHeader>}}
+            />
+            <Stack.Screen
+              name={ROUTES.COUPLE_CHECK}
+              component={CoupleCheckPage}
+              options={{header: () => <PostHeader> </PostHeader>}}
+            />
     </Stack.Navigator>
   )
 }
