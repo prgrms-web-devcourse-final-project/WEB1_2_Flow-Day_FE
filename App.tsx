@@ -25,6 +25,9 @@ import PostListPage from '@/pages/post-list-page/PostListPage';
 import PostCreatePage from '@/pages/post-create-page/PostCreatePage';
 import PostDetailPage from '@/pages/post-detail-page/PostDetailPage';
 import SpotDetailPage from '@/pages/map-page/SpotDetailPage';
+import {TextEncoder} from 'text-encoding';
+global.TextEncoder = TextEncoder;
+import PostEditPage from '@/pages/post-edit-page/PostEditPage';
 
 // 색상 설정
 const COLORS = {
@@ -66,6 +69,7 @@ const PostStack = () => {
       <Stack.Screen name='PostListPage' component={PostListPage} options={{headerShown: false}} />
       <Stack.Screen name='PostDetailPage' component={PostDetailPage} options={{headerShown: false}} />
       <Stack.Screen name='PostCreatePage' component={PostCreatePage} options={{headerShown: false}} />
+      <Stack.Screen name='PostEditPage' component={PostEditPage} options={{headerShown: false}} />
     </Stack.Navigator>
   );
 };
@@ -201,7 +205,13 @@ const App = () => {
                 return (
                   <ButtonBox>
                     <SvgXml xml={getModifiedSvg(svg.home, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>홈</ButtonText>
+                    <ButtonText
+                      style={{
+                        color: focused ? COLORS.active : COLORS.inactive,
+                      }}
+                    >
+                      홈
+                    </ButtonText>
                   </ButtonBox>
                 );
               },
@@ -217,7 +227,13 @@ const App = () => {
                 return (
                   <ButtonBox>
                     <SvgXml xml={getModifiedSvg(svg.chat, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>채팅</ButtonText>
+                    <ButtonText
+                      style={{
+                        color: focused ? COLORS.active : COLORS.inactive,
+                      }}
+                    >
+                      채팅
+                    </ButtonText>
                   </ButtonBox>
                 );
               },
@@ -233,7 +249,13 @@ const App = () => {
                 return (
                   <ButtonBox>
                     <SvgXml xml={getModifiedSvg(svg.map, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>지도</ButtonText>
+                    <ButtonText
+                      style={{
+                        color: focused ? COLORS.active : COLORS.inactive,
+                      }}
+                    >
+                      지도
+                    </ButtonText>
                   </ButtonBox>
                 );
               },
@@ -249,7 +271,13 @@ const App = () => {
                 return (
                   <ButtonBox>
                     <SvgXml xml={getModifiedSvg(svg.post, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>게시글</ButtonText>
+                    <ButtonText
+                      style={{
+                        color: focused ? COLORS.active : COLORS.inactive,
+                      }}
+                    >
+                      게시글
+                    </ButtonText>
                   </ButtonBox>
                 );
               },
@@ -265,7 +293,13 @@ const App = () => {
                 return (
                   <ButtonBox>
                     <SvgXml xml={getModifiedSvg(svg.my, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText style={{color: focused ? COLORS.active : COLORS.inactive}}>마이</ButtonText>
+                    <ButtonText
+                      style={{
+                        color: focused ? COLORS.active : COLORS.inactive,
+                      }}
+                    >
+                      마이
+                    </ButtonText>
                   </ButtonBox>
                 );
               },
