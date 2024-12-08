@@ -23,7 +23,6 @@ const ImageBox = styled.Image`
 
 const Content = styled.Text`
 
-  /* width: 40%; */
 `;
 
 const ProfileContent = styled.View`
@@ -39,10 +38,10 @@ const Comment = styled.View`
 
 const TempView = styled.View`
   height: 100%;
-  padding-bottom: 30px;
+  padding-bottom: 60px;
 `;
 
-const Review = (placeData) => {
+const Review = (placeData: any) => {
   const data = placeData.data.reviews;
   console.log(data);
   const {width} = useWindowDimensions();
@@ -57,7 +56,7 @@ const Review = (placeData) => {
   return (
     <Container>
       <TempView>
-        {data.map((review, index: number) => (
+        {data?.map((review: any, index: number) => (
           <Comment key={index}>
             <ProfileContent>
               <ProfileImage source={require('../../assets/images/daejeon.png')} />

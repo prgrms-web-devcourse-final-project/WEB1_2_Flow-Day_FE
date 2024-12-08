@@ -1,9 +1,6 @@
 import {View, Text, Image, TouchableOpacity} from 'react-native';
 import styled from 'styled-components/native';
-import Swiper from 'react-native-swiper';
 import {useWindowDimensions} from 'react-native';
-import {SvgXml} from 'react-native-svg';
-import {svg} from '@/assets/icons/svg';
 import {useState, useEffect} from 'react';
 import {GOOGLE_MAPS_API_KEY} from '@env';
 import axios from 'axios';
@@ -16,15 +13,6 @@ const Container = styled.View`
   flex: 1;
 `;
 
-const SwiperBox = styled.View`
-  flex: 1;
-`;
-
-const SwipeButton = styled.Text`
-  width: 24px;
-  font-weight: 700;
-`;
-
 const SpotBox = styled.View`
   flex-direction: row;
   width: 100%;
@@ -34,7 +22,8 @@ const SpotBox = styled.View`
 
 const SpotText = styled.Text`
   font-family: 'SCDream4';
-  font-size: 25px;
+  font-size: 23px;
+  padding: 10px 0;
 `;
 
 const SpotRating = styled.View`
@@ -92,7 +81,7 @@ const SpotDetailPage = ({navigation, route}) => {
 
   return (
     <Container>
-      <Image source={{uri: mainPhotoUrl}} style={{width: width, height: 200}} />
+      <Image source={{uri: mainPhotoUrl}} style={{width: width, height: 200, backgroundColor: '#EEEEEE'}} />
 
       <SpotBox>
         <SpotText>{data?.name}</SpotText>
