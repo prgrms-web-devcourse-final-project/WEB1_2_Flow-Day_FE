@@ -8,7 +8,9 @@ export interface Spot {
   courseId: number;
   voteId: number;
   memberId: number;  
-  isOwner?: boolean; 
+  isOwner?: boolean;
+  latitude?: string;  
+  longitude?: string; 
 }
 
 export interface Course {
@@ -20,7 +22,7 @@ export interface Course {
   color: string;
   createdAt?: string;
   updatedAt?: string;
-  spots?: Spot[];  // Array<Spot> 대신 Spot[]를 사용
+  spots?: Spot[];
 }
 
 export interface CreateCourseRequest {

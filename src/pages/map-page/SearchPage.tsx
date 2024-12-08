@@ -179,9 +179,10 @@ types=geocode|establishment`;
  };
 
  const handlePlaceSelect = async (place: SearchResult) => {
-   await saveRecentSearch(place.description);
-   navigation.goBack();
- };
+  await saveRecentSearch(place.description);
+  console.log('Selected Place ID:', place.place_id);
+  navigation.goBack();
+};
 
  const handleRecentSearchSelect = (search: string) => {
    setSearchText(search);

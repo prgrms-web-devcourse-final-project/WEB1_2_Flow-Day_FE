@@ -26,6 +26,8 @@ const MINIMAL_VISIBLE_HEIGHT = 77; // 슬라이드가 내려갔을 때 보일 �
 const HALF_HEIGHT = SCREEN_HEIGHT * 0.5;
 const FULL_HEIGHT = SCREEN_HEIGHT * 0.8;
 
+
+
 const SlideContainer = styled.View<{ height: number }>`
   position: absolute;
   bottom: 0;
@@ -206,22 +208,35 @@ const ActionMenuText = styled.Text<{ color?: string }>`
 
 const colors = ['#FF0004', '#FFA100', '#FFE500', '#26FF00', '#00A1FF', '#001AFF', '#8400FF','#FF69B4'];
 
-export const CourseList = () => {
+interface CourseListProps {
+  courses: Course[];
+  loading: boolean;
+  error: string | null;
+  selectedCourse: Course | null;
+  setSelectedCourse: (course: Course | null) => void;
+  onCoursesUpdate: () => Promise<void>;
+}
+
+export const CourseList = ({ 
+  courses, 
+  loading, 
+  error, 
+  selectedCourse, 
+  setSelectedCourse,
+  onCoursesUpdate 
+}: CourseListProps) => {
   const [slideHeight, setSlideHeight] = useState(HEADER_HEIGHT);
   const [modalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState('');
   const [selectedColor, setSelectedColor] = useState(colors[0]);
   const [isShared, setIsShared] = useState(false);
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [menuVisible, setMenuVisible] = useState(false);
+  const [isDetailView, setIsDetailView] = useState(false);
   const { accessToken } = useStore();
 
-  const [isDetailView, setIsDetailView] = useState(false);
+
 
   const handleCourseClick = (course: Course) => {
     setSelectedCourse(course);
@@ -239,7 +254,6 @@ export const CourseList = () => {
 
   useEffect(() => {
     setSlideHeight(MINIMAL_VISIBLE_HEIGHT);
-    loadCourses();
   }, []);
 
   const resetModalState = () => {
@@ -281,10 +295,10 @@ export const CourseList = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              setLoading(true);
+    
               await courseApi.deleteCourse(selectedCourse.id); 
               
-              setCourses(prev => prev.filter(course => course.id !== selectedCourse.id));
+              onCoursesUpdate();
               Alert.alert('성공', '코스가 삭제되었습니다.');
             } catch (error) {
               const errorMessage = error instanceof Error ? error.message : '삭제 실패';
@@ -296,7 +310,7 @@ export const CourseList = () => {
               
               Alert.alert('오류', errorMessage);
             } finally {
-              setLoading(false);
+   
             }
           }
         }
@@ -304,26 +318,6 @@ export const CourseList = () => {
     );
   };
 
-  const loadCourses = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const response = await courseApi.getCourses();
-      console.log('받아온 코스 목록:', response);
-      
-      if (response?.content) {
-        setCourses(response.content);
-      }
-    } catch (error) {
-      console.error('코스 목록 로드 실패:', error);
-      const errorMessage = error instanceof Error ? error.message : '코스 목록을 불러오는데 실패했습니다.';
-      setError(errorMessage);
-      Alert.alert('오류', errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleCreateOrUpdateCourse = async () => {
     if (!title.trim()) {
@@ -332,8 +326,6 @@ export const CourseList = () => {
     }
   
     try {
-      setLoading(true);
-      
       const tokenData = JSON.parse(atob(accessToken.split('.')[1]));
       const memberId = tokenData.data.id;
 
@@ -354,12 +346,12 @@ export const CourseList = () => {
   
       setModalVisible(false);
       resetModalState();
-      await loadCourses();
+      await onCoursesUpdate();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : '처리 중 오류가 발생했습니다.';
       Alert.alert('오류', errorMessage);
     } finally {
-      setLoading(false);
+
     }
   };
 
@@ -389,6 +381,31 @@ export const CourseList = () => {
   const panResponder = useRef(
     PanResponder.create({
 
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        const { dy, moveY } = gestureState;
+        return Math.abs(dy) > 10;
+      },
+      onPanResponderMove: (_, gestureState) => {
+        const newHeight = SCREEN_HEIGHT - gestureState.moveY;
+        if (newHeight >= MINIMAL_VISIBLE_HEIGHT && newHeight < FULL_HEIGHT) {
+          setSlideHeight(newHeight);
+        }
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        const newHeight = SCREEN_HEIGHT - gestureState.moveY;
+        if (newHeight < HEADER_HEIGHT + 50) {
+          setSlideHeight(MINIMAL_VISIBLE_HEIGHT);
+        } else if (newHeight < HALF_HEIGHT + 50) {
+          setSlideHeight(HALF_HEIGHT);
+        } else {
+          setSlideHeight(FULL_HEIGHT);
+        }
+      },
+    })
+  ).current;
+
+  const headerPanResponder = useRef(
+    PanResponder.create({
       onMoveShouldSetPanResponder: (_, gestureState) => {
         const { dy, moveY } = gestureState;
         return Math.abs(dy) > 10;

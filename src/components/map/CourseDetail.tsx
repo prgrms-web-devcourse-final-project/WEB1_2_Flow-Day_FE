@@ -309,7 +309,7 @@ const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
                   <CategoryButton onPress={() => isDeleteMode && toggleSpotSelection(spot.id)}>
                     <SvgXml 
                       xml={isDeleteMode 
-                        ? (selectedSpots.includes(spot.id) ? svg.check : svg.add)
+                        ? (selectedSpots.includes(spot.id) ? svg.add : svg.check)
                         : svg.list} 
                       width={20} 
                       height={20}
