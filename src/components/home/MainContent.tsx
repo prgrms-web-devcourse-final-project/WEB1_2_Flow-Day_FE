@@ -121,6 +121,7 @@ const MainContent = () => {
       const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,photos&language=ko&key=${GOOGLE_MAPS_API_KEY}`;
       const response = await axios.get(url);
       const data = response.data.result;
+      console.log(data);
 
       const photoReference = data.photos?.[0]?.photo_reference;
       const photoUrl = photoReference

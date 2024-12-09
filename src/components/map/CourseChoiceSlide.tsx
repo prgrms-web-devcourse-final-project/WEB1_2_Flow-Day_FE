@@ -163,7 +163,7 @@ const CourseChoiceSlide = ({data, setShow}) => {
       <CourseList>
         {postList.content.map((course, i) => {
           return (
-            <View>
+            <View key={i}>
               <CourseItem
                 key={i}
                 onPress={() => {
