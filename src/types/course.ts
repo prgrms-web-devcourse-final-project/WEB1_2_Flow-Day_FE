@@ -1,3 +1,18 @@
+export interface Spot {
+  id: number;
+  placeId: string;
+  name: string;
+  city: string;
+  comment: string;
+  sequence: number;
+  courseId: number;
+  voteId: number;
+  memberId: number;  
+  isOwner?: boolean;
+  latitude?: string;  
+  longitude?: string; 
+}
+
 export interface Course {
   id: number;
   memberId: number;
@@ -7,18 +22,7 @@ export interface Course {
   color: string;
   createdAt?: string;
   updatedAt?: string;
-  spots?: Array<{
-    id: number;
-    placeId: string;
-    name: string;
-    city: string;
-    comment: string;
-    sequence: number;
-    courseId: number;
-    voteId: number;
-    memberId: number;  
-    isOwner?: boolean; 
-  }>;
+  spots?: Spot[];
 }
 
 export interface CreateCourseRequest {
@@ -58,3 +62,8 @@ export interface PageResponse<T> {
   last: boolean;
   empty: boolean;
 }
+
+export type RootStackParamList = {
+  MapMain: undefined;
+  Search: undefined;
+};

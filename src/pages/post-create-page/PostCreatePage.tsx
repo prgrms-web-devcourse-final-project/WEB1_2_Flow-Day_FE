@@ -1,4 +1,3 @@
-// PostCreatePage.tsx
 import {StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
