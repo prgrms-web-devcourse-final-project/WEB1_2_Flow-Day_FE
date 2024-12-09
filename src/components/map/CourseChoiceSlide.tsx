@@ -101,7 +101,7 @@ const CourseChoiceSlide = ({data, setShow}) => {
   const {postList, setPostList, postCreateData, setPostCreateData} = usePostCreateStore();
   const {accessToken} = useStore();
   const [text, setText] = useState('');
-  const [id, setId] = useState();
+  const [id, setId] = useState('');
 
   useEffect(() => {
     const getCouserList = async () => {
@@ -122,6 +122,7 @@ const CourseChoiceSlide = ({data, setShow}) => {
 
   const handleSave = async () => {
     const courseId = id;
+    console.log(courseId);
     const place = data?.formatted_address.split(' ')[1].slice(0, 2);
     try {
       const response = await apiClient.post(
@@ -129,7 +130,7 @@ const CourseChoiceSlide = ({data, setShow}) => {
         {
           name: data.name,
           placeId: data.place_id,
-          comment: text,
+          comment: `${text}`,
           city: place,
         },
         {
@@ -138,7 +139,7 @@ const CourseChoiceSlide = ({data, setShow}) => {
           },
         },
       );
-      console.log(response.data);
+      console.log(response);
       setShow(false);
     } catch (error) {
       console.error(error);
@@ -167,7 +168,7 @@ const CourseChoiceSlide = ({data, setShow}) => {
                 key={i}
                 onPress={() => {
                   setPostCreateData({...postCreateData, courseId: `${course.id}`});
-                  setId(course.id);
+                  setId(`${course.id}`);
                 }}
               >
                 <ItemIcon source={require('@/assets/icons/spot.svg')} />
