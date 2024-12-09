@@ -7,6 +7,14 @@ import { GOOGLE_MAPS_API_KEY } from '@env';
 import { SvgXml } from 'react-native-svg';
 import { svg } from '@/assets/icons/svg';
 import { SearchResult } from '@/types/type';
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type RootStackParamList = {
+  MapMain: undefined;
+  Search: undefined;
+  SpotDetail: { spotId: string };
+};
+type SearchScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Search'>;
 
 const SearchPageContainer = styled.SafeAreaView`
  flex: 1;
@@ -109,7 +117,7 @@ const NoResultText = styled.Text`
 `;
 
 export const SearchPage = () => {
- const navigation = useNavigation();
+  const navigation = useNavigation<SearchScreenNavigationProp>();
  const [searchText, setSearchText] = useState('');
  const [recentSearches, setRecentSearches] = useState<string[]>([]);
  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
@@ -179,10 +187,13 @@ types=geocode|establishment`;
  };
 
  const handlePlaceSelect = async (place: SearchResult) => {
-   await saveRecentSearch(place.description);
-   navigation.goBack();
- };
-
+  await saveRecentSearch(place.description);
+  console.log('Navigating to SpotDetail with ID:', place.place_id);
+  
+  navigation.replace('SpotDetail', {
+    spotId: place.place_id
+  });
+};
  const handleRecentSearchSelect = (search: string) => {
    setSearchText(search);
    handleSearch(search);

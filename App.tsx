@@ -60,14 +60,34 @@ const ButtonText = styled.Text`
   font-family: 'SCDream4';
 `;
 
-const Stack = createNativeStackNavigator();
+type MapStackParamList = {
+  MapMain: undefined;
+  Search: undefined;
+  SpotDetail: { spotId: string };
+};
+
+const Stack = createNativeStackNavigator<MapStackParamList>();
+
+
 
 export function MapStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name='MapMain' component={MapPage} options={{headerShown: false}} />
-      <Stack.Screen name='Search' component={SearchPage} options={{headerShown: false}} />
-      <Stack.Screen name='SpotDetail' component={SpotDetailPage} options={{headerShown: false}} />
+      <Stack.Screen 
+        name="MapMain" 
+        component={MapPage} 
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="Search" 
+        component={SearchPage} 
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="SpotDetail" 
+        component={SpotDetailPage} 
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
@@ -312,7 +332,7 @@ const App = () => {
 
           <Tab.Screen
             name='posts'
-            component={PostStack} // PostStack을 사용하도록 변경
+            component={PostStack} 
             options={{
               headerShown: false,
               tabBarIcon: ({focused}: {focused: boolean}) => {

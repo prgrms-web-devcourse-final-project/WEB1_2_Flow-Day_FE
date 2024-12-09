@@ -57,7 +57,7 @@ const PostCreateCourseSlide = ({onPress}: {onPress: () => void}) => {
               }}
             >
               <ItemIcon source={require('../../../assets/icons/spot.svg')} />
-              <SvgXml xml={getModifiedSvg(svg.spotItem, course.color ? course.color : '#000000')} />
+              <SvgXml xml={svg.spot} fill={course.color || '#000000'} />
               <CourseTitle>{`${course.title}`}</CourseTitle>
               {postCreateData.courseId === course.id ? <CheckIcon source={require('../../../assets/icons/check.png')} /> : <CheckIcon source={require('../../../assets/icons/unCheck.png')} />}
             </CourseItem>
