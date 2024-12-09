@@ -111,7 +111,7 @@ const CourseChoiceSlide = ({data, setShow}) => {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        const data = (await res).data;
+        const data = (await res.data);
         setPostList({...data});
       } catch (err) {
         console.error('포스트 생성 페이지에서 코스 목록 가져오기 에러 : ', err);
@@ -138,6 +138,7 @@ const CourseChoiceSlide = ({data, setShow}) => {
           },
         },
       );
+      console.log(response.data);
       setShow(false);
     } catch (error) {
       console.error(error);
