@@ -16,6 +16,7 @@
     "@react-navigation/native": "^7.0.4",
     "@react-navigation/native-stack": "^7.1.8",
     "@react-navigation/stack": "^7.0.11",
+    "@stomp/stompjs": "^7.0.0",
     "@tanstack/react-query": "^5.61.3",
     "@tanstack/react-query-devtools": "^5.61.3",
     "apollo-upload-client": "^18.0.1",
@@ -38,7 +39,10 @@
     "react-native-svg": "^15.10.1",
     "react-native-swiper": "^1.6.0",
     "react-native-web": "~0.19.13",
+    "socketjs-client": "^1.0.2",
+    "sockjs-client": "^1.6.1",
     "styled-components": "^6.1.13",
+    "text-encoding": "^0.7.0",
     "zustand": "^5.0.1"
   },
   "devDependencies": {
@@ -47,7 +51,9 @@
     "@react-native-community/cli": "latest",
     "@react-native/typescript-config": "^0.76.3",
     "@types/react": "~18.3.12",
+    "@types/sockjs-client": "^1.5.4",
     "@types/styled-components": "^5.1.34",
+    "@types/text-encoding": "^0.0.40",
     "@typescript-eslint/eslint-plugin": "^8.16.0",
     "@typescript-eslint/parser": "^8.16.0",
     "eslint": "^8.57.1",
@@ -66,5 +72,6 @@
     "typescript": "^5.3.3",
     "typescript-eslint": "^8.15.0"
   },
-  "private": true
+  "private": true,
+  "proxy": "http://flowday.kro.kr:80"
 }

@@ -4,6 +4,9 @@ import { TouchableOpacity } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import styled from 'styled-components/native';
 import { navigationRef } from '../../App'
+import { Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
 
 type HeaderProps = {
   children: React.ReactNode;
@@ -11,25 +14,30 @@ type HeaderProps = {
 
 const Container = styled.View`
   background-color: #FFFFFF;
-  padding: 16px 14px;
+  padding: 15px 14px;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+  position: relative;
 `
 
 const HeaderText = styled.Text`
   position: absolute;
-  width: fit-content;
+  width: ${width}px;
+  margin: auto;
+  font-family: 'SCDream5';
   font-size: 16px;
-  left: 50%;
-  margin-left: calc((-17px - 24px) / 2);
+  text-align: center;
 `
 
 const LogoImage = styled.View`
-  margin-right: auto;
+  justify-content: center;
+  align-items: center;
 `
 
 const AlertImage = styled.View`
-  margin-left: auto;
+  justify-content: center;
+  align-items: center;
 `
 
 export default function Header({children}: HeaderProps) {

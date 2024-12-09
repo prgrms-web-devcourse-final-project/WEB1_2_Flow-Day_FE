@@ -1,19 +1,20 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import styled from 'styled-components/native';
+import {useNavigation} from '@react-navigation/native';
 
 const PostHeaderDesign = styled.View`
   background-color: white;
   flex-direction: row;
   justify-content: center;
   height: 56px;
-  border: 1px solid black;
+  border: 1px solid #EEEEEE;
 `;
 
 const PostHeaderTitle = styled.Text`
-  font-size: 20px;
-  font-weight: bold;
-  width: 100px;
+  font-size: 16px;
+  font-family: 'SCDream5';
+  width: max-content;
   text-align: center;
   margin: auto;
 `;
@@ -29,14 +30,19 @@ const PostHeaderBackImage = styled.Image`
   height: 24px;
 `;
 
-const PostHeader = () => {
+interface PostHeaderProps {
+  children: React.ReactNode;
+}
+
+const PostHeader: React.FC<PostHeaderProps> = ({ children }) => {
+  const navigation = useNavigation();
   return (
     <PostHeaderDesign>
-      <PostHeaderBackButton>
+      <PostHeaderBackButton onPress={() => navigation.goBack()}>
         <PostHeaderBackImage source={require('../../assets/icons/back.png')} />
       </PostHeaderBackButton>
       <PostHeaderTitle>
-        <Text>게시글</Text>
+        <Text>{children}</Text>
       </PostHeaderTitle>
     </PostHeaderDesign>
   );
