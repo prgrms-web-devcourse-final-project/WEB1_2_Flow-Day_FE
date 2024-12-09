@@ -148,8 +148,13 @@ const CourseChoiceSlide = ({data, setShow}) => {
 
   console.log(postCreateData.courseId);
   const getModifiedSvg = (xml: string, fillColor: string) => {
-    return xml.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
-  };
+    if (xml) {
+        return xml.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
+    } else {
+        console.error('Error: xml is undefined');
+        return '';
+    }
+};
 
   return (
     <CourseSlideDesign>
