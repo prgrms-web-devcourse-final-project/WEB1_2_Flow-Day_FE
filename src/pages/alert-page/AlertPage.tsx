@@ -86,9 +86,9 @@ const AlertPage = () => {
       case 'COUPLE':
         return 'PostDetailPage';
       case 'VOTE':
-        return require('../../assets/icons/alert-icons/vote.png');
+        return 'MapPage';
       case 'COURSE':
-        return require('../../assets/icons/alert-icons/course.png');
+        return 'MapPage';
       default:
         return 'Home';
     }
@@ -103,6 +103,7 @@ const AlertPage = () => {
           <AlertItem
             key={index}
             onPress={() => {
+              console.log(switchType(item.type));
               navigation.navigate(switchType(item.type));
             }}
           >

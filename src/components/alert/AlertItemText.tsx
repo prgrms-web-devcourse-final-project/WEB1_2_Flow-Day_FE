@@ -5,7 +5,7 @@ import styled from 'styled-components/native';
 const AlertItemText = ({message}: any) => {
   return (
     <AlertItemTextDesign>
-      <TextDesign ellipsizeMode='tail'>{message}</TextDesign>
+      <TextDesign>{message}</TextDesign>
     </AlertItemTextDesign>
   );
 };
@@ -22,5 +22,5 @@ const AlertItemTextDesign = styled.View`
 const TextDesign = styled.Text`
   font-size: 14px;
   font-family: 'SCDream4';
-  width: 240px; // 텍스트가 넘치지 않도록 고정 폭을 설정
+  width: 240px;
 `;
