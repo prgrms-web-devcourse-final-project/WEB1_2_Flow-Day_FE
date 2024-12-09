@@ -8,14 +8,14 @@ import OverView from '@/components/map/OverView';
 import Review from '@/components/map/Review';
 
 const Container = styled.View`
-  padding: 10px 10px;
+  padding: 10px 0px;
   background-color: #ffffff;
   flex: 1;
 `;
 
 const SpotBox = styled.View`
   flex-direction: row;
-  width: 100%;
+  width: 370px;
   justify-content: space-between;
   padding-right: 10px;
 `;
@@ -81,7 +81,7 @@ const SpotDetailPage = ({navigation, route}) => {
 
   return (
     <Container>
-      <Image source={{uri: mainPhotoUrl}} style={{width: width, height: 200, backgroundColor: '#EEEEEE'}} />
+      <Image source={{uri: mainPhotoUrl}} style={{width: '370px', margin: '0 auto', height: 200, backgroundColor: '#EEEEEE'}} />
 
       <SpotBox>
         <SpotText>{data?.name}</SpotText>

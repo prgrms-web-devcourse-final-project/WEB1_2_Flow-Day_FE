@@ -19,7 +19,7 @@ export const useStore = create<State>((set, get) => ({
   accessToken: '',
   refreshToken: '',
   userId: '',
-  roomId: 1,
+  roomId: null,
   isLoggedIn: false,
   setRommId: (newRoomId) => set({roomId: newRoomId}),
   setAccessToken: (token) => set({accessToken: token}),

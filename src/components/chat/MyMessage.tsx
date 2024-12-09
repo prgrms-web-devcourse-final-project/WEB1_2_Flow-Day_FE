@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components/native';
 
 const MyMessage = ({data}: any) => {
-  // const [date, time] = data.time.split('T');
-  // const [hour, minute, second] = time.split(':');
+  const [date, time] = data.time.split('T');
+  const [hour, minute, second] = time.split(':');
   return (
     <MyMessageDesign>
-      {/* <SendTime>{`${hour}:${minute}`}</SendTime> */}
+      <SendTime>{`${hour}:${minute}`}</SendTime>
       <TextDesign>
         <MyMessageText>{data.message}</MyMessageText>
       </TextDesign>

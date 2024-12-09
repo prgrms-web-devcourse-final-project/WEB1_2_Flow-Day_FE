@@ -63,31 +63,17 @@ const ButtonText = styled.Text`
 type MapStackParamList = {
   MapMain: undefined;
   Search: undefined;
-  SpotDetail: { spotId: string };
+  SpotDetail: {spotId: string};
 };
 
 const Stack = createNativeStackNavigator<MapStackParamList>();
 
-
-
 export function MapStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen 
-        name="MapMain" 
-        component={MapPage} 
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen 
-        name="Search" 
-        component={SearchPage} 
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen 
-        name="SpotDetail" 
-        component={SpotDetailPage} 
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name='MapMain' component={MapPage} options={{headerShown: false}} />
+      <Stack.Screen name='Search' component={SearchPage} options={{headerShown: false}} />
+      <Stack.Screen name='SpotDetail' component={SpotDetailPage} options={{headerShown: false}} />
     </Stack.Navigator>
   );
 }
@@ -108,10 +94,14 @@ const MainStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name='Home' component={HomePage} options={{header: () => <Header>D+134</Header>}} />
-      <Stack.Screen name='SpotDetail' component={SpotDetailPage} options={{
-        headerTitle: '',
-        headerStyle: {backgroundColor: '#FFFFFF'},
-      }} />
+      <Stack.Screen
+        name='SpotDetail'
+        component={SpotDetailPage}
+        options={{
+          headerTitle: '',
+          headerStyle: {backgroundColor: '#FFFFFF'},
+        }}
+      />
     </Stack.Navigator>
   );
 };
@@ -125,29 +115,19 @@ const AlertStack = () => {
   );
 };
 
-
-
 const MyStack = () => {
-  return(
+  return (
     <Stack.Navigator>
       <Stack.Screen name='MyPage' component={MyPage} options={{header: () => <Header>마이페이지</Header>}} />
       <Stack.Screen name='PostListPage' component={PostListPage} options={{headerShown: false}} />
       <Stack.Screen name='MyInfo' component={MyInfo} options={{header: () => <PostHeader>회원 정보 수정</PostHeader>}} />
       <Stack.Screen name='CheckBreak' component={CheckBreak} options={{headerShown: false}} />
       <Stack.Screen name='CheckQuit' component={CheckQuit} options={{headerShown: false}} />
-      <Stack.Screen
-              name={ROUTES.COUPLE_REGISTER}
-              component={CoupleRegisterPage}
-              options={{header: () => <PostHeader> </PostHeader>}}
-            />
-            <Stack.Screen
-              name={ROUTES.COUPLE_CHECK}
-              component={CoupleCheckPage}
-              options={{header: () => <PostHeader> </PostHeader>}}
-            />
+      <Stack.Screen name={ROUTES.COUPLE_REGISTER} component={CoupleRegisterPage} options={{header: () => <PostHeader> </PostHeader>}} />
+      <Stack.Screen name={ROUTES.COUPLE_CHECK} component={CoupleCheckPage} options={{header: () => <PostHeader> </PostHeader>}} />
     </Stack.Navigator>
-  )
-}
+  );
+};
 
 SplashScreen.preventAutoHideAsync();
 
@@ -208,31 +188,11 @@ const App = () => {
         <NavigationContainer ref={navigationRef}>
           <Stack.Navigator>
             <Stack.Screen name={ROUTES.LOGIN} component={LoginPage} options={{headerShown: false}} />
-            <Stack.Screen
-              name={ROUTES.JOIN}
-              component={JoinPage}
-              options={{header: () => <PostHeader> </PostHeader>}}
-            />
-            <Stack.Screen
-              name={ROUTES.PROFILE_SET}
-              component={ProfileSetPage}
-              options={{header: () => <PostHeader> </PostHeader>}}
-            />
-            <Stack.Screen
-              name={ROUTES.COUPLE_REGISTER}
-              component={CoupleRegisterPage}
-              options={{header: () => <PostHeader> </PostHeader>}}
-            />
-            <Stack.Screen
-              name={ROUTES.COUPLE_CHECK}
-              component={CoupleCheckPage}
-              options={{header: () => <PostHeader> </PostHeader>}}
-            />
-            <Stack.Screen
-              name={ROUTES.WELCOME}
-              component={WelcomePage}
-              options={{header: () => <PostHeader> </PostHeader>}}
-            />
+            <Stack.Screen name={ROUTES.JOIN} component={JoinPage} options={{header: () => <PostHeader> </PostHeader>}} />
+            <Stack.Screen name={ROUTES.PROFILE_SET} component={ProfileSetPage} options={{header: () => <PostHeader> </PostHeader>}} />
+            <Stack.Screen name={ROUTES.COUPLE_REGISTER} component={CoupleRegisterPage} options={{header: () => <PostHeader> </PostHeader>}} />
+            <Stack.Screen name={ROUTES.COUPLE_CHECK} component={CoupleCheckPage} options={{header: () => <PostHeader> </PostHeader>}} />
+            <Stack.Screen name={ROUTES.WELCOME} component={WelcomePage} options={{header: () => <PostHeader> </PostHeader>}} />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaView>
@@ -290,7 +250,7 @@ const App = () => {
             name={ROUTES.CHAT}
             component={ChatPage}
             options={{
-              header: () => <Header>D+1234</Header>,
+              headerShown: false,
               tabBarIcon: ({focused}: {focused: boolean}) => {
                 return (
                   <ButtonBox>
@@ -332,7 +292,7 @@ const App = () => {
 
           <Tab.Screen
             name='posts'
-            component={PostStack} 
+            component={PostStack}
             options={{
               headerShown: false,
               tabBarIcon: ({focused}: {focused: boolean}) => {

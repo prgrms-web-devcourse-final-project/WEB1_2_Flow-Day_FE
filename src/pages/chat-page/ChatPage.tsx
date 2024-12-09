@@ -9,6 +9,7 @@ import useChatStore from '@/store/chat/ChatStore';
 import axios from 'axios';
 import {useStore} from '@/store/useStore';
 import {REACT_APP_SERVER_URL} from '@env';
+import PostHeader from '@/components/post/PostHeader';
 
 // 채팅 메시지 타입 정의
 interface ChatMessage {
