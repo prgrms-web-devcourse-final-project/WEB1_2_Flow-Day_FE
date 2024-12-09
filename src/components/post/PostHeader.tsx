@@ -1,6 +1,7 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import styled from 'styled-components/native';
+import {useNavigation} from '@react-navigation/native';
 
 const PostHeaderDesign = styled.View`
   background-color: white;
@@ -30,9 +31,10 @@ const PostHeaderBackImage = styled.Image`
 `;
 
 const PostHeader = () => {
+  const navigation = useNavigation();
   return (
     <PostHeaderDesign>
-      <PostHeaderBackButton>
+      <PostHeaderBackButton onPress={() => navigation.goBack()}>
         <PostHeaderBackImage source={require('../../assets/icons/back.png')} />
       </PostHeaderBackButton>
       <PostHeaderTitle>

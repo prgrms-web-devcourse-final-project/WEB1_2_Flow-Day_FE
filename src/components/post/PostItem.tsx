@@ -1,20 +1,22 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import React, {useState} from 'react';
 import styled from 'styled-components/native';
+import {useNavigation} from '@react-navigation/native';
 
 // API 완성 후 Type 수정 예정
 const PostItem = (data: any) => {
   const postData = data.postData;
+  const navigation = useNavigation();
   const [year, month, day] = postData.createdAt.split('T')[0].split('-');
+  console.log('postData', postData);
+
   return (
-    <PostItemDesign>
+    <PostItemDesign onPress={() => navigation.navigate('PostDetailPage', {postId: postData.id})}>
       <PostTexts>
         <Title>{postData.title}</Title>
         <ContentPreview>{postData.content}</ContentPreview>
         <PostInfo>
           <InfoBox>
-            {/* import 방식으로 PNG 이미지파일을 가져오지 못하여 이런식으로 작성 - 리팩토링 필요 */}
-            {/* API 완성 시 "좋아요수", "댓글수" 수정 예정 - 리팩토링 필요 */}
             <InfoIcon source={require('../../assets/icons/like.png')} />
             <InfoText>{postData.likeCount}</InfoText>
           </InfoBox>
@@ -28,16 +30,11 @@ const PostItem = (data: any) => {
           </InfoBox>
           <InfoBox>
             <InfoIcon source={require('../../assets/icons/createdAt.png')} />
-            {/* <InfoText>{createdAt}</InfoText> */}
             <InfoText>{`${year}/${month}/${day}`}</InfoText>
           </InfoBox>
         </PostInfo>
       </PostTexts>
-      {postData.images ? (
-        <PostImage source={postData.Image} />
-      ) : (
-        <PostImage source={require('../../assets/images/noImage.png')} />
-      )}
+      {postData.imageURL ? <PostImage source={{uri: postData.imageURL}} /> : <PostImage source={require('../../assets/images/noImage.png')} />}
     </PostItemDesign>
   );
 };
@@ -95,9 +92,8 @@ const InfoText = styled.Text`
   font-size: 12px;
 `;
 const PostImage = styled.Image`
-  width: 90px;
-  height: 90px;
+  width: 80px;
+  height: 80px;
   margin: 5px;
-  border: 1px solid #dddddd;
   margin-left: auto;
 `;

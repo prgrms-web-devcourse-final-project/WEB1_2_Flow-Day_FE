@@ -21,7 +21,7 @@ const PostCreateImages = () => {
       setImages([...images, newImage]);
       setPostCreateData({
         ...postCreateData,
-        images: [...postCreateData.images, newImage.uri],
+        images: [...postCreateData.images, newImage],
       });
     }
   };
@@ -31,11 +31,10 @@ const PostCreateImages = () => {
     setImages(newImages);
     setPostCreateData({
       ...postCreateData,
-      images: newImages.map((img) => img.uri),
+      images: newImages.map((img) => img),
     });
   };
 
-  console.log(postCreateData.images);
   return (
     <ContetnsInputDesign>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>

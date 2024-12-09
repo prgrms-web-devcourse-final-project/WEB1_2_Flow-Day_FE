@@ -1,14 +1,15 @@
 import {create} from 'zustand';
+import * as ImagePicker from 'expo-image-picker';
 
 interface IPostCreateData {
   title: string;
   tags: string;
   region: string;
   season: string;
-  courseId: string;
+  courseId: number;
   contents: string;
   status: 'PUBLIC' | 'COUPLE' | 'PRIVATE';
-  images: string[];
+  images: ImagePicker.ImagePickerAsset[];
 }
 
 interface ISpot {
@@ -72,12 +73,12 @@ interface IPostCreate {
 
 const usePostCreateStore = create<IPostCreate>((set) => ({
   postCreateData: {
-    title: '',
-    tags: '',
-    region: '',
-    season: '',
-    courseId: '',
-    contents: '',
+    title: '', // Add a title
+    tags: '', // Add relevant tags
+    region: '', // Specify the region
+    season: '', // Specify the season
+    courseId: 0, // Add the course ID
+    contents: '', // Add the content
     status: 'PUBLIC',
     images: [],
   },

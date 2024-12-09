@@ -38,14 +38,23 @@ const DetailHeader = styled.View`
 `;
 
 const HeaderContent = styled.View`
-  height: 60px;
-  flexDirection: row;
-  justifyContent: center;
-  alignItems: center;
-  padding: 0 20px;
-  
+  paddingVertical: 16px;
+  paddingHorizontal: 20px;
 `;
 
+const TitleContainer = styled.View`
+  flexDirection: row;
+  alignItems: center;
+  justifyContent: center;
+  marginBottom: 12px; 
+  position: relative;
+`;
+const ButtonContainer = styled.View`
+  flexDirection: row;
+  alignItems: center;
+  justifyContent: flex-end;
+  gap: 12px;
+`;
 const DragIndicator = styled.View`
   width: 30px;
   height: 2px;
@@ -55,26 +64,26 @@ const DragIndicator = styled.View`
 `;
 const BackButton = styled.TouchableOpacity`
   position: absolute;
+  left: 0;
   padding: 8px;
-  left: 16px;
-  zIndex: 1;
+  paddingLeft: 0;
 `;
 
 const DetailTitle = styled.Text`
   fontSize: 18px;
   fontFamily: 'SCDream5';
+  marginLeft: 8px;
 `;
 
 const DeleteButton = styled.TouchableOpacity`
-  position: absolute;
-  right: 16px;
   flexDirection: row;
   alignItems: center;
 `;
 
-const DeleteText = styled.Text`
+
+const DeleteText = styled.Text<{ isActive: boolean }>`
   fontSize: 14px;
-  color: #7d7d7d;
+  color: ${props => props.isActive ? '#FF6666' : '#7d7d7d'};
   fontFamily: 'SCDream4';
   marginLeft: 4px;
 `;
@@ -159,25 +168,66 @@ const DeleteActionText = styled.Text`
   fontFamily: 'SCDream5';
 `;
 
+const TitleInput = styled.TextInput`
+  fontSize: 18px;
+  fontFamily: 'SCDream5';
+  padding: 8px 12px;
+  borderWidth: 1px;
+  borderColor: #ccc;
+  borderRadius: 6px;
+  minWidth: 200px;
+`;
+
+const VoteButton = styled.TouchableOpacity`
+  flexDirection: row;
+  alignItems: center;
+  
+`;
+
+const VoteText = styled.Text<{ isActive: boolean }>`
+  fontSize: 14px;
+  color: ${props => props.isActive ? '#FF6666' : '#7d7d7d'};
+  fontFamily: 'SCDream4';
+  marginLeft: 4px;
+`;
+
+const VoteActionButton = styled.TouchableOpacity`
+  backgroundColor: #FF6666;
+  padding: 16px;
+  alignItems: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+`;
+
+const VoteActionText = styled.Text`
+  color: white;
+  fontSize: 16px;
+  fontFamily: 'SCDream5';
+`;
+
 
 const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
   const [isDeleteMode, setIsDeleteMode] = useState(false);
+  const [isVoteMode, setIsVoteMode] = useState(false);
   const [selectedSpots, setSelectedSpots] = useState<number[]>([]);
   const [spots, setSpots] = useState<SpotWithPhoto[]>([]);
   const [loading, setLoading] = useState(false);
+  const [voteTitle, setVoteTitle] = useState('');
 
   const getPlacePhoto = async (placeId: string): Promise<string | undefined> => {
     try {
-      // console.log('Fetching place details for placeId:', placeId);
+
       const detailsResponse = await fetch(
         `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=photos&key=${GOOGLE_MAPS_API_KEY}`
       );
       const detailsData = await detailsResponse.json();
-      // console.log('Place details response:', detailsData);
+
       
       if (detailsData.result?.photos?.[0]?.photo_reference) {
         const photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${detailsData.result.photos[0].photo_reference}&key=${GOOGLE_MAPS_API_KEY}`;
-        // console.log('Generated photo URL:', photoUrl);
+
         return photoUrl;
       }
       
@@ -219,6 +269,9 @@ const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
 
   const toggleDeleteMode = () => {
     setIsDeleteMode(!isDeleteMode);
+    if (!isDeleteMode) {
+      setIsVoteMode(false);  
+    }
     setSelectedSpots([]);
   };
 
@@ -264,25 +317,97 @@ const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
     );
   };
   
+  const toggleVoteMode = () => {
+    setIsVoteMode(!isVoteMode);
+    if (!isVoteMode) {
+      setIsDeleteMode(false);
+      setVoteTitle(''); // 투표 모드 진입 시 타이틀 초기화
+    }
+    setSelectedSpots([]);
+  };
+  
 
+  const handleCreateVote = () => {
+    if (selectedSpots.length === 0) {
+      Alert.alert('알림', '선택된 장소가 없습니다.');
+      return;
+    }
+
+    if (!voteTitle.trim()) {
+      Alert.alert('알림', '투표 제목을 입력해주세요.');
+      return;
+    }
+
+    Alert.alert(
+      '투표 생성',
+      '선택한 장소들로 투표를 생성하시겠습니까?',
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '생성',
+          onPress: async () => {
+            // 여기에 나중에 투표 생성 API 추가
+            Alert.alert('성공', '투표를 생성했습니다.', [
+              {
+                text: '확인',
+                onPress: () => {
+                  setIsVoteMode(false);
+                  setSelectedSpots([]);
+                  setVoteTitle('');
+                }
+              }
+            ]);
+          }
+        }
+      ]
+    );
+  };
 
   return (
     <DetailContainer>
-      <DetailHeader>
-        <DragIndicator />
-        <HeaderContent>
+     <DetailHeader>
+      <DragIndicator />
+      <HeaderContent>
+        <TitleContainer>
           <BackButton onPress={onBack}>
             <SvgXml xml={svg.back} width={24} height={24} />
           </BackButton>
-          <DetailTitle>{course?.title || '코스 상세'}</DetailTitle>
+          {isVoteMode ? (
+            <TitleInput
+              value={voteTitle}
+              onChangeText={setVoteTitle}
+              placeholder="투표 제목을 입력해주세요"
+              placeholderTextColor="#999"
+            />
+          ) : (
+            <DetailTitle>{course?.title || '코스 상세'}</DetailTitle>
+          )}
+        </TitleContainer>
+        <ButtonContainer>
+          <VoteButton onPress={toggleVoteMode}>
+            <SvgXml 
+              xml={svg.plusCircle} 
+              width={20} 
+              height={20} 
+              color={isVoteMode ? '#FF6666' : '#7d7d7d'}
+            />
+            <VoteText isActive={isVoteMode}>투표</VoteText>
+          </VoteButton>
           <DeleteButton onPress={toggleDeleteMode}>
-            <SvgXml xml={svg.trash} width={20} height={20} />
-            <DeleteText>삭제</DeleteText>
+            <SvgXml 
+              xml={svg.trash} 
+              width={20} 
+              height={20} 
+              color={isDeleteMode ? '#FF6666' : '#7d7d7d'}
+            />
+            <DeleteText isActive={isDeleteMode}>삭제</DeleteText>
           </DeleteButton>
-        </HeaderContent>
-      </DetailHeader>
+        </ButtonContainer>
+      </HeaderContent>
+    </DetailHeader>
 
       <ScrollView>
+   
         {loading ? (
           <View style={{ padding: 20, alignItems: 'center' }}>
             <Text>로딩 중...</Text>
@@ -296,21 +421,32 @@ const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
                     <SequenceNumber>{index + 1}</SequenceNumber>
                   </SequenceCircle>
                   <SpotImage 
-                      source={{ uri: spot.photoUrl || '' }}
-                      style={{ width: 80, height: 80 }}  
-                      resizeMode="cover"  
-                      onError={(e) => console.log('Image loading error:', e.nativeEvent.error)}  
-                    />
+                    source={{ uri: spot.photoUrl || '' }}
+                    style={{ width: 80, height: 80 }}  
+                    resizeMode="cover"  
+                  />
                   <SpotInfo>
                     <SpotName>{spot.name}</SpotName>
                     <SpotAddress>{spot.city}</SpotAddress>
                     <SpotCategory>{spot.comment}</SpotCategory>
                   </SpotInfo>
-                  <CategoryButton onPress={() => isDeleteMode && toggleSpotSelection(spot.id)}>
+                  <CategoryButton 
+                    onPress={() => {
+                      if (isVoteMode) {
+                        toggleSpotSelection(spot.id);
+                      } else if (isDeleteMode) {
+                        toggleSpotSelection(spot.id);
+                      }
+                    }}
+                  >
                     <SvgXml 
-                      xml={isDeleteMode 
-                        ? (selectedSpots.includes(spot.id) ? svg.add : svg.check)
-                        : svg.list} 
+                      xml={
+                        isVoteMode 
+                          ? (selectedSpots.includes(spot.id) ? svg.add : svg.check)
+                          : isDeleteMode
+                            ? (selectedSpots.includes(spot.id) ? svg.add : svg.check)
+                            : svg.list
+                      } 
                       width={20} 
                       height={20}
                     />
@@ -321,11 +457,16 @@ const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
           ))
         )}
       </ScrollView>
-
       {isDeleteMode && (
         <DeleteActionButton onPress={handleDeleteSelectedSpots}>
           <DeleteActionText>삭제</DeleteActionText>
         </DeleteActionButton>
+        )}
+
+      {isVoteMode && (
+        <VoteActionButton onPress={handleCreateVote}>
+          <VoteActionText>투표 생성</VoteActionText>
+        </VoteActionButton>
       )}
     </DetailContainer>
   );

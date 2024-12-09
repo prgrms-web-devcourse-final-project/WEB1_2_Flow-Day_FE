@@ -1,6 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
+import { useStore } from '@/store/useStore';
+import usePostDetailStore from '@/store/post/post-detail-store';
 
 import PostTitle from '@/components/post/post-detail/PostTitle';
 import PostTag from '@/components/post/post-detail/PostTag';
@@ -13,82 +17,96 @@ import PostCommentButton from '@/components/post/post-detail/PostCommentButton';
 import PostButton from '@/components/post/post-detail/PostButton';
 import PostInputComment from '@/components/post/post-detail/PostInputComment';
 import PostParentComment from '@/components/post/post-detail/PostParentComment';
-import PostChildComment from '@/components/post/post-detail/PostChildComment';
+import PostDetailImages from '@/components/post/post-detail/PostDetailImages';
 
-const PostDetailPage = () => {
-  const [commentList, setCommentList] = useState([]);
-  // const getReplies = async () => {
-  //   try {
-  //     const res = await axios.get('{{url}}/api/v1/replies/1');
-  //     const data = await res.data;
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
+const PostDetailPage = ({ route }) => {
+  const { accessToken } = useStore();
+  const { postId } = route.params;
+  const { postDetailData, replyData, updatePostDetailData, setReplyData } =
+    usePostDetailStore();
+  const navigation = useNavigation();
 
-  /** 댓글 더미데이터 - API 완성 시 수정 예정 */
-  const commentData = [
-    {
-      id: 2,
-      content: '부모댓글100',
-      memberName: 'member1',
-      likeCount: 0,
-      createdAt: '2024-11-28T11:39:34.997124',
-      children: [
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPostDetail = async () => {
+      try {
+        const res = await axios.get(
+          `http://flowday.kro.kr:80/api/v1/posts/${postId}`,
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          },
+        );
+        const newData = res.data;
+        updatePostDetailData(newData);
+        setLoading(false); // 데이터 로딩 완료 후 로딩 상태 업데이트
+      } catch (error) {
+        console.error('Error fetching post detail:', error);
+        setLoading(false); // 에러가 나도 로딩 상태 종료
+      }
+    };
+    fetchPostDetail();
+  }, [postId]);
+
+  const deletePost = async () => {
+    try {
+      const res = await axios.delete(
+        `http://flowday.kro.kr:80/api/v1/posts/${postId}`,
         {
-          id: 3,
-          content: '자식댓글100',
-          memberName: 'member1',
-          likeCount: 0,
-          createdAt: '2024-11-28T11:41:24.093087',
-          children: [],
+          headers: { Authorization: `Bearer ${accessToken}` },
         },
-        {
-          id: 4,
-          content: '자식댓글100',
-          memberName: 'member1',
-          likeCount: 0,
-          createdAt: '2024-11-28T11:43:01.349621',
-          children: [],
-        },
-      ],
-    },
-    {
-      id: 5,
-      content: '부모댓글10',
-      memberName: 'member1',
-      likeCount: 0,
-      createdAt: '2024-11-28T11:46:52.440241',
-      children: [],
-    },
-    {
-      id: 6,
-      content: '부모댓글11',
-      memberName: 'member1',
-      likeCount: 0,
-      createdAt: '2024-11-28T11:46:55.760757',
-      children: [
-        {
-          id: 8,
-          content: '자식댓글1',
-          memberName: 'member1',
-          likeCount: 0,
-          createdAt: '2024-11-28T11:47:15.188453',
-          children: [],
-        },
-      ],
-    },
-  ];
+      );
+
+      // 삭제 후, 홈 페이지로 이동하거나 다른 처리를 합니다.
+      // 예: navigation.goBack(); 또는 navigation.navigate('Home');
+      // navigation.goBack(); // 예시로 이전 페이지로 돌아가기
+      navigation.navigate('PostListPage');
+    } catch (err) {
+      console.error('게시글 삭제 에러:', err);
+    }
+  };
+
+  useEffect(() => {
+    const getReply = async () => {
+      try {
+        const res = await axios.get(
+          `http://flowday.kro.kr:80/api/v1/replies/${postId}`,
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          },
+        );
+        const data = await res.data;
+        setReplyData(data);
+      } catch (err) {
+        console.error('게시글 조회 에러:', err);
+      }
+    };
+    getReply();
+  }, []);
+
+  const onPressEdit = () => {
+    navigation.navigate('PostEditPage', {postId});
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView>
+        <Text>Loading...</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <PostDetailPageDesign showsVerticalScrollIndicator={false}>
+      <SafeAreaView style={{ margin: 20 }} />
       <PostTitle />
-      <PostTag />
+      {postDetailData.tags && <PostTag />}
       <InfoSelectCourseBox>
         <PostInfo />
         <SaveCourse />
       </InfoSelectCourseBox>
       <PostMap />
+      {postDetailData.images && <PostDetailImages />}
       <PostContents />
       <Boxs>
         <ButtonsBox>
@@ -96,16 +114,18 @@ const PostDetailPage = () => {
           <PostCommentButton />
         </ButtonsBox>
         <ButtonsBox>
-          <PostButton>수정</PostButton>
-          <PostButton>삭제</PostButton>
+          <PostButton onPress={onPressEdit}>수정</PostButton>
+          <PostButton onPress={deletePost}>삭제</PostButton>
         </ButtonsBox>
       </Boxs>
-      <PostInputComment></PostInputComment>
+      <PostInputComment postId={postId} />
       <PostCommentList>
-        {commentData.map((comment, i) => {
-          return <PostParentComment />;
-        })}
+        {replyData.length > 0 &&
+          replyData.map((comment, i) => (
+            <PostParentComment comment={comment} key={i} />
+          ))}
       </PostCommentList>
+      <SafeAreaView />
     </PostDetailPageDesign>
   );
 };

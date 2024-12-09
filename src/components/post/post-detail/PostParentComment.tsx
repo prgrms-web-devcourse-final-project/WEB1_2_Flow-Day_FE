@@ -1,26 +1,70 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import styled from 'styled-components/native';
+import usePostDetailStore from '@/store/post/post-detail-store';
+import { useStore } from '@/store/useStore';
+import axios from 'axios';
 
-const PostParentComment = () => {
+interface IReply {
+  id: number;
+  content: string;
+  memberName: string | null;
+  likeCount: number;
+  createdAt: string;
+}
+
+const PostParentComment = ({ comment }: { comment: IReply }) => {
+  const { replyData, setReplyData } = usePostDetailStore();
+  const { accessToken } = useStore();
+
+  // 댓글 작성일과 시간 포맷 처리
+  const [date, time] = comment.createdAt.split('T');
+  const [year, month, day] = date.split('-');
+  const [hour, minute] = time.split(':');
+
+  // 좋아요 API 호출 후 상태 업데이트
+  const postLikeReply = async (replyId: number) => {
+    try {
+      const res = await axios.post(
+        `http://flowday.kro.kr:80/api/v1/likes/replies/${comment.id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      const data = await res.data;
+      // 좋아요 카운트를 하나 증가시킨 후 상태 업데이트
+      setReplyData(
+        replyData.map(reply =>
+          reply.id === replyId
+            ? { ...reply, likeCount: reply.likeCount + 1 } // 좋아요 수 증가
+            : reply,
+        ),
+      );
+    } catch (error) {
+      console.error('Error liking the reply:', error);
+    }
+  };
+
   return (
     <ParentCommentDesign>
-      <ProfileImage
-        source={require('../../../assets/images/profile.png')}
-        alt="프사"
-      />
+      <ProfileImage source={require('../../../assets/images/profile.png')} />
       <CommentInfoBox>
         <TextBox>
           <Icon source={require('../../../assets/icons/nickname.png')} />
-          <NicknameText>닉네임입니다</NicknameText>
+          <NicknameText>{`홍길동`}</NicknameText>
           <Icon source={require('../../../assets/icons/date.png')} />
-          <DateText>2024/12/13 12:15</DateText>
+          <DateText>{`${year}/${month}/${day} ${hour}:${minute}`}</DateText>
         </TextBox>
-        <CommentText>댓글입니당</CommentText>
+        <CommentText>{comment.content}</CommentText>
       </CommentInfoBox>
-      <LikeBox>
+      <LikeBox
+        onPress={() => {
+          postLikeReply(comment.id);
+        }}
+      >
         <LikeIcon source={require('../../../assets/icons/like.png')} />
-        <LikeText>1234</LikeText>
+        <LikeText>{comment.likeCount}</LikeText>
       </LikeBox>
     </ParentCommentDesign>
   );
@@ -56,6 +100,7 @@ const Icon = styled.Image`
   height: 16px;
   margin-right: 3px;
 `;
+
 const NicknameText = styled.Text`
   height: 20px;
   font-size: 12px;

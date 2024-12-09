@@ -17,7 +17,7 @@ export default PostTitle;
 const PostTitleDesign = styled.View`
   width: 370px;
   height: 40px;
-  margin: 0 auto;
+  margin: 10px auto;
   border-bottom-width: 1px;
   border-bottom-color: #d9d9d9;
 `;

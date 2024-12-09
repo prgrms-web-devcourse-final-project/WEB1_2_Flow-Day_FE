@@ -1,12 +1,17 @@
 import Buttons from "@/components/Buttons";
 import { ROUTES } from "@/constants/routes";
+import apiClient from "@/utils/apiClient";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 import { useState } from "react";
 import { Text, View } from "react-native";
 import styled from "styled-components/native";
 
 const Container = styled.View`
-    
+    flex: 1;
+    padding: 70px 50px 100px;
+    justify-content: space-between;
+    background-color: #FFFFFF;
 `
 
 const TopText = styled.Text<{ color?: string }>`
@@ -28,15 +33,40 @@ const SubText = styled.Text`
 const Input = styled.TextInput`
     border: 1px solid #DDDDDD;
     width: 300px;
-    margin: 14px 0;
+    margin: 25px 0;
     border-radius: 6px;
     font-family: 'SCDream4';
     padding: 9px 12px;
 `
 
+const Message = styled.Text`
+    color: #FF6666;
+    font-size: 10px;
+    font-family: 'SCDream4';
+`
+
 const CoupleRegisterPage = () => {
     const [name, setName] = useState<string>();
+    const [message, setMessage] = useState<string>();
     const navigation = useNavigation();
+
+    const handleFind = async () => {
+        try{
+            const response = await apiClient.get(`/members/partner/${name}`);
+            console.log(response.data)
+            if (response.data.id === null) {
+                setMessage('정확한 닉네임을 입력해주세요');
+            } else {
+                navigation.navigate(ROUTES.COUPLE_CHECK, {
+                    name: response.data.name,
+                    image: response.data.profileImage,
+                    id: response.data.id
+                });
+            }
+        } catch(error) {
+            console.error('Error: ', error);
+        }  
+    }
 
     return(
         <Container>
@@ -57,7 +87,8 @@ const CoupleRegisterPage = () => {
                     placeholder="닉네임"
                     placeholderTextColor='#DDDDDD'
                 />
-                <Buttons.ShortBtn text="연인 닉네임 조회" style={{backgroundColor: '#000000'}} />
+                <Message>{message}</Message>
+                <Buttons.ShortBtn text="연인 닉네임 조회" style={{backgroundColor: '#000000'}} onPress={() => handleFind()}/>
             </View>
             <Buttons.ShortBtn text="넘어가기" onPress={() => navigation.navigate(ROUTES.WELCOME as never)}/>
         </Container>
