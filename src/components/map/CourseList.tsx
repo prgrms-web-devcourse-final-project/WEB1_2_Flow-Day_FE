@@ -238,7 +238,7 @@ export const CourseList = ({
   const [isEditing, setIsEditing] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [menuVisible, setMenuVisible] = useState(false);
-  
+  const [isDetailView, setIsDetailView] = useState(false);
   const { accessToken } = useStore();
 
 
@@ -367,22 +367,37 @@ export const CourseList = ({
 
  
 
-  const renderCourseItem = (course: Course) => (
-    <TouchableOpacity onPress={() => handleCourseClick(course)}>
-      <CourseItem>   
-        <CourseColor color={course.color || '#666666'} />
-        <CourseTitle>
-          {course.title || (course.spots && course.spots.length > 0 ? course.spots[0].name : '마이 위시리스트')}
-        </CourseTitle>
-        <MoreButton onPress={(event) => {
-          event.stopPropagation();
-          handleMorePress(course, event);
-        }}>
-          <SvgXml xml={svg.more} width={20} height={20} />
-        </MoreButton>
-      </CourseItem>
-    </TouchableOpacity>
-  );
+  const renderCourseItem = (course: Course) => {
+    // 위시리스트 항목인지 확인
+    const isWishlist = !course.title && (!course.spots || course.spots.length === 0);
+    
+    return (
+      <TouchableOpacity 
+        onPress={() => {
+          if (isWishlist) {
+            handleWishListClick();  // 위시리스트로 이동
+          } else {
+            handleCourseClick(course);  // 일반 코스는 상세보기로 이동
+          }
+        }}
+      >
+        <CourseItem>   
+          <CourseColor color={course.color || '#666666'} />
+          <CourseTitle>
+            {isWishlist ? '나의 위시리스트' : course.title}
+          </CourseTitle>
+          {!isWishlist && (
+            <MoreButton onPress={(event) => {
+              event.stopPropagation();
+              handleMorePress(course, event);
+            }}>
+              <SvgXml xml={svg.more} width={20} height={20} />
+            </MoreButton>
+          )}
+        </CourseItem>
+      </TouchableOpacity>
+    );
+  };
 
   const getModalTitle = () => {
     return isEditing ? '코스 수정' : '새코스 생성';
@@ -441,58 +456,51 @@ export const CourseList = ({
 
  return (
  <>
-<SlideContainer height={slideHeight} {...panResponder.panHandlers}>
+  <SlideContainer height={slideHeight} {...panResponder.panHandlers}>
   {viewMode === 'detail' && selectedCourse ? (
     <CourseDetail 
       course={selectedCourse}
       onBack={handleBackToList}
     />
   ) : viewMode === 'wishlist' ? (
-    <WishList onBack={handleBackToList} />
+    <WishList 
+      onBack={handleBackToList}
+    />
   ) : (
        <>
-     <Header>
-        <DragIndicator />
-        <HeaderContent>
-          <HeaderTitle>전체 리스트</HeaderTitle>
-          <CreateButton onPress={() => setModalVisible(true)}>
-            <SvgXml xml={svg.plusCircle} width={20} height={20} />
-            <CreateText>새코스 생성</CreateText>
-          </CreateButton>
-        </HeaderContent>
-      </Header>
+        <Header>
+          <DragIndicator />
+          <HeaderContent>
+            <HeaderTitle>전체 리스트</HeaderTitle>
+            <CreateButton onPress={() => setModalVisible(true)}>
+              <SvgXml xml={svg.plusCircle} width={20} height={20} />
+              <CreateText>새코스 생성</CreateText>
+            </CreateButton>
+          </HeaderContent>
+        </Header>
          <Content>
-            {loading ? (
-              <View style={{ padding: 16 }}>
-                <Text style={{ textAlign: 'center', color: '#666' }}>로딩 중...</Text>
-              </View>
-            ) : error ? (
-              <View style={{ padding: 16 }}>
-                <Text style={{ textAlign: 'center', color: 'red' }}>{error}</Text>
-              </View>
-            ) : courses && courses.length > 0 ? (
-              <>
-                <TouchableOpacity onPress={handleWishListClick}>
-                  <CourseItem>   
-                    <CourseColor color="#666666" />
-                    <CourseTitle>마이 위시리스트</CourseTitle>
-                  </CourseItem>
-                </TouchableOpacity>
-                {courses.map(course => (
-                  <View key={course.id}> 
-                    {renderCourseItem(course)}
-                  </View>
-                ))}
-              </>
-            ) : (
-              <View style={{ padding: 16 }}>
-                <Text style={{ textAlign: 'center', color: '#666' }}>
-                  코스가 없습니다.
-                </Text>
-              </View>
-            )}
-        </Content>
-
+           {loading ? (
+             <View style={{ padding: 16 }}>
+               <Text style={{ textAlign: 'center', color: '#666' }}>로딩 중...</Text>
+             </View>
+           ) : error ? (
+             <View style={{ padding: 16 }}>
+               <Text style={{ textAlign: 'center', color: 'red' }}>{error}</Text>
+             </View>
+           ) : courses && courses.length > 0 ? (
+             courses.map(course => (
+               <View key={course.id}> 
+                 {renderCourseItem(course)}
+               </View>
+             ))
+           ) : (
+             <View style={{ padding: 16 }}>
+               <Text style={{ textAlign: 'center', color: '#666' }}>
+                 코스가 없습니다.
+               </Text>
+             </View>
+           )}
+         </Content>
        </>
      )}
    </SlideContainer>

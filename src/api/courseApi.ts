@@ -1,9 +1,28 @@
 
 import apiClient from 'src/utils/apiClient';
-import { Course, CreateCourseRequest, PageResponse, Spot } from '@/types/course';
+import { Course, CreateCourseRequest, PageResponse } from '@/types/course';
 
 const BASE_URL = 'http://flowday.kro.kr:80/api/v1';
 
+export interface WishSpot {
+  id: number;
+  placeId: string;
+  name: string;
+  city: string;
+  comment: string;
+  sequence: number;
+  courseId: number;
+  voteId: number;
+  photoUrl?: string;  
+  rating?: string;   
+  address?: string;   
+}
+
+export interface WishPlacesResponse {
+  id: number;
+  memberId: number;
+  spots: WishSpot[];
+}
 export const courseApi = {
   createCourse: async (courseData: CreateCourseRequest): Promise<Course> => {
     try {
@@ -83,26 +102,31 @@ export const courseApi = {
     }
   },
 
-  getWishPlaces: async (): Promise<{ spots: Spot[] }> => {
-    try {
-      const response = await apiClient.get<{ spots: Spot[] }>(
-        `${BASE_URL}/wishPlaces`  
-      );
-      return response.data;
-    } catch (error) {
-      console.error('위시리스트 조회 오류:', error);
-      throw error;
+    // 위시리스트 관련 API 추가
+    getWishPlaces: async (): Promise<WishPlacesResponse> => {
+      try {
+        const response = await apiClient.get<WishPlacesResponse>(
+          `${BASE_URL}/wishPlaces`
+        );
+        // 응답이 없거나 spots가 없는 경우 빈 배열 반환
+        if (!response.data || !response.data.spots) {
+          return { id: 0, memberId: 0, spots: [] };
+        }
+        return response.data;
+      } catch (error) {
+        console.error('위시리스트 조회 오류:', error);
+        throw error;
+      }
+    },
+  
+    deleteWishPlace: async (spotId: number): Promise<void> => {
+      try {
+        await apiClient.delete(`${BASE_URL}/wishPlaces/spot/${spotId}`);
+      } catch (error) {
+        console.error('위시리스트 장소 삭제 오류:', error);
+        throw error;
+      }
     }
-  },
-
-  deleteWishPlace: async (spotId: number): Promise<void> => {
-    try {
-      await apiClient.delete(`${BASE_URL}/wishPlaces/spot/${spotId}`); 
-    } catch (error) {
-      console.error('위시리스트 장소 삭제 오류:', error);
-      throw error;
-    }
-  }
 
 
 };
