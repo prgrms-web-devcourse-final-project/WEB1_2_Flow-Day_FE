@@ -23,7 +23,7 @@ const getIcon = (type: string) => {
     case 'COURSE':
       return require('../../assets/icons/alert-icons/course.png');
     default:
-      return undefined;
+      return require('../../assets/icons/alert-icons/course.png');
   }
 };
 

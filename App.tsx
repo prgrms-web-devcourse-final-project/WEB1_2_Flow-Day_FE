@@ -83,6 +83,7 @@ const MainStack = () => {
     <Stack.Navigator>
       <Stack.Screen name='Home' component={HomePage} options={{header: () => <Header>D+134</Header>}} />
       <Stack.Screen name='SpotDetail' component={SpotDetailPage} options={{headerShown: false, tabBarStyle: {display: 'none'}}} />
+      <Stack.Screen name='AlertPage' component={AlertPage} options={{headerShown: false}} />
     </Stack.Navigator>
   );
 };
