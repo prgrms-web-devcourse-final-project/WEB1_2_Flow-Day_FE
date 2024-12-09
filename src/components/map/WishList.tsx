@@ -46,12 +46,15 @@ const Title = styled.Text`
 
 const DeleteButton = styled.TouchableOpacity`
   padding: 8px;
+  flex-direction: row;
+  align-items: center;
 `;
 
 const DeleteButtonText = styled.Text<{ isActive?: boolean }>`
   color: ${props => props.isActive ? '#FF6666' : '#666666'};
   font-family: 'SCDream4';
   font-size: 14px;
+  margin-left: 4px;
 `;
 
 const DragIndicator = styled.View`
@@ -203,13 +206,13 @@ const WishList = ({ onBack }: WishListProps) => {
             <SvgXml 
               xml={svg.trash} 
               width={20} 
-              height={20} 
+              height={20}
               color={isDeleteMode ? '#FF6666' : '#7d7d7d'}
             />
-              <DeleteButtonText isActive={isDeleteMode}>
-                삭제
-              </DeleteButtonText>
-            </DeleteButton>
+            <DeleteButtonText isActive={isDeleteMode}>
+              삭제
+            </DeleteButtonText>
+          </DeleteButton>
           </TitleContainer>
         </HeaderContent>
       </DetailHeader>

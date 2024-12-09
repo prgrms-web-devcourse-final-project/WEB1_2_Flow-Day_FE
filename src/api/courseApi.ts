@@ -22,6 +22,7 @@ export interface WishPlacesResponse {
   id: number;
   memberId: number;
   spots: WishSpot[];
+  memberName?: string;
 }
 export const courseApi = {
   createCourse: async (courseData: CreateCourseRequest): Promise<Course> => {
@@ -102,7 +103,7 @@ export const courseApi = {
     }
   },
 
-    // 위시리스트 관련 API 추가
+    // 나의 위시리스트 조회
     getWishPlaces: async (): Promise<WishPlacesResponse> => {
       try {
         const response = await apiClient.get<WishPlacesResponse>(
@@ -118,6 +119,22 @@ export const courseApi = {
         throw error;
       }
     },
+
+      // 파트너의 위시플레이스 조회
+  getPartnerWishPlaces: async (): Promise<WishPlacesResponse> => {
+    try {
+      const response = await apiClient.get<WishPlacesResponse>(
+        `${BASE_URL}/wishPlaces/partner`
+      );
+      if (!response.data || !response.data.spots) {
+        return { id: 0, memberId: 0, spots: [], memberName: '' };
+      }
+      return response.data;
+    } catch (error) {
+      console.error('파트너 위시리스트 조회 오류:', error);
+      throw error;
+    }
+  },
   
     deleteWishPlace: async (spotId: number): Promise<void> => {
       try {
