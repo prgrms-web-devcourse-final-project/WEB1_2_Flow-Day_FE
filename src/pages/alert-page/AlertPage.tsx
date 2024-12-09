@@ -32,10 +32,11 @@ const AlertPage = () => {
         },
       });
 
-      const data = await res.data;
+      const data = await res.data.content;
       setAlertList(data);
       console.log('===== 알림 데이터 =====');
       console.log(data);
+      setAlertList(data);
     };
     getNotifications();
   }, [accessToken, userId]);

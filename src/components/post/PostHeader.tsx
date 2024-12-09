@@ -2,13 +2,14 @@ import {Text} from 'react-native';
 import React from 'react';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const PostHeaderDesign = styled.View`
   background-color: white;
   flex-direction: row;
   justify-content: center;
   height: 56px;
-  border: 1px solid #EEEEEE;
+  border: 1px solid #eeeeee;
 `;
 
 const PostHeaderTitle = styled.Text`
@@ -34,17 +35,19 @@ interface PostHeaderProps {
   children: React.ReactNode;
 }
 
-const PostHeader: React.FC<PostHeaderProps> = ({ children }) => {
+const PostHeader: React.FC<PostHeaderProps> = ({children}) => {
   const navigation = useNavigation();
   return (
-    <PostHeaderDesign>
-      <PostHeaderBackButton onPress={() => navigation.goBack()}>
-        <PostHeaderBackImage source={require('../../assets/icons/back.png')} />
-      </PostHeaderBackButton>
-      <PostHeaderTitle>
-        <Text>{children}</Text>
-      </PostHeaderTitle>
-    </PostHeaderDesign>
+    <SafeAreaView>
+      <PostHeaderDesign>
+        <PostHeaderBackButton onPress={() => navigation.goBack()}>
+          <PostHeaderBackImage source={require('../../assets/icons/back.png')} />
+        </PostHeaderBackButton>
+        <PostHeaderTitle>
+          <Text>{children}</Text>
+        </PostHeaderTitle>
+      </PostHeaderDesign>
+    </SafeAreaView>
   );
 };
 

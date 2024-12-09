@@ -14,7 +14,6 @@ import {useStore} from '@/store/useStore';
 import HomePage from '@/pages/home-page/HomePage';
 import ChatPage from '@/pages/chat-page/ChatPage';
 import Header from './src/components/Header';
-import AlertPage from '@/pages/alert-page/AlertPage';
 import {svg} from '@/assets/icons/svg';
 import {ROUTES} from '@/constants/routes';
 import MapPage from '@/pages/map-page/MapPage';
@@ -97,6 +96,7 @@ const MainStack = () => {
           headerStyle: {backgroundColor: '#FFFFFF'},
         }}
       />
+      <Stack.Screen name='AlertPage' component={AlertPage} options={{header: () => <PostHeader>알림</PostHeader>}} />
     </Stack.Navigator>
   );
 };
