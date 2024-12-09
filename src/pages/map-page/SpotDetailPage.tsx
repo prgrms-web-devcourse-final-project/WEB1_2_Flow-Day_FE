@@ -55,17 +55,17 @@ const SpotDetailPage = ({navigation, route}) => {
   const [mainPhotoUrl, setMainPhotoUrl] = useState();
   const placeId = route.params.spotId;
 
-  const getPlaceDetails = async (placeId: string) => {
-    try {
-      const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name%2Cplace_id%2Cphotos%2Cformatted_address%2Ccurrent_opening_hours%2Cwebsite%2Cformatted_phone_number%2Crating%2Creviews&language=ko&key=${GOOGLE_MAPS_API_KEY}`;
-      const response = await axios.get(url);
-      setData(response.data.result);
-    } catch (error) {
-      console.error('Error fetching place details:', error);
-    }
-  };
-
   useEffect(() => {
+    const getPlaceDetails = async (placeId: string) => {
+      try {
+        const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name%2Cplace_id%2Cphotos%2Cformatted_address%2Ccurrent_opening_hours%2Cwebsite%2Cformatted_phone_number%2Crating%2Creviews&language=ko&key=${GOOGLE_MAPS_API_KEY}`;
+        const response = await axios.get(url);
+        setData(response.data.result);
+        console.log(data);
+      } catch (error) {
+        console.error('Error fetching place details:', error);
+      }
+    };
     getPlaceDetails(placeId);
   }, [placeId]);
 

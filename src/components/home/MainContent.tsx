@@ -46,7 +46,7 @@ const ImageContainer = styled.ImageBackground`
 const ImageBox = styled.Image`
   width: 150px;
   height: 150px;
-  background-color: #EEEEEE;
+  background-color: #eeeeee;
 `;
 
 const ContentBox = styled.View`

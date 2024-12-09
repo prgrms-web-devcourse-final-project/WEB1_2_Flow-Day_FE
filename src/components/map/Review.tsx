@@ -21,9 +21,7 @@ const ImageBox = styled.Image`
   margin-right: 2px;
 `;
 
-const Content = styled.Text`
-
-`;
+const Content = styled.Text``;
 
 const ProfileContent = styled.View`
   flex-direction: row;
@@ -42,7 +40,7 @@ const TempView = styled.View`
 `;
 
 const Review = (placeData: any) => {
-  const data = placeData.data.reviews;
+  const data = placeData?.data?.reviews;
   console.log(data);
   const {width} = useWindowDimensions();
   const getStars = (rating: number) => {

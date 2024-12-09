@@ -111,7 +111,7 @@ const CourseChoiceSlide = ({data, setShow}) => {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        const data = (await res.data);
+        const data = await res.data;
         setPostList({...data});
       } catch (err) {
         console.error('포스트 생성 페이지에서 코스 목록 가져오기 에러 : ', err);
@@ -163,20 +163,19 @@ const CourseChoiceSlide = ({data, setShow}) => {
       <CourseList>
         {postList.content.map((course, i) => {
           return (
-            <View>
+            <View key={i}>
               <CourseItem
-                key={i}
                 onPress={() => {
-                  setPostCreateData({...postCreateData, courseId: `${course.id}`});
+                  setPostCreateData({...postCreateData, courseId: course.id});
                   setId(`${course.id}`);
                 }}
               >
                 <ItemIcon source={require('@/assets/icons/spot.svg')} />
                 <SvgXml xml={getModifiedSvg(svg.spotItem, course.color ? course.color : '#000000')} />
                 <CourseTitle>{`${course.title}`}</CourseTitle>
-                {postCreateData.courseId === `${course.id}` ? <CheckIcon source={require('@/assets/icons/check.png')} /> : <CheckIcon source={require('@/assets/icons/unCheck.png')} />}
+                {postCreateData.courseId === course.id ? <CheckIcon source={require('@/assets/icons/check.png')} /> : <CheckIcon source={require('@/assets/icons/unCheck.png')} />}
               </CourseItem>
-              {postCreateData.courseId === `${course.id}` && <Input onChangeText={(text) => setText(text)} placeholder='메모를 작성해보세요' placeholderTextColor='#DDDDDD' />}
+              {postCreateData.courseId === course.id && <Input onChangeText={(text) => setText(text)} placeholder='메모를 작성해보세요' placeholderTextColor='#DDDDDD' />}
             </View>
           );
         })}

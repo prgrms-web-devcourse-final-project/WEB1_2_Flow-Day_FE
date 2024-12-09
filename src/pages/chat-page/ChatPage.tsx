@@ -8,6 +8,7 @@ import YourMessage from '@/components/chat/YourMessage';
 import useChatStore from '@/store/chat/ChatStore';
 import axios from 'axios';
 import {useStore} from '@/store/useStore';
+import {REACT_APP_SERVER_URL} from '@env';
 
 // 채팅 메시지 타입 정의
 interface ChatMessage {
@@ -18,7 +19,7 @@ interface ChatMessage {
 
 const ChatPage = (): JSX.Element => {
   const {chatData, setMessage} = useChatStore(); // 전역 상태에서 채팅 데이터 가져오기
-  const {userId, roomId, accessToken} = useStore();
+  const {userId, roomId, accessToken, setRommId} = useStore();
 
   // 상태 변수 타입 정의
   const [connected, setConnected] = useState<boolean>(false); // WebSocket 연결 상태
@@ -26,6 +27,23 @@ const ChatPage = (): JSX.Element => {
   const [pageNumber, setPageNumber] = useState(1);
   const [refresh, setRefresh] = useState(true);
   const clientRef = useRef<Client | null>(null); // STOMP 클라이언트를 참조하는 useRef
+
+  useEffect(() => {
+    const getRoomId = async () => {
+      try {
+        const res = await axios.get(`${REACT_APP_SERVER_URL}/members/`, {
+          headers: {Authorization: `Bearer ${accessToken}`},
+        });
+        const newRoomId = await res.data.chattingRoom;
+
+        console.log('roomId:', newRoomId);
+        setRommId(+newRoomId);
+      } catch (err) {
+        console.error('룸 아이디 에러 :', err);
+      }
+    };
+    getRoomId();
+  }, [accessToken]);
 
   useEffect(() => {
     const getChat = async () => {
@@ -44,7 +62,7 @@ const ChatPage = (): JSX.Element => {
       }
     };
     getChat();
-  }, [roomId, input]);
+  }, [setRommId, input]);
 
   // WebSocket 연결 및 STOMP 클라이언트 설정
   useEffect(() => {
