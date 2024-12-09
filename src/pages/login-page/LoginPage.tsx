@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {View, Image, Alert} from 'react-native';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
@@ -76,7 +76,7 @@ const BottomText = styled.Text`
 const LoginPage = () => {
   const [id, setId] = useState('');
   const [pw, setPw] = useState('');
-  const {setUserId, setAccessToken, setIsLoggedIn} = useStore();
+  const {accessToken, setRommId, setUserId, setAccessToken, setIsLoggedIn} = useStore();
   const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation();

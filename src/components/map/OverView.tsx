@@ -32,7 +32,7 @@ const PhotoBox = styled.Image`
   height: 80px;
   margin-right: 10px;
   margin-bottom: 10px;
-  background-color: #EEEEEE;
+  background-color: #eeeeee;
 `;
 
 const ContentText = styled.Text`
@@ -56,6 +56,8 @@ const OverView = (placeData: any) => {
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {data?.photos?.map((photo: any, index: number) => {
               const photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo.photo_reference}&key=${GOOGLE_MAPS_API_KEY}`;
+              console.log('================= photo================= ');
+              console.log(photoUrl);
               return <PhotoBox key={index} source={{uri: photoUrl}} />;
             })}
           </ScrollView>

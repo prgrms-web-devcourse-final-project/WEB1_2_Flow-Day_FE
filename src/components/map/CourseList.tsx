@@ -1,11 +1,26 @@
+
 import { useRef, useState, useEffect } from 'react';
-import { Modal, PanResponder, Dimensions, View, Text, Alert, TouchableOpacity, GestureResponderEvent } from 'react-native';
+import { 
+  Modal, 
+  PanResponder, 
+  Dimensions, 
+  View, 
+  Text, 
+  Alert, 
+  TouchableOpacity, 
+  GestureResponderEvent 
+} from 'react-native';
+
 import styled from 'styled-components/native';
 import { SvgXml } from 'react-native-svg';
 import { svg } from '@/assets/icons/svg';
 import { courseApi } from '@/api/courseApi';
 import { Course, CreateCourseRequest } from '@/types/course';
 import { useStore } from '@/store/useStore';
+import CourseDetail from './CourseDetail'; 
+import WishList from './WishList'; 
+
+type ViewMode = 'list' | 'detail' | 'wishlist';
 
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -14,6 +29,8 @@ const HEADER_HEIGHT = 60;
 const MINIMAL_VISIBLE_HEIGHT = 77; // 슬라이드가 내려갔을 때 보일 높이
 const HALF_HEIGHT = SCREEN_HEIGHT * 0.5;
 const FULL_HEIGHT = SCREEN_HEIGHT * 0.8;
+
+
 
 const SlideContainer = styled.View<{ height: number }>`
   position: absolute;
@@ -195,26 +212,58 @@ const ActionMenuText = styled.Text<{ color?: string }>`
 
 const colors = ['#FF0004', '#FFA100', '#FFE500', '#26FF00', '#00A1FF', '#001AFF', '#8400FF','#FF69B4'];
 
-export const CourseList = () => {
+interface CourseListProps {
+  courses: Course[];
+  loading: boolean;
+  error: string | null;
+  selectedCourse: Course | null;
+  setSelectedCourse: (course: Course | null) => void;
+  onCoursesUpdate: () => Promise<void>;
+}
+
+export const CourseList = ({ 
+  courses, 
+  loading, 
+  error, 
+  selectedCourse, 
+  setSelectedCourse,
+  onCoursesUpdate 
+}: CourseListProps) => {
   const [slideHeight, setSlideHeight] = useState(HEADER_HEIGHT);
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [modalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState('');
   const [selectedColor, setSelectedColor] = useState(colors[0]);
   const [isShared, setIsShared] = useState(false);
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [menuVisible, setMenuVisible] = useState(false);
+  const [isDetailView, setIsDetailView] = useState(false);
   const { accessToken } = useStore();
+
+
+
+  const handleCourseClick = (course: Course) => {
+    setSelectedCourse(course);
+    setViewMode('detail');
+    setSlideHeight(FULL_HEIGHT);
+  };
+
+  const handleBackToList = () => {
+    setViewMode('list');
+    setSelectedCourse(null);
+    setSlideHeight(MINIMAL_VISIBLE_HEIGHT);
+  };
+
+  const handleWishListClick = () => {
+    setViewMode('wishlist');
+    setSlideHeight(FULL_HEIGHT);
+  };
   
   
 
   useEffect(() => {
     setSlideHeight(MINIMAL_VISIBLE_HEIGHT);
-    loadCourses();
   }, []);
 
   const resetModalState = () => {
@@ -256,10 +305,10 @@ export const CourseList = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              setLoading(true);
+    
               await courseApi.deleteCourse(selectedCourse.id); 
               
-              setCourses(prev => prev.filter(course => course.id !== selectedCourse.id));
+              onCoursesUpdate();
               Alert.alert('성공', '코스가 삭제되었습니다.');
             } catch (error) {
               const errorMessage = error instanceof Error ? error.message : '삭제 실패';
@@ -271,7 +320,7 @@ export const CourseList = () => {
               
               Alert.alert('오류', errorMessage);
             } finally {
-              setLoading(false);
+   
             }
           }
         }
@@ -279,26 +328,6 @@ export const CourseList = () => {
     );
   };
 
-  const loadCourses = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const response = await courseApi.getCourses();
-      console.log('받아온 코스 목록:', response);
-      
-      if (response?.content) {
-        setCourses(response.content);
-      }
-    } catch (error) {
-      console.error('코스 목록 로드 실패:', error);
-      const errorMessage = error instanceof Error ? error.message : '코스 목록을 불러오는데 실패했습니다.';
-      setError(errorMessage);
-      Alert.alert('오류', errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleCreateOrUpdateCourse = async () => {
     if (!title.trim()) {
@@ -307,8 +336,6 @@ export const CourseList = () => {
     }
   
     try {
-      setLoading(true);
-      
       const tokenData = JSON.parse(atob(accessToken.split('.')[1]));
       const memberId = tokenData.data.id;
 
@@ -329,28 +356,48 @@ export const CourseList = () => {
   
       setModalVisible(false);
       resetModalState();
-      await loadCourses();
+      await onCoursesUpdate();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : '처리 중 오류가 발생했습니다.';
       Alert.alert('오류', errorMessage);
     } finally {
-      setLoading(false);
+
     }
   };
 
  
-  const renderCourseItem = (course: Course) => (
-    <CourseItem>   
-      <CourseColor color={course.color || '#666666'} />
-      <CourseTitle>
-        {course.title || (course.spots && course.spots.length > 0 ? course.spots[0].name : '제목 없음')}
-      </CourseTitle>
-      <MoreButton onPress={(event) => handleMorePress(course, event)}>
-        <SvgXml xml={svg.more} width={20} height={20} />
-      </MoreButton>
-    </CourseItem>
-  );
 
+  const renderCourseItem = (course: Course) => {
+    // 위시리스트 항목인지 확인
+    const isWishlist = !course.title && (!course.spots || course.spots.length === 0);
+    
+    return (
+      <TouchableOpacity 
+        onPress={() => {
+          if (isWishlist) {
+            handleWishListClick();  // 위시리스트로 이동
+          } else {
+            handleCourseClick(course);  // 일반 코스는 상세보기로 이동
+          }
+        }}
+      >
+        <CourseItem>   
+          <CourseColor color={course.color || '#666666'} />
+          <CourseTitle>
+            {isWishlist ? '나의 위시리스트' : course.title}
+          </CourseTitle>
+          {!isWishlist && (
+            <MoreButton onPress={(event) => {
+              event.stopPropagation();
+              handleMorePress(course, event);
+            }}>
+              <SvgXml xml={svg.more} width={20} height={20} />
+            </MoreButton>
+          )}
+        </CourseItem>
+      </TouchableOpacity>
+    );
+  };
 
   const getModalTitle = () => {
     return isEditing ? '코스 수정' : '새코스 생성';
@@ -382,144 +429,181 @@ export const CourseList = () => {
     })
   ).current;
 
-  return (
-    <>
-      <SlideContainer height={slideHeight} {...panResponder.panHandlers}>
+  const headerPanResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        const { dy, moveY } = gestureState;
+        return Math.abs(dy) > 10;
+      },
+      onPanResponderMove: (_, gestureState) => {
+        const newHeight = SCREEN_HEIGHT - gestureState.moveY;
+        if (newHeight >= MINIMAL_VISIBLE_HEIGHT && newHeight < FULL_HEIGHT) {
+          setSlideHeight(newHeight);
+        }
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        const newHeight = SCREEN_HEIGHT - gestureState.moveY;
+        if (newHeight < HEADER_HEIGHT + 50) {
+          setSlideHeight(MINIMAL_VISIBLE_HEIGHT);
+        } else if (newHeight < HALF_HEIGHT + 50) {
+          setSlideHeight(HALF_HEIGHT);
+        } else {
+          setSlideHeight(FULL_HEIGHT);
+        }
+      },
+    })
+  ).current;
+
+ return (
+ <>
+  <SlideContainer height={slideHeight} {...panResponder.panHandlers}>
+  {viewMode === 'detail' && selectedCourse ? (
+    <CourseDetail 
+      course={selectedCourse}
+      onBack={handleBackToList}
+    />
+  ) : viewMode === 'wishlist' ? (
+    <WishList 
+      onBack={handleBackToList}
+    />
+  ) : (
+       <>
         <Header>
           <DragIndicator />
           <HeaderContent>
-          <HeaderTitle>전체 리스트</HeaderTitle>
+            <HeaderTitle>전체 리스트</HeaderTitle>
             <CreateButton onPress={() => setModalVisible(true)}>
               <SvgXml xml={svg.plusCircle} width={20} height={20} />
               <CreateText>새코스 생성</CreateText>
             </CreateButton>
           </HeaderContent>
         </Header>
-            <Content>
-            {loading ? (
-              <View style={{ padding: 16 }}>
-                <Text style={{ textAlign: 'center', color: '#666' }}>로딩 중...</Text>
-              </View>
-            ) : error ? (
-              <View style={{ padding: 16 }}>
-                <Text style={{ textAlign: 'center', color: 'red' }}>{error}</Text>
-              </View>
-            ) : courses && courses.length > 0 ? (
-              courses.map(course => (
-                <View key={course.id}> 
-                  {renderCourseItem(course)}
-                </View>
-              ))
-            ) : (
-              <View style={{ padding: 16 }}>
-                <Text style={{ textAlign: 'center', color: '#666' }}>
-                  코스가 없습니다.
-                </Text>
-              </View>
-            )}
-          </Content>
-      </SlideContainer>
+         <Content>
+           {loading ? (
+             <View style={{ padding: 16 }}>
+               <Text style={{ textAlign: 'center', color: '#666' }}>로딩 중...</Text>
+             </View>
+           ) : error ? (
+             <View style={{ padding: 16 }}>
+               <Text style={{ textAlign: 'center', color: 'red' }}>{error}</Text>
+             </View>
+           ) : courses && courses.length > 0 ? (
+             courses.map(course => (
+               <View key={course.id}> 
+                 {renderCourseItem(course)}
+               </View>
+             ))
+           ) : (
+             <View style={{ padding: 16 }}>
+               <Text style={{ textAlign: 'center', color: '#666' }}>
+                 코스가 없습니다.
+               </Text>
+             </View>
+           )}
+         </Content>
+       </>
+     )}
+   </SlideContainer>
 
-    {menuVisible && (
-      <>
-        <TouchableOpacity 
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'transparent'
-          }}
-          onPress={() => setMenuVisible(false)}
-        />
-        <ActionMenu
-          style={{
-            position: 'absolute',
-            top: menuPosition.y,
-            right: 20, 
-            width: 80 
-          }}
-        >
-          <ActionMenuItem onPress={() => {
-            setMenuVisible(false);
-            handleEditPress();
-          }}>
-            <ActionMenuText>수정</ActionMenuText>
-          </ActionMenuItem>
-          <ActionMenuItem onPress={() => {
-            setMenuVisible(false);
-            handleDeletePress();
-          }}>
-            <ActionMenuText color="#FF0000">삭제</ActionMenuText>
-          </ActionMenuItem>
-        </ActionMenu>
-      </>
-    )}
+   {menuVisible && (
+     <>
+       <TouchableOpacity 
+         style={{
+           position: 'absolute',
+           top: 0,
+           left: 0,
+           right: 0,
+           bottom: 0,
+           backgroundColor: 'transparent'
+         }}
+         onPress={() => setMenuVisible(false)}
+       />
+       <ActionMenu
+         style={{
+           position: 'absolute',
+           top: menuPosition.y,
+           right: 20, 
+           width: 80 
+         }}
+       >
+         <ActionMenuItem onPress={() => {
+           setMenuVisible(false);
+           handleEditPress();
+         }}>
+           <ActionMenuText>수정</ActionMenuText>
+         </ActionMenuItem>
+         <ActionMenuItem onPress={() => {
+           setMenuVisible(false);
+           handleDeletePress();
+         }}>
+           <ActionMenuText color="#FF0000">삭제</ActionMenuText>
+         </ActionMenuItem>
+       </ActionMenu>
+     </>
+   )}
 
-      <Modal
-          visible={modalVisible}
-          transparent
-          animationType="fade"
-          onRequestClose={() => {
-            setModalVisible(false);
-            setIsEditing(false);
-            setTitle('');
-            setSelectedColor(colors[0]);
-            setIsShared(false);
-          }}
-        >
-          <ModalContainer>
-            <ModalContent>
-              <ModalTitle>{getModalTitle()}</ModalTitle>
-              <Input
-                placeholder="제목을 입력하세요"
-                value={title}
-                onChangeText={setTitle}
-                editable={!loading}
-              />
-              <ColorContainer>
-                {colors.map(color => (
-                  <ColorButton
-                    key={color}
-                    color={color}
-                    selected={color === selectedColor}
-                    onPress={() => setSelectedColor(color)}
-                    disabled={loading}
-                  />
-                ))}
-              </ColorContainer>
-              <CheckboxContainer onPress={() => !loading && setIsShared(!isShared)}>
-                <View style={{
-                  width: 20,
-                  height: 20,
-                  borderWidth: 1,
-                  borderColor: '#666',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                  {isShared && <Text style={{ color: '#666' }}>✓</Text>}
-                </View>
-                <CheckboxLabel>연인과 코스 공유하기</CheckboxLabel>
-              </CheckboxContainer>
-              <ButtonContainer>
-                <Button onPress={() => {
-                  setModalVisible(false);
-                  setIsEditing(false);
-                  setTitle('');
-                  setSelectedColor(colors[0]);
-                  setIsShared(false);
-                }} disabled={loading}>
-                  <ButtonText>취소</ButtonText>
-                </Button>
-                <Button onPress={handleCreateOrUpdateCourse} disabled={loading}>
-                  <ButtonText>{loading ? '처리 중...' : isEditing ? '수정' : '추가'}</ButtonText>
-                </Button>
-              </ButtonContainer>
-            </ModalContent>
-          </ModalContainer>
-      </Modal>
-              
-    </>
-  );
-}; 
+   <Modal
+     visible={modalVisible}
+     transparent
+     animationType="fade"
+     onRequestClose={() => {
+       setModalVisible(false);
+       setIsEditing(false);
+       setTitle('');
+       setSelectedColor(colors[0]);
+       setIsShared(false);
+     }}
+   >
+     <ModalContainer>
+       <ModalContent>
+         <ModalTitle>{getModalTitle()}</ModalTitle>
+         <Input
+           placeholder="제목을 입력하세요"
+           value={title}
+           onChangeText={setTitle}
+           editable={!loading}
+         />
+         <ColorContainer>
+           {colors.map(color => (
+             <ColorButton
+               key={color}
+               color={color}
+               selected={color === selectedColor}
+               onPress={() => setSelectedColor(color)}
+               disabled={loading}
+             />
+           ))}
+         </ColorContainer>
+         <CheckboxContainer onPress={() => !loading && setIsShared(!isShared)}>
+           <View style={{
+             width: 20,
+             height: 20,
+             borderWidth: 1,
+             borderColor: '#666',
+             alignItems: 'center',
+             justifyContent: 'center',
+           }}>
+             {isShared && <Text style={{ color: '#666' }}>✓</Text>}
+           </View>
+           <CheckboxLabel>연인과 코스 공유하기</CheckboxLabel>
+         </CheckboxContainer>
+         <ButtonContainer>
+           <Button onPress={() => {
+             setModalVisible(false);
+             setIsEditing(false);
+             setTitle('');
+             setSelectedColor(colors[0]);
+             setIsShared(false);
+           }} disabled={loading}>
+             <ButtonText>취소</ButtonText>
+           </Button>
+           <Button onPress={handleCreateOrUpdateCourse} disabled={loading}>
+             <ButtonText>{loading ? '처리 중...' : isEditing ? '수정' : '추가'}</ButtonText>
+           </Button>
+         </ButtonContainer>
+       </ModalContent>
+     </ModalContainer>
+   </Modal>
+ </>
+);
+}

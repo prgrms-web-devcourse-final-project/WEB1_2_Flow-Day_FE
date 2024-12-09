@@ -1,4 +1,4 @@
-import {SafeAreaView} from 'react-native';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 import {NavigationContainer, createNavigationContainerRef, useNavigation} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -60,7 +60,13 @@ const ButtonText = styled.Text`
   font-family: 'SCDream4';
 `;
 
-const Stack = createNativeStackNavigator();
+type MapStackParamList = {
+  MapMain: undefined;
+  Search: undefined;
+  SpotDetail: {spotId: string};
+};
+
+const Stack = createNativeStackNavigator<MapStackParamList>();
 
 export function MapStack() {
   return (
@@ -180,6 +186,7 @@ const App = () => {
 
   if (!isLoggedIn) {
     return (
+      <SafeAreaProvider>
       <SafeAreaView style={{flex: 1}}>
         <NavigationContainer ref={navigationRef}>
           <Stack.Navigator>
@@ -192,6 +199,7 @@ const App = () => {
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaView>
+      </SafeAreaProvider>
     );
   }
 
@@ -202,6 +210,7 @@ const App = () => {
   };
 
   return (
+    <SafeAreaProvider>
     <SafeAreaView style={{flex: 1}}>
       <NavigationContainer ref={navigationRef}>
         <Tab.Navigator
@@ -246,7 +255,7 @@ const App = () => {
             name={ROUTES.CHAT}
             component={ChatPage}
             options={{
-              header: () => <Header>D+1234</Header>,
+              headerShown: false,
               tabBarIcon: ({focused}: {focused: boolean}) => {
                 return (
                   <ButtonBox>
@@ -288,7 +297,7 @@ const App = () => {
 
           <Tab.Screen
             name='posts'
-            component={PostStack} // PostStack을 사용하도록 변경
+            component={PostStack}
             options={{
               headerShown: false,
               tabBarIcon: ({focused}: {focused: boolean}) => {
@@ -332,6 +341,7 @@ const App = () => {
         </Tab.Navigator>
       </NavigationContainer>
     </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 

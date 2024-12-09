@@ -8,14 +8,14 @@ import OverView from '@/components/map/OverView';
 import Review from '@/components/map/Review';
 
 const Container = styled.View`
-  padding: 10px 10px;
+  padding: 10px 0px;
   background-color: #ffffff;
   flex: 1;
 `;
 
 const SpotBox = styled.View`
   flex-direction: row;
-  width: 100%;
+  width: 370px;
   justify-content: space-between;
   padding-right: 10px;
 `;
@@ -55,17 +55,17 @@ const SpotDetailPage = ({navigation, route}) => {
   const [mainPhotoUrl, setMainPhotoUrl] = useState();
   const placeId = route.params.spotId;
 
-  const getPlaceDetails = async (placeId: string) => {
-    try {
-      const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name%2Cplace_id%2Cphotos%2Cformatted_address%2Ccurrent_opening_hours%2Cwebsite%2Cformatted_phone_number%2Crating%2Creviews&language=ko&key=${GOOGLE_MAPS_API_KEY}`;
-      const response = await axios.get(url);
-      setData(response.data.result);
-    } catch (error) {
-      console.error('Error fetching place details:', error);
-    }
-  };
-
   useEffect(() => {
+    const getPlaceDetails = async (placeId: string) => {
+      try {
+        const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name%2Cplace_id%2Cphotos%2Cformatted_address%2Ccurrent_opening_hours%2Cwebsite%2Cformatted_phone_number%2Crating%2Creviews&language=ko&key=${GOOGLE_MAPS_API_KEY}`;
+        const response = await axios.get(url);
+        setData(response.data.result);
+        console.log(data);
+      } catch (error) {
+        console.error('Error fetching place details:', error);
+      }
+    };
     getPlaceDetails(placeId);
   }, [placeId]);
 
@@ -81,7 +81,7 @@ const SpotDetailPage = ({navigation, route}) => {
 
   return (
     <Container>
-      <Image source={{uri: mainPhotoUrl}} style={{width: width, height: 200, backgroundColor: '#EEEEEE'}} />
+      <Image source={{uri: mainPhotoUrl}} style={{width: '370px', margin: '0 auto', height: 200, backgroundColor: '#EEEEEE'}} />
 
       <SpotBox>
         <SpotText>{data?.name}</SpotText>

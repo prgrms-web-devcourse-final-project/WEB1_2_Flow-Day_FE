@@ -102,6 +102,10 @@ const CourseChoiceSlide = ({data, setShow}) => {
   const {accessToken} = useStore();
   const [text, setText] = useState('');
   const [id, setId] = useState('');
+  const [wish, setWish] = useState('');
+  console.log(postList);
+  console.log(accessToken);
+  console.log(wish);
 
   useEffect(() => {
     const getCouserList = async () => {
@@ -111,8 +115,9 @@ const CourseChoiceSlide = ({data, setShow}) => {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        const data = (await res.data);
+        const data = await res.data;
         setPostList({...data});
+        setWish(data.content[0].id);
       } catch (err) {
         console.error('포스트 생성 페이지에서 코스 목록 가져오기 에러 : ', err);
       }
@@ -124,31 +129,62 @@ const CourseChoiceSlide = ({data, setShow}) => {
     const courseId = id;
     console.log(courseId);
     const place = data?.formatted_address.split(' ')[1].slice(0, 2);
-    try {
-      const response = await apiClient.post(
-        `/courses/${courseId}`,
-        {
-          name: data.name,
-          placeId: data.place_id,
-          comment: `${text}`,
-          city: place,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
+    if(wish === courseId){
+      try {
+        const response = await apiClient.post(
+          `/wishPlaces`,
+          {
+            name: data.name,
+            placeId: data.place_id,
+            comment: `${text}`,
+            city: place,
           },
-        },
-      );
-      console.log(response);
-      setShow(false);
-    } catch (error) {
-      console.error(error);
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+        console.log(response);
+        setShow(false);
+      } catch (error) {
+        console.error(error);
+      }
+
+    } else {
+      try {
+        const response = await apiClient.post(
+          `/courses/${courseId}`,
+          {
+            name: data.name,
+            placeId: data.place_id,
+            comment: `${text}`,
+            city: place,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+        console.log(response);
+        setShow(false);
+      } catch (error) {
+        console.error(error);
+      }
+
     }
+    
   };
 
   console.log(postCreateData.courseId);
   const getModifiedSvg = (xml: string, fillColor: string) => {
-    return xml.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
+    if (xml) {
+        return xml.replace(/fill="[^"]*"/g, `fill="${fillColor}"`);
+    } else {
+        console.error('Error: xml is undefined');
+        return '';
+    }
   };
 
   return (
@@ -165,18 +201,17 @@ const CourseChoiceSlide = ({data, setShow}) => {
           return (
             <View key={i}>
               <CourseItem
-                key={i}
                 onPress={() => {
-                  setPostCreateData({...postCreateData, courseId: `${course.id}`});
+                  setPostCreateData({...postCreateData, courseId: course.id});
                   setId(`${course.id}`);
                 }}
               >
                 <ItemIcon source={require('@/assets/icons/spot.svg')} />
                 <SvgXml xml={getModifiedSvg(svg.spotItem, course.color ? course.color : '#000000')} />
                 <CourseTitle>{`${course.title}`}</CourseTitle>
-                {postCreateData.courseId === `${course.id}` ? <CheckIcon source={require('@/assets/icons/check.png')} /> : <CheckIcon source={require('@/assets/icons/unCheck.png')} />}
+                {postCreateData.courseId === course.id ? <CheckIcon source={require('@/assets/icons/check.png')} /> : <CheckIcon source={require('@/assets/icons/unCheck.png')} />}
               </CourseItem>
-              {postCreateData.courseId === `${course.id}` && <Input onChangeText={(text) => setText(text)} placeholder='메모를 작성해보세요' placeholderTextColor='#DDDDDD' />}
+              {postCreateData.courseId === course.id && <Input onChangeText={(text) => setText(text)} placeholder='메모를 작성해보세요' placeholderTextColor='#DDDDDD' />}
             </View>
           );
         })}
