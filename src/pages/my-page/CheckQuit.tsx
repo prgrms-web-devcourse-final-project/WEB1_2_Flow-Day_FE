@@ -1,7 +1,7 @@
 import Buttons from "@/components/Buttons";
 import apiClient from "@/utils/apiClient";
 import { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import styled from "styled-components/native";
 import { useStore } from "@/store/useStore";
 
