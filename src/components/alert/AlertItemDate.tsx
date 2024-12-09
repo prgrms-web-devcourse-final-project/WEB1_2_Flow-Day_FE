@@ -23,6 +23,6 @@ const AlertItemDateDesign = styled.View`
 `;
 
 const TextDesign = styled.Text`
-  font-size: 14px;
-  font-family: SCDream4;
+  font-size: 12px;
+  font-family: 'SCDream4';
 `;

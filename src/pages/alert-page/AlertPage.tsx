@@ -12,6 +12,7 @@ import SockJS from 'sockjs-client';
 import {Client} from '@stomp/stompjs';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {IAlert} from '@/store/alert/alert-store';
+import PostDetailPage from '../post-detail-page/PostDetailPage';
 
 const AlertPage = () => {
   // 스토어
@@ -76,22 +77,42 @@ const AlertPage = () => {
   //   return () => stompClient.deactivate();
   // }, []);
 
+  const switchType = (type: string) => {
+    switch (type) {
+      case 'COMMENT':
+        return 'PostDetailPage';
+      case 'LIKE':
+        return 'PostDetailPage';
+      case 'COUPLE':
+        return 'PostDetailPage';
+      case 'VOTE':
+        return require('../../assets/icons/alert-icons/vote.png');
+      case 'COURSE':
+        return require('../../assets/icons/alert-icons/course.png');
+      default:
+        return 'Home';
+    }
+  };
+
   return (
-    <SafeAreaView>
-      <AlertPageDesign>
-        <FlatList
-          data={alertList}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({item, index}) => (
-            <AlertItem key={index}>
-              <AlertItemIcon type={''}></AlertItemIcon>
-              <AlertItemText message={item.message}></AlertItemText>
-              <AlertItemDate createdAt={item.createdAt}></AlertItemDate>
-            </AlertItem>
-          )}
-        />
-      </AlertPageDesign>
-    </SafeAreaView>
+    <AlertPageDesign>
+      <FlatList
+        data={alertList}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({item, index}) => (
+          <AlertItem
+            key={index}
+            onPress={() => {
+              navigation.navigate(switchType(item.type));
+            }}
+          >
+            <AlertItemIcon type={item.type}></AlertItemIcon>
+            <AlertItemText message={item.message}></AlertItemText>
+            <AlertItemDate createdAt={item.createdAt}></AlertItemDate>
+          </AlertItem>
+        )}
+      />
+    </AlertPageDesign>
   );
 };
 
@@ -103,7 +124,7 @@ const AlertPageDesign = styled.View`
   background-color: #fff;
 `;
 
-const AlertItem = styled.View`
+const AlertItem = styled.TouchableOpacity`
   flex-direction: row;
   width: 100%;
   height: 60px;

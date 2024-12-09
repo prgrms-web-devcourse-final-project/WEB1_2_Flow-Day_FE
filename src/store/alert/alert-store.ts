@@ -2,13 +2,13 @@ import {create} from 'zustand';
 
 // IAlert 인터페이스 정의
 export interface IAlert {
-  id: number;
-  receiverId: number;
+  id: number | null;
+  receiverId: number | null;
   message: string;
   url: string;
   createdAt: string;
   isRead: boolean;
-  type: 'LIKE' | 'COMMENT' | 'VOTE' | 'COUPLE' | 'COURSE'; // 수정 예정
+  type: 'LIKE' | 'COMMENT' | 'VOTE' | 'COUPLE' | 'COURSE' | null; // 수정 예정
   additionalParamsJson?: string;
 }
 
@@ -20,13 +20,13 @@ const useAlertStore = create<{
 }>((set) => ({
   alertList: [
     {
-      id: 1,
-      receiverId: 1,
-      message: '새로운 댓글이 달렸습니다!',
-      url: 'http://localhost:8080/posts/123',
-      createdAt: '2024-11-29T12:34:56',
+      id: null,
+      receiverId: null,
+      message: 'Error : No Message',
+      url: 'Error : No url',
+      createdAt: '2001-09-05T09:05:00',
       isRead: true,
-      type: 'COMMENT',
+      type: null,
     },
   ],
   addAlert: (alert) => set((state) => ({alertList: [...state.alertList, alert]})),
@@ -39,37 +39,27 @@ const useAlertStore = create<{
 
 export default useAlertStore;
 
-// const data = {
-//   content: [
-//     {
-//       additionalParamsJson: '{"relationshipDt":"string","senderId":2}',
-//       createdAt: '2024-12-08T11:25:38.611007',
-//       id: 7,
-//       isRead: false,
-//       message: '연인 신청이 도착했습니다.',
-//       receiverId: 5,
-//       senderId: 2,
-//       url: '/api/v1/members/partnerUpdate',
-//     },
-//     {
-//       additionalParamsJson: '{"relationshipDt":"string","senderId":2}',
-//       createdAt: '2024-12-08T11:21:30.933033',
-//       id: 6,
-//       isRead: false,
-//       message: '연인 신청이 도착했습니다.',
-//       receiverId: 5,
-//       senderId: 2,
-//       url: '/api/v1/members/partnerUpdate',
-//     },
-//   ],
-//   empty: false,
-//   first: true,
-//   last: true,
-//   number: 0,
-//   numberOfElements: 2,
-//   pageable: {offset: 0, pageNumber: 0, pageSize: 10, paged: true, sort: {empty: true, sorted: false, unsorted: true}, unpaged: false},
-//   size: 10,
-//   sort: {empty: true, sorted: false, unsorted: true},
-//   totalElements: 2,
-//   totalPages: 1,
-// };
+const data = [
+  {
+    additionalParamsJson: '{"relationshipDt":"string","senderId":2}',
+    createdAt: '2024-12-08T11:25:38.611007',
+    id: 7,
+    isRead: false,
+    message: '연인 신청이 도착했습니다.',
+    receiverId: 5,
+    senderId: 2,
+    type: null,
+    url: '/api/v1/members/partnerUpdate',
+  },
+  {
+    additionalParamsJson: '{"relationshipDt":"string","senderId":2}',
+    createdAt: '2024-12-08T11:21:30.933033',
+    id: 6,
+    isRead: false,
+    message: '연인 신청이 도착했습니다.',
+    receiverId: 5,
+    senderId: 2,
+    type: null,
+    url: '/api/v1/members/partnerUpdate',
+  },
+];
