@@ -1,6 +1,6 @@
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
-import {NavigationContainer, createNavigationContainerRef} from '@react-navigation/native';
+import {NavigationContainer, createNavigationContainerRef, useNavigation} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SvgXml} from 'react-native-svg';
@@ -102,6 +102,7 @@ const MainStack = () => {
           headerStyle: {backgroundColor: '#FFFFFF'},
         }}
       />
+      <Stack.Screen name='AlertPage' component={AlertPage} options={{header: () => <PostHeader>알림</PostHeader>}} />
     </Stack.Navigator>
   );
 };
@@ -141,6 +142,7 @@ export const navigationRef = createNavigationContainerRef();
 const App = () => {
   const {logOut, setAccessToken, isLoggedIn} = useStore();
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  // const navigation = useNavigation();
 
   useEffect(() => {
     const validateToken = async () => {
