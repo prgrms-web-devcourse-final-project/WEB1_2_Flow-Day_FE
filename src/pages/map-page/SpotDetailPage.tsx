@@ -8,7 +8,7 @@ import OverView from '@/components/map/OverView';
 import Review from '@/components/map/Review';
 
 const Container = styled.View`
-  padding: 30px 10px;
+  padding: 10px 10px;
   background-color: #ffffff;
   flex: 1;
 `;
@@ -22,8 +22,8 @@ const SpotBox = styled.View`
 
 const SpotText = styled.Text`
   font-family: 'SCDream4';
-  font-size: 23px;
-  padding: 10px 0;
+  font-size: 20px;
+  padding: 5px 0;
 `;
 
 const SpotRating = styled.View`

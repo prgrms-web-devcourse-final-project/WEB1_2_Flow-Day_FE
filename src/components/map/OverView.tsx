@@ -8,9 +8,9 @@ import Buttons from '@/components/Buttons';
 import CourseChoiceSlide from '@/components/map/CourseChoiceSlide';
 
 const Container = styled.View`
-  height: 70%;
-  padding: 20px 10px;
-  padding-bottom: 0;
+  height: 60%;
+  padding: 10px;
+  padding-bottom: 20px;
   background-color: #ffffff;
   position: relative;
 `;
@@ -84,11 +84,11 @@ const OverView = (placeData: any) => {
             </InfoBox>
           )}
         </View>
-        <View style={{position: 'absolute', bottom: -(height / 2 - 60)}}>
+        <View>
           <Buttons.LongBtn text='장소 저장' style={{marginTop: 50}} onPress={() => setShow(true)} />
         </View>
       </Container>
-      <ModalBox style={{bottom: -(height / 3)}}>{show && <CourseChoiceSlide data={data} setShow={setShow} />}</ModalBox>
+      <ModalBox style={{bottom: -(height / 3 - 80)}}>{show && <CourseChoiceSlide data={data} setShow={setShow} />}</ModalBox>
     </View>
   );
 };
