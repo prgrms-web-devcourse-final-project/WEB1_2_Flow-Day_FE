@@ -42,7 +42,13 @@ const PostListPage: React.FC<PostListPageProps> = ({ type, title }) => {
   const {accessToken} = useStore();
   const [header, setHeader] = useState('');
 
-  const { type: routeType, title: routeTitle } = route.params ||  {type: null, title: null};
+  let { type: routeType, title: routeTitle } = route.params ||  {type: null, title: null};
+  if(routeTitle === '내 포스트') {
+    routeType = '';
+    
+  }
+console.log(routeType);
+console.log(routeTitle);
 
   useEffect(() => {
     if (routeTitle) {
@@ -67,9 +73,9 @@ const PostListPage: React.FC<PostListPageProps> = ({ type, title }) => {
           ? `http://flowday.kro.kr:80/api/v1/posts/all/latest?pageSize=10&page=${pageNumber}`
           : `http://flowday.kro.kr:80/api/v1/posts/all/mostLike?pageSize=10&page=${pageNumber}`;
       } else {
-        url = `http://flowday.kro.kr:80/api/v1/posts/all${type}?pageSize=10&page=${pageNumber}`
+        url = `http://flowday.kro.kr:80/api/v1/posts/all${routeType}`
       }
-
+      console.log(url);
       const res = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -78,6 +84,8 @@ const PostListPage: React.FC<PostListPageProps> = ({ type, title }) => {
       const newPosts = res.data.content;
       if (!routeType && routeType !== '' && newPosts.length > 0) {
         setPostData((prevData) => (pageNumber === 0 ? newPosts : [...prevData, ...newPosts])); // 페이지가 0이면 기존 데이터 덮어쓰기
+      } else {
+        setPostData(res.data.content);
       }
     } catch (err) {
       console.error('getPostList 실패 : ', err);
@@ -151,7 +159,7 @@ const PostListPage: React.FC<PostListPageProps> = ({ type, title }) => {
           keyExtractor={(item: IPost, index: number) => `${item.id}-${index}`} // id와 index를 결합하여 고유한 키 생성
           onEndReached={handleEndReached}
           onEndReachedThreshold={0.5}
-          ListFooterComponent={isLoading ? <LoadingIndicator /> : null}
+          // ListFooterComponent={isLoading ? <LoadingIndicator /> : null}
         />
       )}
       {
