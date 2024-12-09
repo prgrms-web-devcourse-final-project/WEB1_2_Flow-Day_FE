@@ -31,6 +31,11 @@ import SpotDetailPage from '@/pages/map-page/SpotDetailPage';
 import {TextEncoder} from 'text-encoding';
 global.TextEncoder = TextEncoder;
 import PostEditPage from '@/pages/post-edit-page/PostEditPage';
+import MyPage from '@/pages/my-page/MyPage';
+import MyInfo from '@/pages/my-page/MyInfo';
+import PostHeader from '@/components/post/PostHeader';
+import CheckBreak from '@/pages/my-page/CheckBreak';
+import CheckQuit from '@/pages/my-page/CheckQuit';
 
 // 색상 설정
 const COLORS = {
@@ -93,10 +98,26 @@ const MainStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name='Home' component={HomePage} options={{header: () => <Header>D+134</Header>}} />
-      <Stack.Screen name='SpotDetail' component={SpotDetailPage} options={{headerShown: false, tabBarStyle: {display: 'none'}}} />
+      <Stack.Screen name='SpotDetail' component={SpotDetailPage} options={{
+        headerTitle: '',
+        headerStyle: {backgroundColor: '#FFFFFF'},
+      }} />
     </Stack.Navigator>
   );
 };
+
+const MyStack = () => {
+  return(
+    <Stack.Navigator>
+      <Stack.Screen name='MyPage' component={MyPage} options={{header: () => <Header>마이페이지</Header>}} />
+      <Stack.Screen name='PostListPage' component={PostListPage} options={{headerShown: false}} />
+      <Stack.Screen name='MyInfo' component={MyInfo} options={{header: () => <PostHeader>회원 정보 수정</PostHeader>}} />
+      <Stack.Screen name='CheckBreak' component={CheckBreak} options={{headerShown: false}} />
+      <Stack.Screen name='CheckQuit' component={CheckQuit} options={{headerShown: false}} />
+    </Stack.Navigator>
+  )
+}
+
 SplashScreen.preventAutoHideAsync();
 
 SplashScreen.setOptions({
@@ -159,42 +180,27 @@ const App = () => {
             <Stack.Screen
               name={ROUTES.JOIN}
               component={JoinPage}
-              options={{
-                headerTitle: '',
-                headerStyle: {backgroundColor: '#FFFFFF'},
-              }}
+              options={{header: () => <PostHeader> </PostHeader>}}
             />
             <Stack.Screen
               name={ROUTES.PROFILE_SET}
               component={ProfileSetPage}
-              options={{
-                headerTitle: '',
-                headerStyle: {backgroundColor: '#FFFFFF'},
-              }}
+              options={{header: () => <PostHeader> </PostHeader>}}
             />
             <Stack.Screen
               name={ROUTES.COUPLE_REGISTER}
               component={CoupleRegisterPage}
-              options={{
-                headerTitle: '',
-                headerStyle: {backgroundColor: '#FFFFFF'},
-              }}
+              options={{header: () => <PostHeader> </PostHeader>}}
             />
             <Stack.Screen
               name={ROUTES.COUPLE_CHECK}
               component={CoupleCheckPage}
-              options={{
-                headerTitle: '',
-                headerStyle: {backgroundColor: '#FFFFFF'},
-              }}
+              options={{header: () => <PostHeader> </PostHeader>}}
             />
             <Stack.Screen
               name={ROUTES.WELCOME}
               component={WelcomePage}
-              options={{
-                headerTitle: '',
-                headerStyle: {backgroundColor: '#FFFFFF'},
-              }}
+              options={{header: () => <PostHeader> </PostHeader>}}
             />
           </Stack.Navigator>
         </NavigationContainer>
@@ -317,9 +323,9 @@ const App = () => {
 
           <Tab.Screen
             name={ROUTES.MY}
-            component={ChatPage}
+            component={MyStack}
             options={{
-              header: () => <Header>마이페이지</Header>,
+              headerShown: false,
               tabBarIcon: ({focused}: {focused: boolean}) => {
                 return (
                   <ButtonBox>
