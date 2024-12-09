@@ -6,7 +6,7 @@ interface IPostCreateData {
   tags: string;
   region: string;
   season: string;
-  courseId: number;
+  courseId: number | null;
   contents: string;
   status: 'PUBLIC' | 'COUPLE' | 'PRIVATE';
   images: ImagePicker.ImagePickerAsset[];
@@ -77,7 +77,7 @@ const usePostCreateStore = create<IPostCreate>((set) => ({
     tags: '', // Add relevant tags
     region: '', // Specify the region
     season: '', // Specify the season
-    courseId: 0, // Add the course ID
+    courseId: null, // Add the course ID
     contents: '', // Add the content
     status: 'PUBLIC',
     images: [],

@@ -7,22 +7,25 @@ import usePostCreateStore from '@/store/post/post-create-store';
 import Buttons from '@/components/Buttons';
 import {SvgXml} from 'react-native-svg';
 import {svg} from '../../../assets/icons/svg';
+import {useStore} from '@/store/useStore';
 
 const PostCreateCourseSlide = ({onPress}: {onPress: () => void}) => {
   const {postList, setPostList, postCreateData, setPostCreateData} = usePostCreateStore();
-  const token =
-    'eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7InJvbGUiOiJST0xFX1VTRVIiLCJpZCI6OCwibG9naW5JZCI6InN0ZXA0MDUiLCJjYXRlZ29yeSI6ImFjY2Vzc1Rva2VuIn0sImlhdCI6MTczMzQxNTA5OCwiZXhwIjoxNzMzNzc1MDk4fQ.mUcpaHbYTkNRK2sh-Yr7MSynCGtRvDMWjYP_mbH3GCw';
+  const {accessToken} = useStore();
 
   useEffect(() => {
     const getCouserList = async () => {
       try {
         const res = await axios.get(`${REACT_APP_SERVER_URL}/courses`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         });
         const data = (await res).data;
+        console.log(' ==== 코스 목록 ====');
+        // console.log(data);
         setPostList({...data});
+        console.log(postList);
       } catch (err) {
         console.error('포스트 생성 페이지에서 코스 목록 가져오기 에러 : ', err);
       }
@@ -50,13 +53,13 @@ const PostCreateCourseSlide = ({onPress}: {onPress: () => void}) => {
             <CourseItem
               key={i}
               onPress={() => {
-                setPostCreateData({...postCreateData, courseId: `${course.id}`});
+                setPostCreateData({...postCreateData, courseId: Number(course.id)});
               }}
             >
               <ItemIcon source={require('../../../assets/icons/spot.svg')} />
               <SvgXml xml={getModifiedSvg(svg.spotItem, course.color ? course.color : '#000000')} />
               <CourseTitle>{`${course.title}`}</CourseTitle>
-              {postCreateData.courseId === `${course.id}` ? <CheckIcon source={require('../../../assets/icons/check.png')} /> : <CheckIcon source={require('../../../assets/icons/unCheck.png')} />}
+              {postCreateData.courseId === course.id ? <CheckIcon source={require('../../../assets/icons/check.png')} /> : <CheckIcon source={require('../../../assets/icons/unCheck.png')} />}
             </CourseItem>
           );
         })}
