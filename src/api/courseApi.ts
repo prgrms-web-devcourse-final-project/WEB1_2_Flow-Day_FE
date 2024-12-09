@@ -94,14 +94,15 @@ export const courseApi = {
     }
   },
 
-  updateSpotSequence: async (courseId: number, spotId: number, sequence: number): Promise<void> => {
-    try {
-      await apiClient.patch(`${BASE_URL}/courses/${courseId}/spots/${spotId}`, { sequence });
-    } catch (error) {
-      console.error('코스 내 장소 순서 업데이트 오류:', error);
-      throw error;
-    }
-  },
+
+updateSpotSequence: async (courseId: number, spotId: number, sequence: number): Promise<void> => {
+  try {
+    await apiClient.patch(`${BASE_URL}/courses/${courseId}/spot/${spotId}/sequence/${sequence}`);
+  } catch (error) {
+    console.error('코스 내 장소 순서 업데이트 오류:', error);
+    throw error;
+  }
+},
 
     // 나의 위시리스트 조회
     getWishPlaces: async (): Promise<WishPlacesResponse> => {

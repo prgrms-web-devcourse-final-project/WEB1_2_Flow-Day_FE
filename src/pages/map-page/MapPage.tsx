@@ -4,10 +4,18 @@ import MapView, { PROVIDER_GOOGLE, Region, Marker } from 'react-native-maps';
 import { MapSearch } from '@/components/map/MapSearch';
 import { CourseList } from '@/components/map/CourseList';
 import { Course, Spot } from '@/types/course';
-import CustomMarker from '@/components/map/CustomMarker';
+// import CustomMarker from '@/components/map/CustomMarker';
 import { courseApi } from '@/api/courseApi';
 import { GOOGLE_MAPS_API_KEY } from '@env'; 
 import { View, Text, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type RootStackParamList = {
+  SpotDetail: { spotId: string };
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const Container = styled.View`
  flex: 1;
@@ -19,11 +27,18 @@ const StyledMapView = styled(MapView)`
 `;
 
 const MapPage = () => {
+ const navigation = useNavigation<NavigationProp>();
  const [courses, setCourses] = useState<Course[]>([]);
  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
  const mapRef = useRef<MapView>(null);
  const [loading, setLoading] = useState(false);
  const [error, setError] = useState<string | null>(null);
+
+ const handleMarkerPress = (placeId: string) => {
+  navigation.navigate('SpotDetail', {
+    spotId: placeId
+  });
+};
 
  const initialRegion: Region = {
    latitude: 37.5665,
@@ -147,53 +162,53 @@ const getPlaceCoordinates = async (placeId: string): Promise<{latitude: number, 
 
  return (
    <Container>
-     <StyledMapView
-       ref={mapRef}
-       provider={PROVIDER_GOOGLE}
-       initialRegion={initialRegion}
-     >
-{courses.map(course => {
-  console.log('Rendering course:', course.title, 'with spots:', course.spots);
-  return course.spots?.map((spot, index) => {
-    console.log('Processing spot:', spot);
-    const lat = spot.latitude;
-    const lng = spot.longitude;
-    
-    if (lat && lng) {
-      console.log('Valid coordinates found:', { lat, lng });
-      const latitude = parseFloat(lat);
-      const longitude = parseFloat(lng);
-      
-      if (!isNaN(latitude) && !isNaN(longitude)) {
-        console.log('Creating marker at:', { latitude, longitude });
-        return (
-          <Marker
-          key={spot.id}
-          coordinate={{ latitude, longitude }}
-          title={spot.name}
-          description={spot.comment}
-        >
-          <View style={{
-            width: 30,
-            height: 30,
-            backgroundColor: course.color || '#FF6666',
-            borderRadius: 15,
-            borderWidth: 2,
-            borderColor: 'white',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
-            <Text style={{ color: 'white', fontSize: 12 }}>{index + 1}</Text>
-          </View>
-        </Marker>
-        );
-      }
-    }
-    console.log('Skipping spot due to invalid coordinates');
-    return null;
-  });
-})}
-     </StyledMapView>
+    <StyledMapView
+            ref={mapRef}
+            provider={PROVIDER_GOOGLE}
+            initialRegion={initialRegion}
+          >
+            {courses.map(course => {
+              return (
+                <React.Fragment key={course.id}>
+                  {course.spots?.map((spot, index) => {
+                    const lat = spot.latitude;
+                    const lng = spot.longitude;
+                    
+                    if (lat && lng) {
+                      const latitude = parseFloat(lat);
+                      const longitude = parseFloat(lng);
+                      
+                      if (!isNaN(latitude) && !isNaN(longitude)) {
+                        return (
+                          <Marker
+                            key={`${course.id}-${spot.id}`}
+                            coordinate={{ latitude, longitude }}
+                            title={spot.name}
+                            description={spot.comment}
+                            onPress={() => handleMarkerPress(spot.placeId)} 
+                          >
+                            <View style={{
+                              width: 30,
+                              height: 30,
+                              backgroundColor: course.color || '#FF6666',
+                              borderRadius: 15,
+                              borderWidth: 2,
+                              borderColor: 'white',
+                              justifyContent: 'center',
+                              alignItems: 'center'
+                            }}>
+                              <Text style={{ color: 'white', fontSize: 12 }}>{index + 1}</Text>
+                            </View>
+                          </Marker>
+                        );
+                      }
+                    }
+                    return null;
+                  })}
+                </React.Fragment>
+              );
+            })}
+        </StyledMapView>
      <MapSearch />
      <CourseList 
        courses={courses}
