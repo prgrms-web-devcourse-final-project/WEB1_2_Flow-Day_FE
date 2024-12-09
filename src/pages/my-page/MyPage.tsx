@@ -114,6 +114,7 @@ type RootStackParamList = {
 
 const MyPage = () => {
     const [data, setData] = useState<any>();
+    const [partner, setPartner] = useState<any>();
     const getInfo = async () => {
         try {
             const response = await apiClient.get('/members/');
@@ -127,6 +128,15 @@ const MyPage = () => {
     useEffect(() => {
         getInfo();
     }, []);
+    
+    useEffect(() => {
+        if(data?.partnerName) {
+            setPartner({
+                name: data.partnerName,
+                image: data.partnerImage
+            });
+        }
+    }, [data]);
 
 
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -166,10 +176,10 @@ const MyPage = () => {
                     <Date>D+{getDate()}</Date>
                 </ProfileBox>
                 {
-                    data?.partnerId ? (
+                    partner?.name ? (
                         <ProfileBox>
-                            <ProfileImage source={{uri: data?.partnerImage}} />
-                            <ProfileText>{data?.partnerName}</ProfileText>
+                            <ProfileImage source={{uri:partner?.image}} />
+                            <ProfileText>{partner?.name}</ProfileText>
                         </ProfileBox>
                     ) : (
                         <ProfileBox onPress={() => navigation.navigate(ROUTES.COUPLE_REGISTER as never)}>

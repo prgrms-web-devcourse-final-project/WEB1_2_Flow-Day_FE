@@ -84,6 +84,7 @@ const CoupleCheckPage = ({ route }: any) => {
     const { name, image, id, myId } = route.params;
     const { accessToken } = useStore.getState();
     const { isLoggedIn } = useStore();
+    const [partner, setPartner] = useState<any>();
 
     const navigation = useNavigation();
     
@@ -100,26 +101,22 @@ const CoupleCheckPage = ({ route }: any) => {
             });
             console.log(response.data);
             
-            const res = await apiClient.post(`/notifications`, {
-                senderId: myId,
-                receiverId: id,
-                message: "커플 신청이 도착했어요",
-                url: "test.com",
-                params: {
-                    "additionalProp1": {},
-                    "additionalProp2": {},
-                    "additionalProp3": {}
-                }
+            
 
+        } catch(error) {
+            console.error('Error: ', error);
+        }  
+        try{
+            const response = await apiClient.put(`/members/partnerUpdate`, {
+                senderId: id,
+                relationshipDt: date
             }, {
                 headers: {
                     "Content-Type": "application/json",
                 },
             });
-            console.log('여기지 !')
-            console.log(res)
-            console.log(res.data);
-
+            console.log('커플연결');
+            console.log(response.data);
         } catch(error) {
             console.error('Error: ', error);
         }  
