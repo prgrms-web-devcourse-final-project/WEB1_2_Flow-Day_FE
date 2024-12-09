@@ -1,5 +1,6 @@
 import Buttons from "@/components/Buttons";
 import { ROUTES } from "@/constants/routes";
+import { useStore } from "@/store/useStore";
 import apiClient from "@/utils/apiClient";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
@@ -49,15 +50,23 @@ const CoupleRegisterPage = () => {
     const [name, setName] = useState<string>();
     const [message, setMessage] = useState<string>();
     const navigation = useNavigation();
+    const {accessToken} = useStore();
+    console.log(accessToken);
 
     const handleFind = async () => {
         try{
             const response = await apiClient.get(`/members/partner/${name}`);
             console.log(response.data)
+
+            const res = await apiClient.get('/members/');
+            const res2 = await apiClient.get(`/members/partner/${res.data.name}`);
+            
+            console.log(res2.data)
             if (response.data.id === null) {
                 setMessage('정확한 닉네임을 입력해주세요');
             } else {
                 navigation.navigate(ROUTES.COUPLE_CHECK, {
+                    myId: res2.data.Id,
                     name: response.data.name,
                     image: response.data.profileImage,
                     id: response.data.id

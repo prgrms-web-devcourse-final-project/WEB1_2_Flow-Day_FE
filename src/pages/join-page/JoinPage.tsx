@@ -1,4 +1,4 @@
-import { Text, View } from "react-native"
+import { Alert, Text, View } from "react-native"
 import styled from 'styled-components/native';
 import { useState } from "react";
 import Buttons from "@/components/Buttons";
@@ -68,7 +68,6 @@ const JoinPage = () => {
             } else {
                 console.error('Error: ', error);
             }
-            navigation.navigate(ROUTES.PROFILE_SET as never); //삭제
         }
     }
 
@@ -76,6 +75,7 @@ const JoinPage = () => {
 
 
     const handleLogin = async () => {
+        checkPassword();
         try {
             const response = await apiClient.post('/members/login', {
                 loginId: id,
@@ -86,7 +86,6 @@ const JoinPage = () => {
         
             if (accessToken) {
                 setAccessToken(accessToken);
-                console.log(accessToken);
             }
 
         } catch (error) {
@@ -100,8 +99,9 @@ const JoinPage = () => {
 
     const checkPassword = async () => {
         if(pw !== pwCheck){
-
-
+            Alert.alert(
+                '비밀번호가 일치하지 않습니다.'
+            )
         }
     }
 

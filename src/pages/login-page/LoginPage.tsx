@@ -112,6 +112,7 @@ const LoginPage = () => {
         setAccessToken(accessToken);
         setIsLoggedIn(true);
         setUserId(userId); // 로그인 시 유저 아이디 저장
+        console.log(accessToken);
       } else {
         Alert.alert('로그인 실패', '로그인 처리 중 문제가 발생했습니다. 다시 시도해 주세요.');
       }
