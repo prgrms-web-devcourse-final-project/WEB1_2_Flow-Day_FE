@@ -1,4 +1,4 @@
-import {SafeAreaView} from 'react-native';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 import {NavigationContainer, createNavigationContainerRef} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -204,6 +204,7 @@ const App = () => {
 
   if (!isLoggedIn) {
     return (
+      <SafeAreaProvider>
       <SafeAreaView style={{flex: 1}}>
         <NavigationContainer ref={navigationRef}>
           <Stack.Navigator>
@@ -236,6 +237,7 @@ const App = () => {
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaView>
+      </SafeAreaProvider>
     );
   }
 
@@ -246,6 +248,7 @@ const App = () => {
   };
 
   return (
+    <SafeAreaProvider>
     <SafeAreaView style={{flex: 1}}>
       <NavigationContainer ref={navigationRef}>
         <Tab.Navigator
@@ -376,6 +379,7 @@ const App = () => {
         </Tab.Navigator>
       </NavigationContainer>
     </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 

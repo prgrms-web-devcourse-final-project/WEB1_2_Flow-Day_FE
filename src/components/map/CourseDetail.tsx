@@ -6,22 +6,23 @@ import { svg } from '@/assets/icons/svg';
 import { Course, Spot } from '@/types/course';
 import { courseApi } from '@/api/courseApi';
 import { GOOGLE_MAPS_API_KEY } from '@env';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
+type RootStackParamList = {
+  SpotDetail: { spotId: string };
+};
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface CourseDetailProps {
   course: Course;
   onBack: () => void;
+  navigation: any;
 }
 
 interface SpotWithPhoto extends Spot {
   photoUrl?: string;
 }
-
-interface CourseDetailProps {
-  course: Course;
-  onBack: () => void;
-}
-
 
 const DetailContainer = styled.View`
   flex: 1;
@@ -92,7 +93,7 @@ const SpotItemContainer = styled.View`
   position: relative;
 `;
 
-const SpotItem = styled.View`
+const SpotItem = styled.TouchableOpacity`
   flexDirection: row;
   padding: 16px;
   borderBottomWidth: 1px;
@@ -207,14 +208,109 @@ const VoteActionText = styled.Text`
   fontFamily: 'SCDream5';
 `;
 
+const SequenceInput = styled.TextInput`
+  width: 35px;
+  height: 35px;
+  backgroundColor: white;
+  borderRadius: 4px;
+  borderWidth: 1px;
+  borderColor: #FF6666;
+  textAlign: center;
+  color: #FF6666;
+  marginRight: 8px;
+  fontSize: 16px;
+  padding: 0;
+`;
+const SequenceButton = styled.TouchableOpacity`
+  flexDirection: row;
+  alignItems: center;
+`;
+
+const SequenceText = styled.Text<{ isActive: boolean }>`
+  fontSize: 14px;
+  color: ${props => props.isActive ? '#FF6666' : '#7d7d7d'};
+  fontFamily: 'SCDream4';
+  marginLeft: 4px;
+`;
+
+const SequenceActionButton = styled.TouchableOpacity`
+  backgroundColor: #FF6666;
+  padding: 16px;
+  alignItems: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+`;
+
+
+
 
 const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
+  const navigation = useNavigation<NavigationProp>();
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [isVoteMode, setIsVoteMode] = useState(false);
   const [selectedSpots, setSelectedSpots] = useState<number[]>([]);
   const [spots, setSpots] = useState<SpotWithPhoto[]>([]);
   const [loading, setLoading] = useState(false);
   const [voteTitle, setVoteTitle] = useState('');
+  const [isSequenceMode, setIsSequenceMode] = useState(false);
+  const [sequences, setSequences] = useState<{[key: number]: string}>({});
+
+  const toggleSequenceMode = () => {
+    setIsSequenceMode(!isSequenceMode);
+    if (!isSequenceMode) {
+      setIsDeleteMode(false);
+      setIsVoteMode(false);
+      // 초기값을 문자열로 설정
+      const initialSequences = spots.reduce((acc, spot, index) => {
+        acc[spot.id] = (index + 1).toString();
+        return acc;
+      }, {} as {[key: number]: string});
+      setSequences(initialSequences);
+    } else {
+      setSequences({});
+    }
+  };
+  
+  const handleSequenceChange = (spotId: number, value: string) => {
+    const number = parseInt(value);
+    if (value === '' || (!isNaN(number) && number > 0 && number <= spots.length)) {
+      setSequences(prev => ({...prev, [spotId]: value}));
+    }
+  };
+  
+
+  const handleSpotPress = (spot: SpotWithPhoto) => {
+    if (!isDeleteMode && !isVoteMode) {
+      navigation.navigate('SpotDetail', {
+        spotId: spot.placeId
+      });
+    }
+  };
+
+  const handleUpdateSequence = async () => {
+    try {
+      // 문자열을 숫자로 변환하여 정렬
+      const sortedSpots = [...spots].sort((a, b) => {
+        const aSeq = parseInt(sequences[a.id] || '0');
+        const bSeq = parseInt(sequences[b.id] || '0');
+        return aSeq - bSeq;
+      });
+  
+      // API 호출 시 숫자로 변환
+      for (let i = 0; i < sortedSpots.length; i++) {
+        const spot = sortedSpots[i];
+        await courseApi.updateSpotSequence(course.id, spot.id, i + 1);
+      }
+  
+      await loadCourseDetails();
+      setIsSequenceMode(false);
+      Alert.alert('성공', '순서가 변경되었습니다.');
+    } catch (error) {
+      Alert.alert('오류', '순서 변경에 실패했습니다.');
+    }
+  };
 
   const getPlacePhoto = async (placeId: string): Promise<string | undefined> => {
     try {
@@ -384,6 +480,17 @@ const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
           )}
         </TitleContainer>
         <ButtonContainer>
+          <SequenceButton onPress={toggleSequenceMode}>
+            <SvgXml 
+              xml={svg.plusCircle} 
+              width={20} 
+              height={20} 
+              color={isSequenceMode ? '#FF6666' : '#7d7d7d'}
+            />
+            <SequenceText isActive={isSequenceMode}>
+            {isSequenceMode ? '변경취소' : '순서변경'}
+            </SequenceText>
+          </SequenceButton>
           <VoteButton onPress={toggleVoteMode}>
             <SvgXml 
               xml={svg.plusCircle} 
@@ -405,9 +512,8 @@ const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
         </ButtonContainer>
       </HeaderContent>
     </DetailHeader>
-
+ 
       <ScrollView>
-   
         {loading ? (
           <View style={{ padding: 20, alignItems: 'center' }}>
             <Text>로딩 중...</Text>
@@ -415,11 +521,26 @@ const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
         ) : (
           spots.map((spot, index) => (
             <SpotItemContainer key={spot.id}>
-              <SpotItem>
+              <SpotItem 
+                onPress={() => handleSpotPress(spot)}
+                disabled={isDeleteMode || isVoteMode || isSequenceMode}
+              >
                 <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                {isSequenceMode ? (
+                  <SequenceInput
+                    value={sequences[spot.id]?.toString()}
+                    onChangeText={(value) => handleSequenceChange(spot.id, value)}
+                    keyboardType="numeric"
+                    maxLength={2}
+                    autoFocus={index === 0} // 첫 번째 input에 자동 포커스
+                    placeholder={`${index + 1}`} // 이전 번호를 placeholder로 표시
+                    placeholderTextColor="#999"
+                  />
+                ) : (
                   <SequenceCircle>
                     <SequenceNumber>{index + 1}</SequenceNumber>
                   </SequenceCircle>
+                )}
                   <SpotImage 
                     source={{ uri: spot.photoUrl || '' }}
                     style={{ width: 80, height: 80 }}  
@@ -432,9 +553,7 @@ const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
                   </SpotInfo>
                   <CategoryButton 
                     onPress={() => {
-                      if (isVoteMode) {
-                        toggleSpotSelection(spot.id);
-                      } else if (isDeleteMode) {
+                      if (isVoteMode || isDeleteMode) {
                         toggleSpotSelection(spot.id);
                       }
                     }}
@@ -457,16 +576,23 @@ const CourseDetail = ({ course, onBack }: CourseDetailProps) => {
           ))
         )}
       </ScrollView>
+ 
       {isDeleteMode && (
         <DeleteActionButton onPress={handleDeleteSelectedSpots}>
           <DeleteActionText>삭제</DeleteActionText>
         </DeleteActionButton>
-        )}
-
+      )}
+ 
       {isVoteMode && (
         <VoteActionButton onPress={handleCreateVote}>
           <VoteActionText>투표 생성</VoteActionText>
         </VoteActionButton>
+      )}
+ 
+      {isSequenceMode && (
+        <SequenceActionButton onPress={handleUpdateSequence}>
+          <VoteActionText>순서변경 완료</VoteActionText>
+        </SequenceActionButton>
       )}
     </DetailContainer>
   );
