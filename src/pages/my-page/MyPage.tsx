@@ -4,6 +4,7 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import apiClient from "@/utils/apiClient";
 import { useEffect, useState } from "react";
 import { useStore } from "@/store/useStore";
+import { ROUTES } from "@/constants/routes";
 
 const Container = styled.View`
     padding: 15px;
@@ -31,7 +32,7 @@ const TopProfile = styled.View`
     margin: 20px 0;
 `;
 
-const ProfileBox = styled.View`
+const ProfileBox = styled.TouchableOpacity`
     align-items: center;
 `;
 
@@ -171,7 +172,7 @@ const MyPage = () => {
                             <ProfileText>{data?.partnerName}</ProfileText>
                         </ProfileBox>
                     ) : (
-                        <ProfileBox>
+                        <ProfileBox onPress={() => navigation.navigate(ROUTES.COUPLE_REGISTER as never)}>
                             <ImageBox>
                                 <Image source={require('../../assets/icons/plus.png')}  />
                             </ImageBox>

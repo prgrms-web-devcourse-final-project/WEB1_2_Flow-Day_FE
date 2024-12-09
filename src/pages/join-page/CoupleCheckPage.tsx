@@ -4,7 +4,7 @@ import { useStore } from "@/store/useStore"
 import apiClient from "@/utils/apiClient"
 import { useNavigation } from "@react-navigation/native"
 import { useState } from "react"
-import { Text, View } from "react-native"
+import { Alert, Text, View } from "react-native"
 import styled from "styled-components/native"
 
 const Container = styled.View`
@@ -81,8 +81,9 @@ const ButtonText = styled.Text<{ colored?: boolean }>`
 
 const CoupleCheckPage = ({ route }: any) => {
     const [date, setDate] = useState<string>()
-    const { name, image, id } = route.params;
+    const { name, image, id, myId } = route.params;
     const { accessToken } = useStore.getState();
+    const { isLoggedIn } = useStore();
 
     const navigation = useNavigation();
     
@@ -98,12 +99,50 @@ const CoupleCheckPage = ({ route }: any) => {
                 },
             });
             console.log(response.data);
-            navigation.navigate(ROUTES.WELCOME as never)
+            
+            const res = await apiClient.post(`/notifications`, {
+                senderId: myId,
+                receiverId: id,
+                message: "커플 신청이 도착했어요",
+                url: "test.com",
+                params: {
+                    "additionalProp1": {},
+                    "additionalProp2": {},
+                    "additionalProp3": {}
+                }
+
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            console.log('여기지 !')
+            console.log(res)
+            console.log(res.data);
 
         } catch(error) {
             console.error('Error: ', error);
         }  
+
+        if(isLoggedIn){
+            Alert.alert(
+                '커플 신청이 완료되었습니다.',
+                '',
+                [
+                    {
+                        text: '확인',
+                        onPress: () => {
+                            console.log('Navigating to MY');
+                            navigation.navigate('MyPage' as never);
+                        }
+                    }
+                ]
+            );
+        } else {
+            navigation.navigate(ROUTES.WELCOME as never)
+        }
     }
+
     return(
         <Container>
             <View>

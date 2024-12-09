@@ -36,6 +36,8 @@ import MyInfo from '@/pages/my-page/MyInfo';
 import PostHeader from '@/components/post/PostHeader';
 import CheckBreak from '@/pages/my-page/CheckBreak';
 import CheckQuit from '@/pages/my-page/CheckQuit';
+import AlertPage from '@/pages/alert-page/AlertPage';
+import CoupleApprove from '@/pages/alert-page/CoupleApprove';
 
 // 색상 설정
 const COLORS = {
@@ -94,6 +96,17 @@ const MainStack = () => {
   );
 };
 
+const AlertStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name='Alert' component={AlertPage} options={{header: () => <PostHeader> </PostHeader>}} />
+      <Stack.Screen name='CoupleApprove' component={CoupleApprove} options={{header: () => <PostHeader> </PostHeader>}} />
+    </Stack.Navigator>
+  );
+};
+
+
+
 const MyStack = () => {
   return(
     <Stack.Navigator>
@@ -102,6 +115,16 @@ const MyStack = () => {
       <Stack.Screen name='MyInfo' component={MyInfo} options={{header: () => <PostHeader>회원 정보 수정</PostHeader>}} />
       <Stack.Screen name='CheckBreak' component={CheckBreak} options={{headerShown: false}} />
       <Stack.Screen name='CheckQuit' component={CheckQuit} options={{headerShown: false}} />
+      <Stack.Screen
+              name={ROUTES.COUPLE_REGISTER}
+              component={CoupleRegisterPage}
+              options={{header: () => <PostHeader> </PostHeader>}}
+            />
+            <Stack.Screen
+              name={ROUTES.COUPLE_CHECK}
+              component={CoupleCheckPage}
+              options={{header: () => <PostHeader> </PostHeader>}}
+            />
     </Stack.Navigator>
   )
 }
