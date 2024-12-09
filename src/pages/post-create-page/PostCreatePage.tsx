@@ -32,7 +32,7 @@ const PostCreatePage = () => {
     formData.append('tags', postCreateData.tags);
     formData.append('region', postCreateData.region);
     formData.append('season', postCreateData.season);
-    if (postCreateData.courseId !== 0) {
+    if (postCreateData.courseId !== null) {
       formData.append('courseId', postCreateData.courseId as any);
     }
     formData.append('contents', postCreateData.contents);
@@ -47,12 +47,12 @@ const PostCreatePage = () => {
         formData.append('images', photo as any);
       });
     }
-
+    console.log(formData);
     try {
       const res = await axios.post(`${REACT_APP_SERVER_URL}/posts`, formData, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          'content-type': 'multipart/form-data',
+          'Content-Type': 'multipart/form-data',
         },
       });
       const data = await res.data;

@@ -1,6 +1,6 @@
 
 import apiClient from 'src/utils/apiClient';
-import { Course, CreateCourseRequest, PageResponse } from '@/types/course';
+import { Course, CreateCourseRequest, PageResponse, Spot } from '@/types/course';
 
 const BASE_URL = 'http://flowday.kro.kr:80/api/v1';
 
@@ -79,6 +79,27 @@ export const courseApi = {
       await apiClient.patch(`${BASE_URL}/courses/${courseId}/spots/${spotId}`, { sequence });
     } catch (error) {
       console.error('코스 내 장소 순서 업데이트 오류:', error);
+      throw error;
+    }
+  },
+
+  getWishPlaces: async (): Promise<{ spots: Spot[] }> => {
+    try {
+      const response = await apiClient.get<{ spots: Spot[] }>(
+        `${BASE_URL}/wishPlaces`  
+      );
+      return response.data;
+    } catch (error) {
+      console.error('위시리스트 조회 오류:', error);
+      throw error;
+    }
+  },
+
+  deleteWishPlace: async (spotId: number): Promise<void> => {
+    try {
+      await apiClient.delete(`${BASE_URL}/wishPlaces/spot/${spotId}`); 
+    } catch (error) {
+      console.error('위시리스트 장소 삭제 오류:', error);
       throw error;
     }
   }

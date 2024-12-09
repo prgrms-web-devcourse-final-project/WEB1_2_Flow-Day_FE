@@ -18,6 +18,10 @@ import { courseApi } from '@/api/courseApi';
 import { Course, CreateCourseRequest } from '@/types/course';
 import { useStore } from '@/store/useStore';
 import CourseDetail from './CourseDetail'; 
+import WishList from './WishList'; 
+
+type ViewMode = 'list' | 'detail' | 'wishlist';
+
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -226,6 +230,7 @@ export const CourseList = ({
   onCoursesUpdate 
 }: CourseListProps) => {
   const [slideHeight, setSlideHeight] = useState(HEADER_HEIGHT);
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [modalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState('');
   const [selectedColor, setSelectedColor] = useState(colors[0]);
@@ -233,21 +238,26 @@ export const CourseList = ({
   const [isEditing, setIsEditing] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [menuVisible, setMenuVisible] = useState(false);
-  const [isDetailView, setIsDetailView] = useState(false);
+  
   const { accessToken } = useStore();
 
 
 
   const handleCourseClick = (course: Course) => {
     setSelectedCourse(course);
-    setIsDetailView(true);
+    setViewMode('detail');
     setSlideHeight(FULL_HEIGHT);
   };
 
   const handleBackToList = () => {
-    setIsDetailView(false);
+    setViewMode('list');
     setSelectedCourse(null);
     setSlideHeight(MINIMAL_VISIBLE_HEIGHT);
+  };
+
+  const handleWishListClick = () => {
+    setViewMode('wishlist');
+    setSlideHeight(FULL_HEIGHT);
   };
   
   
@@ -362,7 +372,7 @@ export const CourseList = ({
       <CourseItem>   
         <CourseColor color={course.color || '#666666'} />
         <CourseTitle>
-          {course.title || (course.spots && course.spots.length > 0 ? course.spots[0].name : '제목 없음')}
+          {course.title || (course.spots && course.spots.length > 0 ? course.spots[0].name : '마이 위시리스트')}
         </CourseTitle>
         <MoreButton onPress={(event) => {
           event.stopPropagation();
@@ -431,47 +441,58 @@ export const CourseList = ({
 
  return (
  <>
-   <SlideContainer height={slideHeight} {...panResponder.panHandlers}>
-     {isDetailView && selectedCourse ? (
-       <CourseDetail 
-         course={selectedCourse}
-         onBack={handleBackToList}
-       />
-     ) : (
+<SlideContainer height={slideHeight} {...panResponder.panHandlers}>
+  {viewMode === 'detail' && selectedCourse ? (
+    <CourseDetail 
+      course={selectedCourse}
+      onBack={handleBackToList}
+    />
+  ) : viewMode === 'wishlist' ? (
+    <WishList onBack={handleBackToList} />
+  ) : (
        <>
-         <Header>
-           <DragIndicator />
-           <HeaderContent>
-             <HeaderTitle>전체 리스트</HeaderTitle>
-             <CreateButton onPress={() => setModalVisible(true)}>
-               <SvgXml xml={svg.plusCircle} width={20} height={20} />
-               <CreateText>새코스 생성</CreateText>
-             </CreateButton>
-           </HeaderContent>
-         </Header>
+     <Header>
+        <DragIndicator />
+        <HeaderContent>
+          <HeaderTitle>전체 리스트</HeaderTitle>
+          <CreateButton onPress={() => setModalVisible(true)}>
+            <SvgXml xml={svg.plusCircle} width={20} height={20} />
+            <CreateText>새코스 생성</CreateText>
+          </CreateButton>
+        </HeaderContent>
+      </Header>
          <Content>
-           {loading ? (
-             <View style={{ padding: 16 }}>
-               <Text style={{ textAlign: 'center', color: '#666' }}>로딩 중...</Text>
-             </View>
-           ) : error ? (
-             <View style={{ padding: 16 }}>
-               <Text style={{ textAlign: 'center', color: 'red' }}>{error}</Text>
-             </View>
-           ) : courses && courses.length > 0 ? (
-             courses.map(course => (
-               <View key={course.id}> 
-                 {renderCourseItem(course)}
-               </View>
-             ))
-           ) : (
-             <View style={{ padding: 16 }}>
-               <Text style={{ textAlign: 'center', color: '#666' }}>
-                 코스가 없습니다.
-               </Text>
-             </View>
-           )}
-         </Content>
+            {loading ? (
+              <View style={{ padding: 16 }}>
+                <Text style={{ textAlign: 'center', color: '#666' }}>로딩 중...</Text>
+              </View>
+            ) : error ? (
+              <View style={{ padding: 16 }}>
+                <Text style={{ textAlign: 'center', color: 'red' }}>{error}</Text>
+              </View>
+            ) : courses && courses.length > 0 ? (
+              <>
+                <TouchableOpacity onPress={handleWishListClick}>
+                  <CourseItem>   
+                    <CourseColor color="#666666" />
+                    <CourseTitle>마이 위시리스트</CourseTitle>
+                  </CourseItem>
+                </TouchableOpacity>
+                {courses.map(course => (
+                  <View key={course.id}> 
+                    {renderCourseItem(course)}
+                  </View>
+                ))}
+              </>
+            ) : (
+              <View style={{ padding: 16 }}>
+                <Text style={{ textAlign: 'center', color: '#666' }}>
+                  코스가 없습니다.
+                </Text>
+              </View>
+            )}
+        </Content>
+
        </>
      )}
    </SlideContainer>
