@@ -1,4 +1,4 @@
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 import {NavigationContainer, createNavigationContainerRef, useNavigation} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -38,6 +38,9 @@ import CheckBreak from '@/pages/my-page/CheckBreak';
 import CheckQuit from '@/pages/my-page/CheckQuit';
 import AlertPage from '@/pages/alert-page/AlertPage';
 import CoupleApprove from '@/pages/alert-page/CoupleApprove';
+import {LogBox} from 'react-native';
+
+LogBox.ignoreAllLogs(); // 모든 경고 메시지를 무시
 
 // 색상 설정
 const COLORS = {
@@ -187,18 +190,18 @@ const App = () => {
   if (!isLoggedIn) {
     return (
       <SafeAreaProvider>
-      <SafeAreaView style={{flex: 1}}>
-        <NavigationContainer ref={navigationRef}>
-          <Stack.Navigator>
-            <Stack.Screen name={ROUTES.LOGIN} component={LoginPage} options={{headerShown: false}} />
-            <Stack.Screen name={ROUTES.JOIN} component={JoinPage} options={{header: () => <PostHeader> </PostHeader>}} />
-            <Stack.Screen name={ROUTES.PROFILE_SET} component={ProfileSetPage} options={{header: () => <PostHeader> </PostHeader>}} />
-            <Stack.Screen name={ROUTES.COUPLE_REGISTER} component={CoupleRegisterPage} options={{header: () => <PostHeader> </PostHeader>}} />
-            <Stack.Screen name={ROUTES.COUPLE_CHECK} component={CoupleCheckPage} options={{header: () => <PostHeader> </PostHeader>}} />
-            <Stack.Screen name={ROUTES.WELCOME} component={WelcomePage} options={{header: () => <PostHeader> </PostHeader>}} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </SafeAreaView>
+        <SafeAreaView style={{flex: 1}}>
+          <NavigationContainer ref={navigationRef}>
+            <Stack.Navigator>
+              <Stack.Screen name={ROUTES.LOGIN} component={LoginPage} options={{headerShown: false}} />
+              <Stack.Screen name={ROUTES.JOIN} component={JoinPage} options={{header: () => <PostHeader> </PostHeader>}} />
+              <Stack.Screen name={ROUTES.PROFILE_SET} component={ProfileSetPage} options={{header: () => <PostHeader> </PostHeader>}} />
+              <Stack.Screen name={ROUTES.COUPLE_REGISTER} component={CoupleRegisterPage} options={{header: () => <PostHeader> </PostHeader>}} />
+              <Stack.Screen name={ROUTES.COUPLE_CHECK} component={CoupleCheckPage} options={{header: () => <PostHeader> </PostHeader>}} />
+              <Stack.Screen name={ROUTES.WELCOME} component={WelcomePage} options={{header: () => <PostHeader> </PostHeader>}} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </SafeAreaView>
       </SafeAreaProvider>
     );
   }
@@ -211,136 +214,136 @@ const App = () => {
 
   return (
     <SafeAreaProvider>
-    <SafeAreaView style={{flex: 1}}>
-      <NavigationContainer ref={navigationRef}>
-        <Tab.Navigator
-          screenOptions={{
-            tabBarStyle: {
-              backgroundColor: '#FFFFFF',
-              height: 56,
-              borderTopWidth: 1,
-              borderTopColor: '#EEEEEE',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingBottom: 30,
-            },
-            tabBarShowLabel: true,
-            tabBarLabelPosition: 'below-icon',
-          }}
-        >
-          <Tab.Screen
-            name={ROUTES.HOME}
-            component={MainStack}
-            options={{
-              headerShown: false,
-              tabBarIcon: ({focused}: {focused: boolean}) => {
-                return (
-                  <ButtonBox>
-                    <SvgXml xml={getModifiedSvg(svg.home, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText
-                      style={{
-                        color: focused ? COLORS.active : COLORS.inactive,
-                      }}
-                    >
-                      홈
-                    </ButtonText>
-                  </ButtonBox>
-                );
+      <SafeAreaView style={{flex: 1}}>
+        <NavigationContainer ref={navigationRef}>
+          <Tab.Navigator
+            screenOptions={{
+              tabBarStyle: {
+                backgroundColor: '#FFFFFF',
+                height: 56,
+                borderTopWidth: 1,
+                borderTopColor: '#EEEEEE',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingBottom: 30,
               },
+              tabBarShowLabel: true,
+              tabBarLabelPosition: 'below-icon',
             }}
-          />
+          >
+            <Tab.Screen
+              name={ROUTES.HOME}
+              component={MainStack}
+              options={{
+                headerShown: false,
+                tabBarIcon: ({focused}: {focused: boolean}) => {
+                  return (
+                    <ButtonBox>
+                      <SvgXml xml={getModifiedSvg(svg.home, focused ? COLORS.active : COLORS.inactive)} />
+                      <ButtonText
+                        style={{
+                          color: focused ? COLORS.active : COLORS.inactive,
+                        }}
+                      >
+                        홈
+                      </ButtonText>
+                    </ButtonBox>
+                  );
+                },
+              }}
+            />
 
-          <Tab.Screen
-            name={ROUTES.CHAT}
-            component={ChatPage}
-            options={{
-              headerShown: false,
-              tabBarIcon: ({focused}: {focused: boolean}) => {
-                return (
-                  <ButtonBox>
-                    <SvgXml xml={getModifiedSvg(svg.chat, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText
-                      style={{
-                        color: focused ? COLORS.active : COLORS.inactive,
-                      }}
-                    >
-                      채팅
-                    </ButtonText>
-                  </ButtonBox>
-                );
-              },
-            }}
-          />
+            <Tab.Screen
+              name={ROUTES.CHAT}
+              component={ChatPage}
+              options={{
+                headerShown: false,
+                tabBarIcon: ({focused}: {focused: boolean}) => {
+                  return (
+                    <ButtonBox>
+                      <SvgXml xml={getModifiedSvg(svg.chat, focused ? COLORS.active : COLORS.inactive)} />
+                      <ButtonText
+                        style={{
+                          color: focused ? COLORS.active : COLORS.inactive,
+                        }}
+                      >
+                        채팅
+                      </ButtonText>
+                    </ButtonBox>
+                  );
+                },
+              }}
+            />
 
-          <Tab.Screen
-            name={ROUTES.MAP}
-            component={MapStack}
-            options={{
-              headerShown: false,
-              tabBarIcon: ({focused}: {focused: boolean}) => {
-                return (
-                  <ButtonBox>
-                    <SvgXml xml={getModifiedSvg(svg.map, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText
-                      style={{
-                        color: focused ? COLORS.active : COLORS.inactive,
-                      }}
-                    >
-                      지도
-                    </ButtonText>
-                  </ButtonBox>
-                );
-              },
-            }}
-          />
+            <Tab.Screen
+              name={ROUTES.MAP}
+              component={MapStack}
+              options={{
+                headerShown: false,
+                tabBarIcon: ({focused}: {focused: boolean}) => {
+                  return (
+                    <ButtonBox>
+                      <SvgXml xml={getModifiedSvg(svg.map, focused ? COLORS.active : COLORS.inactive)} />
+                      <ButtonText
+                        style={{
+                          color: focused ? COLORS.active : COLORS.inactive,
+                        }}
+                      >
+                        지도
+                      </ButtonText>
+                    </ButtonBox>
+                  );
+                },
+              }}
+            />
 
-          <Tab.Screen
-            name='posts'
-            component={PostStack}
-            options={{
-              headerShown: false,
-              tabBarIcon: ({focused}: {focused: boolean}) => {
-                return (
-                  <ButtonBox>
-                    <SvgXml xml={getModifiedSvg(svg.post, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText
-                      style={{
-                        color: focused ? COLORS.active : COLORS.inactive,
-                      }}
-                    >
-                      게시글
-                    </ButtonText>
-                  </ButtonBox>
-                );
-              },
-            }}
-          />
+            <Tab.Screen
+              name='posts'
+              component={PostStack}
+              options={{
+                headerShown: false,
+                tabBarIcon: ({focused}: {focused: boolean}) => {
+                  return (
+                    <ButtonBox>
+                      <SvgXml xml={getModifiedSvg(svg.post, focused ? COLORS.active : COLORS.inactive)} />
+                      <ButtonText
+                        style={{
+                          color: focused ? COLORS.active : COLORS.inactive,
+                        }}
+                      >
+                        게시글
+                      </ButtonText>
+                    </ButtonBox>
+                  );
+                },
+              }}
+            />
 
-          <Tab.Screen
-            name={ROUTES.MY}
-            component={MyStack}
-            options={{
-              headerShown: false,
-              tabBarIcon: ({focused}: {focused: boolean}) => {
-                return (
-                  <ButtonBox>
-                    <SvgXml xml={getModifiedSvg(svg.my, focused ? COLORS.active : COLORS.inactive)} />
-                    <ButtonText
-                      style={{
-                        color: focused ? COLORS.active : COLORS.inactive,
-                      }}
-                    >
-                      마이
-                    </ButtonText>
-                  </ButtonBox>
-                );
-              },
-            }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
+            <Tab.Screen
+              name={ROUTES.MY}
+              component={MyStack}
+              options={{
+                headerShown: false,
+                tabBarIcon: ({focused}: {focused: boolean}) => {
+                  return (
+                    <ButtonBox>
+                      <SvgXml xml={getModifiedSvg(svg.my, focused ? COLORS.active : COLORS.inactive)} />
+                      <ButtonText
+                        style={{
+                          color: focused ? COLORS.active : COLORS.inactive,
+                        }}
+                      >
+                        마이
+                      </ButtonText>
+                    </ButtonBox>
+                  );
+                },
+              }}
+            />
+          </Tab.Navigator>
+        </NavigationContainer>
+      </SafeAreaView>
     </SafeAreaProvider>
   );
 };

@@ -20,7 +20,8 @@ interface ChatMessage {
 
 const ChatPage = (): JSX.Element => {
   const {chatData, setMessage} = useChatStore(); // 전역 상태에서 채팅 데이터 가져오기
-  const {userId, roomId, accessToken, setRommId} = useStore();
+  const {userId, accessToken, setRommId} = useStore();
+  const roomId = 3033;
 
   // 상태 변수 타입 정의
   const [connected, setConnected] = useState<boolean>(false); // WebSocket 연결 상태
