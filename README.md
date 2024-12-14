@@ -33,14 +33,24 @@
 | <img src="https://avatars.githubusercontent.com/u/174772263?v=4" width="160" height="160"> | <img src="https://avatars.githubusercontent.com/u/105384780?v=4" width="160" height="160"> | <img src="https://avatars.githubusercontent.com/u/175666899?v=4" width="160" height="160"> |
 | :----------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------: |
 |                                           임재현                                           |                                           이의영                                           |                                           김혜준                                           |
-|                      [JaeHyun10-03](https://github.com/JaeHyun10-03)                       |                         [snsdl0905](https://github.com/snsdl0905)                          |                         [hyejun-fe](https://github.com/hyejun-fe)                          |
+|                           [PM](https://github.com/JaeHyun10-03)                            |                          [FE 팀장](https://github.com/snsdl0905)                           |                          [FE 팀원](https://github.com/hyejun-fe)                           |
 
 ### Backend
 
-| <img src="https://avatars.githubusercontent.com/u/39723498?v=4" width="160" height="160"> | <img src="https://avatars.githubusercontent.com/u/143896003?v=4" width="160" height="160"> | <img src="https://avatars.githubusercontent.com/u/78125105?v=4" width="160" height="160"> | <img src="https://avatars.githubusercontent.com/u/121223022?v=4" width="160" height="160"> | <img src="https://avatars.githubusercontent.com/u/145197184?v=4" width="160" height="160"> |
-| :---------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------: |
-|                                          서상원                                           |                                           강예진                                           |                                          황유정                                           |                                           임재영                                           |                                           천영상                                           |
-|                        [seosangwon](https://github.com/seosangwon)                        |                       [kang-ye-jin](https://github.com/kang-ye-jin)                        |                      [youjungHwang](https://github.com/youjungHwang)                      |                            [asklas](https://github.com/asklas)                             |                     [CHUNYOUNGSANG](https://github.com/CHUNYOUNGSANG)                      |
+| <img src="https://avatars.githubusercontent.com/u/39723498?v=4" width="160" height="160"> | <img src="https://avatars.githubusercontent.com/u/143896003?v=4" width="160" height="160"> | <img src="https://avatars.githubusercontent.com/u/78125105?v=4" width="160" height="160"> |
+| :---------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------: |
+|                                          서상원                                           |                                           강예진                                           |                                          황유정                                           |
+|                         [BE 팀장](https://github.com/seosangwon)                          |                         [BE 팀원](https://github.com/kang-ye-jin)                          |                        [BE 팀원](https://github.com/youjungHwang)                         |
+
+---
+
+### Backend
+
+| <img src="https://avatars.githubusercontent.com/u/121223022?v=4" width="160" height="160"> | <img src="https://avatars.githubusercontent.com/u/145197184?v=4" width="160" height="160"> |
+| :----------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------: |
+|                                           임재영                                           |                                           천영상                                           |
+|                            [BE 팀원](https://github.com/asklas)                            |                        [BE 팀원](https://github.com/CHUNYOUNGSANG)                         |
+|                                                                                            |
 
 ## 🔧 기술 스택
 
