@@ -4,13 +4,8 @@
 
 플로우 데이는 연인과 데이트 코스를 공유하는 앱입니다.
 
-<img src="image.png" width="200px" style="display:inline-block;">
-<img src="image-1.png" width="200px" style="display:inline-block;">
-<img src="image-3.png" width="200px" style="display:inline-block;">
-<img src="image-4.png" width="200px" style="display:inline-block;">
-<img src="image-6.png" width="200px" style="display:inline-block;">
-<img src="image-7.png" width="200px" style="display:inline-block;">
-<img src="image-8.png" width="200px" style="display:inline-block;">
+![image1](image.png) ![image2](image-1.png) ![image3](image-3.png) ![image4](image-4.png) ![image5](image-6.png) ![image6](image-7.png) ![image7](image-8.png)
+
 
 ## 🛠 주요 기능
 
